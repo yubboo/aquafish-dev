@@ -1,0 +1,340 @@
+/*
+ * Aquafish 安装器基础视觉系统。
+ *
+ * 关联页面：SetupPage.vue 与 SetupInstalledRedirectPage.vue。
+ * 负责安装器全局背景、通用卡片、按钮、表单、状态和摘要；颜色延续项目现有的粉紫、
+ * 蓝色柔光。流程专属布局放在 setup-page-v2.css，已安装页局部样式在其 Vue 组件内。
+ */
+:root {
+  --setup-ink: #26213f;
+  --setup-muted: #746f91;
+  --setup-primary: #7165ee;
+  --setup-primary-strong: #5c4fe0;
+  --setup-pink: #ee69b6;
+  --setup-line: rgba(142, 132, 205, 0.2);
+  --setup-panel: rgba(255, 255, 255, 0.76);
+  --setup-success: #2ea97c;
+  --setup-danger: #d94c71;
+}
+
+.setup-page {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--setup-ink);
+  background:
+    radial-gradient(circle at 8% 4%, rgba(255, 165, 215, 0.38), transparent 31%),
+    radial-gradient(circle at 93% 10%, rgba(131, 182, 255, 0.42), transparent 34%),
+    radial-gradient(circle at 52% 96%, rgba(166, 130, 255, 0.3), transparent 38%),
+    linear-gradient(135deg, #fff9fc 0%, #edf4ff 48%, #f6f0ff 100%);
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+}
+
+.setup-card {
+  width: min(1040px, 100%);
+  box-sizing: border-box;
+  padding: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(253, 249, 255, 0.91));
+  box-shadow:
+    0 34px 100px rgba(80, 67, 157, 0.17),
+    0 0 0 8px rgba(255, 255, 255, 0.28),
+    inset 0 1px 0 #fff;
+  backdrop-filter: blur(22px);
+}
+
+.setup-card button,
+.setup-card input,
+.setup-card select,
+.setup-card a {
+  font: inherit;
+}
+
+.setup-brand-row,
+.setup-header__badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.setup-brand {
+  color: #2d2748;
+  font-size: 20px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.setup-mode-badge,
+.setup-kicker {
+  width: fit-content;
+  margin: 0;
+  padding: 8px 13px;
+  border: 1px solid rgba(119, 106, 232, 0.22);
+  border-radius: 999px;
+  color: #5f56bd;
+  background: linear-gradient(135deg, rgba(237, 226, 255, 0.84), rgba(221, 240, 255, 0.88));
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+}
+
+.setup-eyebrow {
+  margin: 0;
+  color: #7468db;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.setup-primary,
+.setup-secondary,
+.setup-link-button,
+.setup-test-button,
+.setup-text-button {
+  border: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease, border-color 160ms ease;
+}
+
+.setup-primary {
+  min-height: 48px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--setup-primary) 0%, var(--setup-pink) 100%);
+  box-shadow: 0 16px 34px rgba(113, 101, 238, 0.27), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  font-weight: 850;
+}
+
+.setup-primary svg {
+  width: 18px;
+  height: 18px;
+}
+
+.setup-primary:hover:not(:disabled),
+.setup-secondary:hover:not(:disabled),
+.setup-link-button:hover,
+.setup-test-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.setup-primary:disabled,
+.setup-secondary:disabled,
+.setup-test-button:disabled,
+.setup-text-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.setup-secondary,
+.setup-link-button {
+  min-height: 48px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(132, 120, 196, 0.3);
+  border-radius: 16px;
+  color: #554f73;
+  background: rgba(255, 255, 255, 0.82);
+  font-weight: 800;
+}
+
+.setup-link-button {
+  color: #6357d4;
+  border-color: rgba(112, 98, 226, 0.26);
+  background: rgba(239, 235, 255, 0.76);
+}
+
+.setup-form {
+  display: grid;
+  gap: 22px;
+}
+
+.setup-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.setup-form label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.setup-form label > span,
+.setup-form label strong {
+  color: #494361;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.setup-form input[type='text'],
+.setup-form input[type='url'],
+.setup-form input[type='email'],
+.setup-form input[type='password'],
+.setup-form input[type='number'],
+.setup-form select {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid rgba(146, 136, 199, 0.42);
+  border-radius: 14px;
+  outline: none;
+  color: var(--setup-ink);
+  background: rgba(255, 255, 255, 0.91);
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.setup-form input:focus,
+.setup-form select:focus {
+  border-color: rgba(113, 101, 238, 0.74);
+  box-shadow: 0 0 0 4px rgba(113, 101, 238, 0.12);
+}
+
+.setup-form input::placeholder {
+  color: #aaa5bc;
+}
+
+.setup-form small {
+  color: #85809a;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.setup-form code {
+  padding: 3px 7px;
+  border-radius: 7px;
+  color: #6256db;
+  background: rgba(113, 101, 238, 0.11);
+  font-weight: 850;
+}
+
+.setup-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.setup-summary div {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(142, 132, 205, 0.18);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.setup-summary span {
+  display: block;
+  margin-bottom: 6px;
+  color: #8d87a4;
+  font-size: 12px;
+}
+
+.setup-summary strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #39334f;
+  font-size: 14px;
+}
+
+.setup-message {
+  padding: 15px 17px;
+  border: 1px solid rgba(190, 201, 255, 0.44);
+  border-radius: 15px;
+  color: #625d82;
+  background: rgba(247, 249, 255, 0.91);
+}
+
+.setup-message--error {
+  color: #bd365c;
+  border-color: rgba(255, 129, 170, 0.38);
+  background: rgba(255, 239, 245, 0.94);
+}
+
+.setup-state-card,
+.setup-done {
+  width: min(720px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.setup-state-card h1,
+.setup-done h1 {
+  margin: 0;
+  color: #2c2743;
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.setup-state-card p,
+.setup-done > p {
+  margin: 0;
+  color: var(--setup-muted);
+  line-height: 1.75;
+}
+
+.setup-state-icon {
+  width: 68px;
+  height: 68px;
+}
+
+.setup-state-icon.is-success { color: var(--setup-success); }
+.setup-state-icon.is-error { color: var(--setup-danger); }
+
+.setup-loading-ring {
+  width: 54px;
+  height: 54px;
+  border: 4px solid rgba(113, 101, 238, 0.15);
+  border-top-color: var(--setup-primary);
+  border-radius: 50%;
+  animation: setup-spin 800ms linear infinite;
+}
+
+.is-spinning { animation: setup-spin 850ms linear infinite; }
+
+@keyframes setup-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .setup-page {
+    align-items: flex-start;
+    padding: 22px 13px;
+  }
+
+  .setup-card {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .setup-form-grid,
+  .setup-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-primary,
+  .setup-secondary,
+  .setup-link-button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

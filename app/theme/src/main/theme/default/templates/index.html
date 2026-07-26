@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${site != null ? site.name : 'Aquafish'}">Aquafish</title>
+</head>
+<body>
+<main class="af-main af-home">
+  <section class="af-home-hero" aria-labelledby="af-home-title">
+    <picture>
+      <source
+        media="(max-width: 640px)"
+        th:attr="srcset=${theme != null ? theme.settings.storyImage1 : '/theme-assets/images/carousel/home/aquafish-story-01.jpg'}">
+      <img
+        class="af-home-hero-image"
+        src="/theme-assets/images/backgrounds/home/aquafish-portal-hero.jpg"
+        th:src="${theme != null ? theme.settings.heroImage : '/theme-assets/images/backgrounds/home/aquafish-portal-hero.jpg'}"
+        width="1600"
+        height="900"
+        alt="月色森林中的二次元少女与植物"
+        decoding="async"
+        fetchpriority="high">
+    </picture>
+
+    <div class="af-home-hero-content">
+      <span class="af-home-eyebrow">Aquafish 内容 · 论坛 · 社区</span>
+      <h1
+        id="af-home-title"
+        th:text="${theme != null ? theme.settings.heroTitle : '发现内容，也发现同好'}">
+        发现内容，也发现同好
+      </h1>
+      <p th:text="${theme != null ? theme.settings.heroSubtitle : (site != null ? site.description : 'CMS + 强论坛 + AI 内容社区')}">
+        CMS + 强论坛 + AI 内容社区
+      </p>
+
+      <form class="af-home-search"
+            id="af-home-search"
+            role="search"
+            th:if="${theme == null || theme.settings.showHomeSearch}">
+        <label class="af-sr-only" for="af-home-search-input">搜索首页内容</label>
+        <input
+          id="af-home-search-input"
+          name="keyword"
+          type="search"
+          autocomplete="off"
+          placeholder="搜索文章标题、摘要或作者">
+        <button type="submit">搜索内容</button>
+      </form>
+
+      <!--
+        BEGIN：首页快捷导航
+        直接循环公共导航模型，避免主题模板把菜单名称和地址写死。
+      -->
+      <nav class="af-home-shortcuts"
+           aria-label="首页快捷入口"
+           th:if="${navigation != null}">
+        <a
+          th:each="item : ${navigation.primary}"
+          th:href="${item.url}"
+          th:text="${item.label}"
+        >主导航</a>
+        <a
+          th:each="item : ${navigation.account}"
+          th:href="${item.url}"
+          th:text="${item.label}"
+        >账号导航</a>
+      </nav>
+      <!-- END：首页快捷导航 -->
+    </div>
+  </section>
+
+  <section class="af-home-section" id="latest-content" aria-labelledby="latest-content-title">
+    <header class="af-home-section-heading">
+      <div>
+        <span>Latest</span>
+        <h2 id="latest-content-title">最近更新</h2>
+        <p>最新发布的文章与社区内容都在这里。</p>
+      </div>
+      <a href="/content">查看全部内容</a>
+    </header>
+
+    <p class="af-home-search-status" id="af-home-search-status" aria-live="polite"></p>
+
+    <div class="af-home-card-grid"
+         id="af-home-card-grid"
+         th:if="${articles != null && !articles.isEmpty()}">
+      <article
+        class="af-home-content-card"
+        th:each="article, stat : ${articles}"
+        th:attr="data-search=${article.title + ' ' + (article.summary != null ? article.summary : '') + ' ' + article.authorName}">
+        <a class="af-home-card-cover" th:attr="href=${article.url}">
+          <img th:if="${stat.index % 4 == 0}"
+               src="/theme-assets/images/carousel/home/aquafish-story-01.jpg"
+               th:src="${theme != null ? theme.settings.storyImage1 : '/theme-assets/images/carousel/home/aquafish-story-01.jpg'}"
+               width="720"
+               height="405"
+               alt=""
+               loading="lazy"
+               decoding="async">
+          <img th:if="${stat.index % 4 == 1}"
+               src="/theme-assets/images/carousel/home/aquafish-story-02.jpg"
+               th:src="${theme != null ? theme.settings.storyImage2 : '/theme-assets/images/carousel/home/aquafish-story-02.jpg'}"
+               width="720"
+               height="405"
+               alt=""
+               loading="lazy"
+               decoding="async">
+          <img th:if="${stat.index % 4 == 2}"
+               src="/theme-assets/images/carousel/home/aquafish-story-03.jpg"
+               th:src="${theme != null ? theme.settings.storyImage3 : '/theme-assets/images/carousel/home/aquafish-story-03.jpg'}"
+               width="720"
+               height="405"
+               alt=""
+               loading="lazy"
+               decoding="async">
+          <img th:if="${stat.index % 4 == 3}"
+               src="/theme-assets/images/carousel/home/aquafish-story-04.jpg"
+               th:src="${theme != null ? theme.settings.storyImage4 : '/theme-assets/images/carousel/home/aquafish-story-04.jpg'}"
+               width="720"
+               height="405"
+               alt=""
+               loading="lazy"
+               decoding="async">
+        </a>
+        <div class="af-home-card-body">
+          <span class="af-home-card-type">文章</span>
+          <h3>
+            <a th:attr="href=${article.url}" th:text="${article.title}">文章标题</a>
+          </h3>
+          <p th:text="${article.summary != null && !article.summary.isEmpty() ? article.summary : '打开文章阅读完整内容。'}">
+            文章摘要
+          </p>
+          <footer>
+            <span th:text="${article.authorName}">作者</span>
+            <time th:text="${article.publishedAt}">发布时间</time>
+          </footer>
+        </div>
+      </article>
+    </div>
+
+    <div class="af-home-card-grid" id="af-home-card-grid-empty"
+         th:if="${articles == null || articles.isEmpty()}">
+      <article class="af-home-content-card" data-search="内容中心 文章 发布">
+        <a class="af-home-card-cover" href="/content">
+          <img src="/theme-assets/images/carousel/home/aquafish-story-01.jpg"
+               th:src="${theme != null ? theme.settings.storyImage1 : '/theme-assets/images/carousel/home/aquafish-story-01.jpg'}"
+               width="720" height="405" alt="月色森林与植物"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="af-home-card-body">
+          <span class="af-home-card-type">内容中心</span>
+          <h3><a href="/content">阅读站点最新文章</a></h3>
+          <p>文章发布后会自动出现在首页，保持内容与后台数据同步。</p>
+          <footer><span>Aquafish</span><span>持续更新</span></footer>
+        </div>
+      </article>
+
+      <article class="af-home-content-card" data-search="论坛 社区 讨论">
+        <a class="af-home-card-cover" href="/forum">
+          <img src="/theme-assets/images/carousel/home/aquafish-story-02.jpg"
+               th:src="${theme != null ? theme.settings.storyImage2 : '/theme-assets/images/carousel/home/aquafish-story-02.jpg'}"
+               width="720" height="405" alt="天空下的二次元少女"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="af-home-card-body">
+          <span class="af-home-card-type">社区论坛</span>
+          <h3><a href="/forum">进入板块参与讨论</a></h3>
+          <p>浏览公开板块、主题与楼层，把文章阅读延伸成社区交流。</p>
+          <footer><span>Forum</span><span>开放浏览</span></footer>
+        </div>
+      </article>
+
+      <article class="af-home-content-card" data-search="用户 个人中心 资料">
+        <a class="af-home-card-cover" href="/member">
+          <img src="/theme-assets/images/carousel/home/aquafish-story-03.jpg"
+               th:src="${theme != null ? theme.settings.storyImage3 : '/theme-assets/images/carousel/home/aquafish-story-03.jpg'}"
+               width="720" height="405" alt="樱花街道上的二次元少女"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="af-home-card-body">
+          <span class="af-home-card-type">个人中心</span>
+          <h3><a href="/member">管理账号与个人资料</a></h3>
+          <p>登录后查看 UID、账号信息和社区身份，进入属于自己的页面。</p>
+          <footer><span>Member</span><span>账号空间</span></footer>
+        </div>
+      </article>
+
+      <article
+        class="af-home-content-card"
+        data-search="注册 加入 社区"
+        th:if="${viewer == null || !viewer.authenticated}">
+        <a class="af-home-card-cover" href="/register">
+          <img src="/theme-assets/images/carousel/home/aquafish-story-04.jpg"
+               th:src="${theme != null ? theme.settings.storyImage4 : '/theme-assets/images/carousel/home/aquafish-story-04.jpg'}"
+               width="720" height="405" alt="云海中的二次元少女"
+               loading="lazy" decoding="async">
+        </a>
+        <div class="af-home-card-body">
+          <span class="af-home-card-type">加入社区</span>
+          <h3><a href="/register">创建你的 Aquafish 账号</a></h3>
+          <p>注册普通用户账号，登录前台并参与内容与论坛互动。</p>
+          <footer><span>Account</span><span>立即注册</span></footer>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="af-home-section af-home-discover" aria-labelledby="popular-entry-title">
+    <header class="af-home-section-heading is-centered">
+      <div>
+        <span>Explore</span>
+        <h2 id="popular-entry-title">热门入口</h2>
+        <p>从内容阅读、论坛讨论到个人空间，快速进入常用功能。</p>
+      </div>
+    </header>
+
+    <div class="af-home-topic-grid">
+      <a class="af-home-topic-card" href="/content">
+        <strong>内容精选</strong>
+        <span>文章、专栏与最新发布</span>
+      </a>
+      <a class="af-home-topic-card" href="/forum">
+        <strong>论坛热议</strong>
+        <span>板块、主题与楼层交流</span>
+      </a>
+      <a class="af-home-topic-card" href="/member">
+        <strong>我的空间</strong>
+        <span>UID、资料与账号信息</span>
+      </a>
+      <!-- 管理功能卡片只允许已登录管理员看到。 -->
+      <a class="af-home-topic-card"
+         href="/admin"
+         th:if="${viewer != null && viewer.admin}">
+        <strong>站点管理</strong>
+        <span>仅管理员可进入后台</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="af-home-community">
+    <div>
+      <span>Community</span>
+      <h2>让内容和讨论在同一个社区里发生</h2>
+      <p>从阅读文章开始，进入论坛继续交流，或登录个人中心管理你的社区身份。</p>
+    </div>
+    <div class="af-home-community-actions">
+      <a class="af-button" href="/forum">浏览社区论坛</a>
+      <a
+        class="af-button is-secondary"
+        href="/register"
+        th:if="${viewer == null || !viewer.authenticated}"
+      >注册账号</a>
+    </div>
+  </section>
+
+  <script src="/theme-assets/js/home.js" defer></script>
+</main>
+</body>
+</html>

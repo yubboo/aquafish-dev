@@ -1,0 +1,42 @@
+dependencies {
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework:spring-context'
+    /*
+     * common 公共模块。
+     *
+     * 作用：
+     * 1. 使用统一 ApiResult 返回结构；
+     * 2. 后续可复用公共 DTO、异常、工具类。
+     */
+    implementation project(':common')
+
+    /*
+     * core 核心模块。
+     *
+     * 作用：
+     * 1. 使用固定链接设置服务；
+     * 2. 后续使用系统设置、配置、路径、表名、固定链接等核心能力。
+     */
+    implementation project(':core')
+    implementation project(':user')
+    implementation project(':theme')
+    implementation project(':template')
+    /*
+     * 后台插件页直接读取 plugin 模块的真实 PF4J 运行状态，
+     * 不再自行扫描 workdir/plugins 伪造生命周期。
+     */
+    implementation project(':plugin')
+
+    /*
+     * Spring WebFlux。
+     *
+     * 作用：
+     * 1. 支持 @RestController；
+     * 2. 支持 @GetMapping、@PutMapping、@PostMapping；
+     * 3. 让 admin 模块可以提供后台 API。
+     */
+    implementation 'org.springframework:spring-webflux'
+}

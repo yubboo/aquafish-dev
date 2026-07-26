@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(pageTitle, pageContent)">
+<head>
+  <meta charset="UTF-8">
+  <title th:replace="${pageTitle}">Aquafish</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    th:attr="content=${seo != null ? seo.description : 'Aquafish 内容与社区平台'}">
+  <meta
+    name="theme-color"
+    th:attr="content=${theme != null && theme.settings.primaryColor != null ? theme.settings.primaryColor : '#3f5039'}">
+  <link rel="stylesheet" href="/theme-assets/css/style.css">
+</head>
+<!--
+  BEGIN：主题实例设置挂载
+  这里只消费后端校验后的 theme.settings，不读取 YAML，不拼服务器路径。
+-->
+<body
+  th:classappend="${theme != null && theme.settings.layout == 'compact' ? ' af-density-compact' : ''}"
+  th:style="${theme != null
+    ? '--af-moss: ' + theme.settings.primaryColor
+      + '; --af-terracotta: ' + theme.settings.accentColor
+      + '; --af-paper-soft: ' + theme.settings.pageBackground + ';'
+    : null}">
+  <!-- END：主题实例设置挂载 -->
+  <div th:replace="~{partial/header :: header}"></div>
+
+  <main class="af-main" th:replace="${pageContent}">
+    <section class="af-card">
+      <h1>Aquafish</h1>
+      <p>页面内容加载中。</p>
+    </section>
+  </main>
+
+  <div th:replace="~{partial/footer :: footer}"></div>
+  <!-- 登录用户的全站退出入口；脚本只在页面存在退出按钮时发起认证请求。 -->
+  <script src="/theme-assets/js/member-session.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+/*
+ * 关联入口：admin/src/styles/index.css，作用于整个后台应用。
+ * 集中声明后台基础颜色、圆角和阴影变量；页面专属粉紫蓝变量应留在页面 CSS，避免全局
+ * Token 被单个页面覆盖。
+ */
+:root {
+  --aq-color-bg: #f6f3eb;
+  --aq-color-paper: #fbf9f4;
+  --aq-color-card: #fffdfa;
+  --aq-color-text: #292d28;
+  --aq-color-muted: #777268;
+  --aq-color-border: #ded8cc;
+  --aq-color-primary: #3f5039;
+  --aq-color-primary-soft: #e5e6d8;
+  --aq-color-accent: #b95228;
+  --aq-color-accent-dark: #963f20;
+  --aq-color-danger: #a33f32;
+  --aq-radius-card: 10px;
+  --aq-shadow-card: 0 8px 24px rgba(67, 56, 41, 0.055);
+}

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>文章详情 - Aquafish</title>
+</head>
+<body>
+  <h1 th:text="${article != null ? article.title : '文章详情'}">文章详情</h1>
+  <p>这是文章详情核心兜底模板。</p>
+</body>
+</html>

@@ -1,0 +1,505 @@
+/*
+ * 关联页面：UserManagePage.vue、UserSimpleListPage.vue、UserModulePlaceholderPage.vue。
+ * 用户后台页面共享标题、操作区、列表、状态、详情抽屉和空状态样式；用户页之外不要复用
+ * admin-user-* 选择器，避免页面间样式耦合。
+ */
+.admin-user-page {
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+  color: #172033;
+}
+
+.admin-user-page__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.admin-user-page__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.admin-user-page__desc {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.admin-user-page__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-user-search {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.admin-user-input,
+.admin-user-select {
+  height: 38px;
+  min-width: 180px;
+  padding: 0 12px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #111827;
+}
+
+.admin-user-input:focus,
+.admin-user-select:focus {
+  border-color: #667257;
+  box-shadow: 0 0 0 3px rgba(102, 114, 87, 0.14);
+}
+
+.admin-user-btn {
+  height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  background: #3f5039;
+  box-shadow: 0 10px 22px rgba(63, 80, 57, 0.18);
+}
+
+.admin-user-btn.is-ghost {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #dbe3ef;
+  box-shadow: none;
+}
+
+.admin-user-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-user-card {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.admin-user-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-user-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 960px;
+}
+
+.admin-user-table th,
+.admin-user-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #edf2f7;
+  text-align: left;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.admin-user-table th {
+  color: #64748b;
+  font-weight: 900;
+  background: rgba(248, 250, 252, 0.88);
+}
+
+.admin-user-table td {
+  color: #1f2937;
+}
+
+.admin-user-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #3f5039 0%, #7b5b3f 100%);
+}
+
+.admin-user-name {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-user-name strong {
+  color: #111827;
+  font-size: 13px;
+}
+
+.admin-user-name span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.admin-user-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-user-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  color: #334155;
+  background: #eef2ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-user-badge.is-green {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.admin-user-badge.is-red {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.admin-user-badge.is-gray {
+  color: #475569;
+  background: #e2e8f0;
+}
+
+.admin-user-empty {
+  padding: 42px 18px;
+  text-align: center;
+  color: #64748b;
+}
+
+.admin-user-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.admin-user-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.admin-user-modal {
+  width: min(760px, 100%);
+  max-height: min(760px, 86vh);
+  overflow: hidden;
+  border-radius: 26px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+}
+
+.admin-user-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.admin-user-modal__header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.admin-user-modal__body {
+  max-height: 620px;
+  overflow-y: auto;
+  padding: 18px 20px 22px;
+}
+
+.admin-user-detail-grid {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 10px 14px;
+  font-size: 13px;
+}
+
+.admin-user-detail-grid dt {
+  color: #64748b;
+  font-weight: 900;
+}
+
+.admin-user-detail-grid dd {
+  margin: 0;
+  min-width: 0;
+  color: #111827;
+  word-break: break-all;
+}
+
+.admin-user-placeholder {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px dashed #cbd5e1;
+}
+
+.admin-user-placeholder__inner {
+  max-width: 520px;
+  text-align: center;
+}
+
+.admin-user-placeholder h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.admin-user-placeholder p {
+  margin: 12px 0 0;
+  color: #64748b;
+  line-height: 1.8;
+}
+
+/* ==========================================================================
+ * BEGIN：用户 CRUD 与权限操作区
+ *
+ * 这些样式只服务 UserManagePage.vue 新建/管理抽屉；表单采用两列网格，
+ * 小屏自动变为一列。颜色沿用后台的墨绿、米白与陶土色，不引入蓝紫渐变。
+ * ========================================================================== */
+.admin-user-checkbox {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid #ddd7ca;
+  border-radius: 12px;
+  background: #fffdf8;
+  color: #4c5146;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-user-notice {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.admin-user-notice.is-success {
+  color: #355035;
+  background: #eef3e8;
+  border-color: #d5dfcc;
+}
+
+.admin-user-notice.is-error {
+  color: #8e3329;
+  background: #fff0ea;
+  border-color: #eccbc0;
+}
+
+.admin-user-modal.is-compact {
+  width: min(720px, 100%);
+}
+
+.admin-user-modal.is-wide {
+  width: min(1080px, 100%);
+}
+
+.admin-user-modal__header p {
+  margin: 6px 0 0;
+  color: #777467;
+  font-size: 12px;
+}
+
+.admin-user-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 20px;
+}
+
+.admin-user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+
+.admin-user-form-grid label {
+  display: grid;
+  gap: 7px;
+  color: #464b42;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-user-form-grid label.is-full {
+  grid-column: 1 / -1;
+}
+
+.admin-user-form-grid .admin-user-input,
+.admin-user-form-grid .admin-user-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-user-form-action {
+  display: flex;
+  align-items: flex-end;
+}
+
+.admin-user-manage-sections {
+  max-height: calc(86vh - 82px);
+  overflow-y: auto;
+  padding: 18px 20px 24px;
+  background: #f7f4ed;
+}
+
+.admin-user-manage-section {
+  margin-bottom: 16px;
+  padding: 18px;
+  border: 1px solid #e3ded2;
+  border-radius: 18px;
+  background: #fffefa;
+}
+
+.admin-user-manage-section:last-child {
+  margin-bottom: 0;
+}
+
+.admin-user-manage-section h4 {
+  margin: 0 0 14px;
+  color: #283126;
+  font-size: 15px;
+}
+
+.admin-user-manage-section p {
+  color: #777467;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.admin-user-manage-section .admin-user-form-grid {
+  padding: 0 0 14px;
+}
+
+.admin-user-manage-section.is-danger {
+  border-color: #e6c5b9;
+  background: #fff7f2;
+}
+
+.admin-user-btn.is-danger {
+  background: #a74232;
+  box-shadow: 0 10px 22px rgba(167, 66, 50, 0.16);
+}
+
+/* ==========================================================================
+ * BEGIN：用户组与管理组编辑页
+ * ========================================================================== */
+
+.admin-user-row-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-user-link.is-danger {
+  color: #9a3f34;
+}
+
+.admin-user-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.admin-user-checkbox {
+  min-height: 42px;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px !important;
+  padding-top: 24px;
+}
+
+.admin-user-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #40553a;
+}
+
+.admin-user-group-editor__description {
+  min-height: 104px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+/* END：用户组与管理组编辑页。 */
+
+.admin-user-inline-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-user-inline-form .admin-user-select {
+  min-width: 220px;
+}
+
+@media (max-width: 760px) {
+  .admin-user-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-user-form-grid label.is-full {
+    grid-column: auto;
+  }
+
+  .admin-user-modal-mask {
+    padding: 10px;
+  }
+}
+/* END：用户 CRUD 与权限操作区。 */

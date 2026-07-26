@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "key": "logo",
+      "directory": "logo",
+      "label": "站点标识",
+      "usage": ["siteLogo", "favicon"]
+    },
+    {
+      "key": "login",
+      "directory": "login",
+      "label": "登录页面",
+      "usage": ["loginImage"]
+    },
+    {
+      "key": "register",
+      "directory": "register",
+      "label": "注册页面",
+      "usage": ["registerImage"]
+    },
+    {
+      "key": "backgrounds",
+      "directory": "backgrounds",
+      "label": "页面背景",
+      "usage": ["heroImage", "pageBackgroundImage"]
+    },
+    {
+      "key": "carousel",
+      "directory": "carousel",
+      "label": "轮播与内容卡片",
+      "usage": ["storyImage1", "storyImage2", "storyImage3", "storyImage4"]
+    }
+  ]
+}

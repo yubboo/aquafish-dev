@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${(page != null ? page.title : '单页') + ' - ' + (site != null ? site.name : 'Aquafish')}">单页 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">content/page</span>
+    <h1 th:text="${page != null ? page.title : '单页'}">单页</h1>
+    <p th:text="${page != null ? page.summary : '这里显示单页内容。'}">这里显示单页内容。</p>
+    <div data-hook="content.page.after"></div>
+  </section>
+</main>
+</body>
+</html>

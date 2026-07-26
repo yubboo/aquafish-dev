@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'归档 - ' + (site != null ? site.name : 'Aquafish')}">归档 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">content/archives</span>
+    <h1>文章归档</h1>
+    <p>这里按时间展示文章归档。</p>
+    <div data-hook="content.archives.after"></div>
+  </section>
+</main>
+</body>
+</html>

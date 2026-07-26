@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'个人中心 - ' + (site != null ? site.name : 'Aquafish')}">个人中心 - Aquafish</title>
+</head>
+<body>
+<main>
+  <!-- ==================== 页面标题区 START ==================== -->
+  <section class="af-page-head af-member-head">
+    <span class="af-kicker">Member Center</span>
+    <h1>个人中心</h1>
+    <p>查看当前登录账号的会员资料、社区统计与账号信息。</p>
+  </section>
+  <!-- ==================== 页面标题区 END ==================== -->
+
+
+  <!-- ==================== 个人中心内容区 START ==================== -->
+  <section id="member-profile-panel" class="af-member-panel" aria-live="polite">
+    <!-- 骨架屏：API 数据到达前展示 -->
+    <div class="af-member-skeleton">
+      <div class="af-member-skeleton__banner"></div>
+      <div class="af-member-skeleton__body">
+        <div class="af-member-skeleton__avatar"></div>
+        <div class="af-member-skeleton__lines">
+          <span></span><span></span>
+        </div>
+        <div class="af-member-skeleton__stats">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <div data-hook="member.home.after"></div>
+  </section>
+  <!-- ==================== 个人中心内容区 END ==================== -->
+
+
+  <script>
+    (() => {
+      const panel = document.getElementById('member-profile-panel')
+      if (!panel) return
+
+      const escapeHtml = (value) => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;')
+
+      const safeImageUrl = (value) => {
+        const source = String(value || '').trim()
+        if (!source) return ''
+        try {
+          const url = new URL(source, window.location.origin)
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') return ''
+          return escapeHtml(url.origin === window.location.origin
+            ? `${url.pathname}${url.search}${url.hash}`
+            : url.href)
+        } catch {
+          return ''
+        }
+      }
+
+      const formatDate = (value) => {
+        const source = String(value || '').trim()
+        if (!source) return '—'
+        const date = new Date(source)
+        return Number.isNaN(date.getTime())
+          ? escapeHtml(source)
+          : new Intl.DateTimeFormat('zh-CN', {
+              year: 'numeric', month: '2-digit', day: '2-digit',
+              hour: '2-digit', minute: '2-digit'
+            }).format(date)
+      }
+
+      /**
+       * 取显示名首字作为头像占位；无显示名时用用户名首字。
+       */
+      const avatarInitial = (profile) => {
+        const source = profile.displayName || profile.username || 'A'
+        return escapeHtml(source.slice(0, 1).toUpperCase())
+      }
+
+      /**
+       * 渲染完整个人中心 — 现代化卡片式布局。
+       *
+       * 布局自上而下：
+       * 封面 → 头像 + 信息栏 + 统计 → 操作按钮
+       */
+      const render = (profile) => {
+        const initials = avatarInitial(profile)
+        const avatarUrl = safeImageUrl(profile.avatar)
+        const hasAvatar = !!avatarUrl
+
+        panel.innerHTML = `
+          <!-- ==================== 个人中心整体布局 START ==================== -->
+          <div class="af-member-layout">
+
+            <!-- ==================== 封面卡片 START ==================== -->
+            <div class="af-member-cover-card">
+              <!-- 封面 Banner -->
+              <div class="af-member-cover-card__banner">
+                <div class="af-member-cover-card__banner-copy">
+                  <span>Aquafish Member</span>
+                  <strong>发现内容，也发现同好</strong>
+                </div>
+              </div>
+
+              <!-- 头像 + 核心信息区 -->
+              <div class="af-member-cover-card__header">
+                <div class="af-member-cover-card__avatar ${hasAvatar ? 'has-image' : 'has-initials'}">
+                  ${hasAvatar
+                    ? `<img src="${avatarUrl}" alt="${escapeHtml(profile.displayName || profile.username)}" />`
+                    : `<span>${initials}</span>`
+                  }
+                </div>
+
+                <div class="af-member-cover-card__identity">
+                  <span class="af-member-cover-card__group">${escapeHtml(profile.groupName || '会员')}</span>
+                  <h2 class="af-member-cover-card__name">
+                    ${escapeHtml(profile.displayName || profile.username)}
+                  </h2>
+                  <p class="af-member-cover-card__handle">@${escapeHtml(profile.username)}</p>
+
+                  ${profile.bio
+                    ? `<p class="af-member-cover-card__bio">${escapeHtml(profile.bio)}</p>`
+                    : ''}
+                  ${profile.signature
+                    ? `<p class="af-member-cover-card__sig">${escapeHtml(profile.signature)}</p>`
+                    : ''}
+                </div>
+
+                <div class="af-member-cover-card__actions">
+                  <a class="af-button is-secondary" href="/member/edit">编辑资料</a>
+                  ${profile.adminAccess
+                    ? '<a class="af-button" href="/admin">进入管理后台</a>'
+                    : ''}
+                </div>
+              </div>
+            </div>
+            <!-- ==================== 封面卡片 END ==================== -->
+
+
+            <!-- ==================== 统计卡片网格 START ==================== -->
+            <div class="af-member-stats-grid">
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.threadsCount)}</strong>
+                <span>主题</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.postsCount)}</strong>
+                <span>帖子</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.commentsCount)}</strong>
+                <span>评论</span>
+              </div>
+
+              <div class="af-member-stat-card af-member-stat-card--highlight">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.points)}</strong>
+                <span>积分</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.followersCount)}</strong>
+                <span>关注者</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.followingCount)}</strong>
+                <span>正在关注</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.friendsCount)}</strong>
+                <span>好友</span>
+              </div>
+
+              <div class="af-member-stat-card">
+                <span class="af-member-stat-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                </span>
+                <strong>${escapeHtml(profile.uid)}</strong>
+                <span>UID</span>
+              </div>
+            </div>
+            <!-- ==================== 统计卡片网格 END ==================== -->
+
+
+            <!-- ==================== 账号信息面板 START ==================== -->
+            <div class="af-member-info">
+              <h3 class="af-member-info__title">账号信息</h3>
+              <dl class="af-member-info__grid">
+                <div>
+                  <dt>UID</dt>
+                  <dd><code>${escapeHtml(profile.uid)}</code></dd>
+                </div>
+                <div>
+                  <dt>公开编号</dt>
+                  <dd><code>${escapeHtml(profile.publicId)}</code></dd>
+                </div>
+                <div>
+                  <dt>邮箱</dt>
+                  <dd>${escapeHtml(profile.email || '未设置')}</dd>
+                </div>
+                <div>
+                  <dt>用户组</dt>
+                  <dd>${escapeHtml(profile.groupName || '会员')}</dd>
+                </div>
+                <div>
+                  <dt>加入时间</dt>
+                  <dd>${formatDate(profile.createdAt)}</dd>
+                </div>
+                <div>
+                  <dt>最后登录</dt>
+                  <dd>${formatDate(profile.lastLoginAt)}</dd>
+                </div>
+              </dl>
+            </div>
+            <!-- ==================== 账号信息面板 END ==================== -->
+
+          </div>
+          <!-- ==================== 个人中心整体布局 END ==================== -->
+        `
+      }
+
+      /**
+       * 渲染未登录或错误状态。
+       */
+      const renderError = (message) => {
+        panel.innerHTML = `
+          <div class="af-empty">
+            <strong>尚未登录</strong>
+            <p>${escapeHtml(message || '请先登录后查看个人中心。')}</p>
+            <a class="af-button" href="/login">前往登录</a>
+            <a class="af-button is-secondary" href="/">返回首页</a>
+          </div>
+        `
+      }
+
+      // 调用后端 API 获取个人资料
+      fetch('/api/member/profile', {
+        credentials: 'include',
+        headers: { Accept: 'application/json' }
+      })
+        .then(async (response) => {
+          const body = await response.json().catch(() => null)
+          if (!response.ok || !body?.success) {
+            throw new Error(body?.message || '请先登录后查看个人中心。')
+          }
+          render(body.data)
+        })
+        .catch((error) => {
+          renderError(error instanceof Error ? error.message : '请先登录。')
+        })
+    })()
+  </script>
+</main>
+</body>
+</html>

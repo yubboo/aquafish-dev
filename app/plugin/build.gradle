@@ -1,0 +1,17 @@
+
+dependencies {
+    implementation project(':common')
+    implementation project(':core')
+
+    /*
+     * PF4J 插件运行时内核。
+     *
+     * 这里使用与当前 Halo 主线源码一致的 3.15.0：
+     * 1. 每个插件拥有独立 PluginClassLoader；
+     * 2. PF4J 自己解析必选、可选和版本范围依赖；
+     * 3. Aquafish 在 PF4J 状态机外层补充 Spring 子上下文和数据库状态同步。
+     */
+    api 'org.pf4j:pf4j:3.15.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

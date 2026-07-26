@@ -1,0 +1,56 @@
+dependencies {
+    implementation 'org.springframework:spring-webflux'
+    /*
+     * common 公共模块。
+     *
+     * 当前用于：
+     * 1. ApiResult 统一接口返回结构；
+     * 2. 其他轻量公共工具。
+     */
+    implementation project(':common')
+
+    /*
+     * core 核心模块。
+     *
+     * 当前用于：
+     * 1. AquafishProperties；
+     * 2. WorkDirResolver；
+     * 3. TableNameResolver；
+     * 4. 其他框架核心能力。
+     */
+    implementation project(':core')
+
+    /*
+     * template 模板核心模块。
+     *
+     * 当前用于：
+     * 1. TemplateType；
+     * 2. TemplateTypes；
+     * 3. 开发阶段模板类型诊断接口。
+     */
+    implementation project(':template')
+
+    /*
+     * theme 主题模块。
+     *
+     * 当前用于：
+     * 1. ThemeDescriptor；
+     * 2. ThemeScanner；
+     * 3. ActiveThemeResolver；
+     * 4. 开发阶段主题扫描诊断接口。
+     */
+    implementation project(':theme')
+
+    /*
+     * Spring Boot WebFlux。
+     *
+     * 当前用于：
+     * 1. @RestController；
+     * 2. @GetMapping；
+     * 3. 开发阶段诊断接口。
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

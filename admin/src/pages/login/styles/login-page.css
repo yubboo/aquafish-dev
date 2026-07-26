@@ -1,0 +1,102 @@
+/*
+ * 关联历史页面：早期后台登录页方案，当前 AdminLoginPage.vue 未导入本文件。
+ * 仅作迁移参考；现行登录页请修改 ../admin-login-page.css，避免两个同名登录样式同时
+ * 演进造成误判。
+ */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 182, 193, 0.3), transparent 320px),
+    radial-gradient(circle at top right, rgba(147, 197, 253, 0.3), transparent 340px),
+    linear-gradient(180deg, #f8fbff 0%, #eef3f9 100%);
+}
+
+.login-card {
+  width: min(920px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 28px;
+  padding: 30px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 24px 70px rgba(148, 163, 184, 0.22);
+  backdrop-filter: blur(16px);
+}
+
+.login-card__visual {
+  min-height: 360px;
+  padding: 32px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(244, 114, 182, 0.2), transparent 230px),
+    radial-gradient(circle at 80% 70%, rgba(96, 165, 250, 0.22), transparent 240px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.9));
+}
+
+.login-card__badge {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-card__visual h1 {
+  margin: 34px 0 16px;
+  font-size: 42px;
+  line-height: 1.18;
+  color: #111827;
+}
+
+.login-card__visual p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.9;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-form :deep(.el-form-item__label) {
+  font-weight: 800;
+  color: #374151;
+}
+
+.login-form :deep(.el-input__wrapper) {
+  border-radius: 16px;
+  min-height: 44px;
+}
+
+.login-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+}
+
+.login-tips {
+  margin: 10px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .login-card {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card__visual {
+    min-height: auto;
+  }
+}

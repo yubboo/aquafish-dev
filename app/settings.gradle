@@ -1,0 +1,40 @@
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'aquafish'
+
+include 'boot'
+include 'core'
+include 'common'
+include 'setup'
+include 'theme'
+include 'template'
+include 'plugin'
+include 'license'
+include 'market'
+include 'user'
+include 'forum'
+include 'content'
+include 'search'
+include 'ai'
+
+/*
+ * admin 后端后台管理模块。
+ *
+ * 注意：
+ * 仓库根目录 admin 是 Vue 后台前端目录；
+ * app/admin 是 Java 后端后台接口模块。
+ */
+include 'admin'

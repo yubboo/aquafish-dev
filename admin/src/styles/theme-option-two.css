@@ -1,0 +1,257 @@
+/*
+ * 关联入口：main.ts 全局样式入口以及尚未完成独立视觉迁移的后台旧页面。
+ * 图 2 全局兼容层。
+ *
+ * 新页面直接使用 variables.css 和共享页面样式；本文件只收口尚未完成视觉重写的
+ * 历史登录、安装、授权、用户、固定链接和故障页，确保不会重新露出蓝紫渐变。
+ * 使用 !important 是为了覆盖按路由异步加载、插入顺序晚于全局样式的旧页面 CSS。
+ */
+.admin-login-page,
+.system-unavailable-page,
+.license-feature-required-page,
+.admin-coming-soon-page,
+.permalink-page,
+.setup-page {
+  color: var(--aq-color-text) !important;
+  background: var(--aq-color-bg) !important;
+}
+
+.admin-login-bg,
+.admin-coming-hero::after {
+  display: none !important;
+}
+
+.admin-login-card,
+.system-unavailable-card,
+.license-feature-required-card,
+.admin-coming-hero,
+.permalink-hero,
+.permalink-panel,
+.permalink-mode-card,
+.setup-card {
+  border: 1px solid var(--aq-color-border) !important;
+  border-radius: var(--aq-radius-card) !important;
+  background: var(--aq-color-card) !important;
+  box-shadow: var(--aq-shadow-card) !important;
+  backdrop-filter: none !important;
+}
+
+.admin-login-logo,
+.system-unavailable-icon,
+.license-feature-required-icon {
+  color: #fffaf4 !important;
+  border-radius: 50% !important;
+  background: var(--aq-color-primary) !important;
+  box-shadow: none !important;
+}
+
+.admin-login-logo svg,
+.system-unavailable-icon svg,
+.license-feature-required-icon svg {
+  width: 46% !important;
+  height: 46% !important;
+}
+
+.admin-login-kicker,
+.license-feature-required-kicker,
+.admin-coming-kicker,
+.permalink-kicker,
+.setup-eyebrow {
+  color: var(--aq-color-primary) !important;
+}
+
+.admin-login-submit,
+.system-unavailable-retry,
+.license-feature-required-actions .is-primary,
+.permalink-save-button,
+.setup-primary,
+.license-enter-button {
+  color: #fffaf4 !important;
+  border-color: var(--aq-color-accent) !important;
+  border-radius: 7px !important;
+  background: var(--aq-color-accent) !important;
+  box-shadow: none !important;
+}
+
+.admin-login-submit:hover,
+.system-unavailable-retry:hover,
+.license-feature-required-actions .is-primary:hover,
+.permalink-save-button:hover,
+.setup-primary:hover,
+.license-enter-button:hover {
+  background: var(--aq-color-accent-dark) !important;
+}
+
+.admin-login-field input,
+.permalink-page input,
+.permalink-page select,
+.permalink-page textarea,
+.setup-page input,
+.setup-page select,
+.setup-page textarea {
+  border-color: #d9d4ca !important;
+  border-radius: 7px !important;
+  color: var(--aq-color-text) !important;
+  background: #fffefa !important;
+  box-shadow: none !important;
+}
+
+.admin-login-field input:focus,
+.permalink-page input:focus,
+.permalink-page select:focus,
+.permalink-page textarea:focus,
+.setup-page input:focus,
+.setup-page select:focus,
+.setup-page textarea:focus {
+  border-color: #7a8872 !important;
+  box-shadow: 0 0 0 3px rgba(63, 80, 57, 0.09) !important;
+}
+
+.license-page {
+  --license-ink: var(--aq-color-text) !important;
+  --license-muted: var(--aq-color-muted) !important;
+  --license-line: var(--aq-color-border) !important;
+  --license-purple: var(--aq-color-primary) !important;
+  --license-pink: var(--aq-color-primary) !important;
+  gap: 20px !important;
+}
+
+.license-hero,
+.license-panel,
+.license-overview-card,
+.license-active-panel {
+  border-color: var(--aq-color-border) !important;
+  border-radius: var(--aq-radius-card) !important;
+  background: var(--aq-color-card) !important;
+  box-shadow: var(--aq-shadow-card) !important;
+}
+
+.license-overview-card.is-primary,
+.license-primary-card,
+.license-online-button,
+.license-import-button,
+.license-check-button,
+.license-progress-bar,
+.license-active-badge {
+  background: var(--aq-color-primary) !important;
+  box-shadow: none !important;
+}
+
+.license-primary-card,
+.license-primary-card strong {
+  color: #fffaf4 !important;
+}
+
+.license-primary-card > span,
+.license-primary-card p {
+  color: rgba(255, 250, 244, 0.82) !important;
+}
+
+.license-activate-button,
+.license-device-box .license-portal-button,
+.license-enter-button {
+  color: #fffaf4 !important;
+}
+
+.license-feature-required-facts article,
+.license-feature-required-tags span,
+.system-unavailable-detail,
+.admin-coming-path,
+.permalink-mode-card.is-active,
+.permalink-example-box,
+.setup-database-card.is-selected,
+.setup-mode-badge,
+.setup-kicker {
+  color: var(--aq-color-text) !important;
+  border-color: var(--aq-color-border) !important;
+  border-radius: 8px !important;
+  background: #f5f2e9 !important;
+  box-shadow: none !important;
+}
+
+.admin-user-page {
+  color: var(--aq-color-text) !important;
+}
+
+.admin-user-search,
+.admin-user-card,
+.admin-user-table-wrap,
+.admin-user-drawer {
+  border-color: var(--aq-color-border) !important;
+  border-radius: var(--aq-radius-card) !important;
+  background: var(--aq-color-card) !important;
+  box-shadow: var(--aq-shadow-card) !important;
+}
+
+.admin-user-title,
+.admin-user-page__title {
+  color: var(--aq-color-text) !important;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif !important;
+  font-weight: 600 !important;
+}
+
+.admin-user-btn,
+.admin-user-avatar {
+  background: var(--aq-color-primary) !important;
+  box-shadow: none !important;
+}
+
+.admin-user-btn:not(.is-ghost) {
+  color: #fffaf4 !important;
+}
+
+.admin-user-btn.is-ghost {
+  color: var(--aq-color-primary) !important;
+  border-color: var(--aq-color-border) !important;
+  background: #fffefa !important;
+}
+
+.admin-user-btn:disabled {
+  color: rgba(255, 250, 244, 0.78) !important;
+}
+
+.admin-user-btn.is-ghost:disabled {
+  color: rgba(63, 80, 57, 0.58) !important;
+}
+
+.admin-user-input:focus,
+.admin-user-select:focus {
+  border-color: #7a8872 !important;
+  box-shadow: 0 0 0 3px rgba(63, 80, 57, 0.09) !important;
+}
+
+.permalink-mode-card.is-active {
+  border-color: #7a8872 !important;
+}
+
+.permalink-panel-icon,
+.permalink-switch input:checked + span {
+  background: var(--aq-color-primary) !important;
+}
+
+:root {
+  --setup-ink: var(--aq-color-text) !important;
+  --setup-muted: var(--aq-color-muted) !important;
+  --setup-primary: var(--aq-color-primary) !important;
+  --setup-primary-strong: var(--aq-color-primary) !important;
+  --setup-pink: var(--aq-color-primary) !important;
+  --setup-line: var(--aq-color-border) !important;
+  --setup-panel: var(--aq-color-card) !important;
+  --setup-success: #4e765f !important;
+  --setup-danger: var(--aq-color-danger) !important;
+}
+
+.setup-card {
+  max-height: calc(100dvh - 32px) !important;
+}
+
+.setup-step--active > span,
+.setup-step--done > span,
+.setup-progress-track span {
+  background: var(--aq-color-primary) !important;
+  box-shadow: none !important;
+}
+
+.setup-primary--hero {
+  border-radius: 7px !important;
+}

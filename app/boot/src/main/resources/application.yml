@@ -1,0 +1,158 @@
+# Aquafish 后端默认配置。
+#
+# 当前文件位置：
+# app/boot/src/main/resources/application.yml
+#
+# 这个文件属于程序内置默认配置。
+# 真正的运行配置放在 AQUAFISH_WORK_DIR 指向目录的 application.yaml。
+# Gradle 开发启动默认使用用户目录下的 .aquafish/dev；
+# 发行 JAR、Docker 和 1Panel 则显式设置各自的实例工作目录。
+#
+# 设计原则：
+# 1. application.yml 只放默认值。
+# 2. 实例工作目录中的 application.yaml 放用户本地配置。
+# 3. 外置配置优先级更高。
+# 4. 后续打包成 JAR 后，也可以通过外置 workdir/application.yaml 覆盖默认配置。
+
+server:
+  port: ${AQUAFISH_SERVER_PORT:8080}
+
+spring:
+  application:
+    name: aquafish
+
+  # 对齐 Halo 式外置配置思路。
+  #
+  # 只读取 AQUAFISH_WORK_DIR 指向的当前实例配置。
+  # 默认值仍是发行包旁边的 workdir；开发 bootRun、Docker 和 1Panel
+  # 都会显式覆盖该变量，源码仓库根目录不再保存运行目录。
+  # optional 表示纯净发行包首次启动时文件不存在也不会报错。
+  config:
+    import:
+      - optional:file:${AQUAFISH_WORK_DIR:workdir}/application.yaml
+
+  thymeleaf:
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+    # 开发阶段关闭缓存，方便改模板后立即看到效果。
+    cache: true
+
+aquafish:
+  # 部署来源只由服务端启动参数声明，安装页面不能通过 URL 自行切换。
+  # archive：ZIP/JAR 完整安装；docker/onepanel：平台托管初始化。
+  deployment:
+    type: ${AQUAFISH_DEPLOYMENT_TYPE:archive}
+
+  setup:
+    database-source: ${AQUAFISH_SETUP_DATABASE_SOURCE:installer}
+    redis-source: ${AQUAFISH_SETUP_REDIS_SOURCE:installer}
+    license-required: ${AQUAFISH_SETUP_LICENSE_REQUIRED:true}
+    license-version: ${AQUAFISH_SETUP_LICENSE_VERSION:1.0}
+
+  # 系统平台许可证。
+  #
+  # 实现关系：
+  # 1. 产品只内置 Ed25519 公钥，用于验证授权码，无法自行签发授权码；
+  # 2. 私钥只保存在 Aquafish 官方授权端，绝不能进入源码包、镜像或客户服务器；
+  # 3. 正式环境默认强制授权；正式 JAR 或 prod/release/formal Profile
+  #    检测到外置配置要求关闭时会拒绝启动；
+  # 4. dev Profile 只允许在未携带发行标记的开发构建中关闭强制拦截；
+  # 5. 公钥信任链的收紧属于后续独立安全步骤，本步骤不混合修改。
+  license:
+    enforcement-enabled: ${AQUAFISH_LICENSE_ENFORCEMENT_ENABLED:true}
+    product: ${AQUAFISH_LICENSE_PRODUCT:aquafish-platform}
+    public-key: ${AQUAFISH_LICENSE_PUBLIC_KEY:}
+    # 客户授权中心公开入口。设备码不会自动追加到 URL，避免进入浏览器历史和代理日志。
+    portal-url: ${AQUAFISH_LICENSE_PORTAL_URL:}
+    clock-skew-seconds: ${AQUAFISH_LICENSE_CLOCK_SKEW_SECONDS:300}
+    # 在线校验默认关闭，只有配置 HTTPS 授权中心后才启用；网络请求在后台执行，
+    # 业务请求只读取本地缓存，避免授权中心波动拖慢客户站点。
+    online:
+      enabled: ${AQUAFISH_LICENSE_ONLINE_ENABLED:false}
+      url: ${AQUAFISH_LICENSE_ONLINE_URL:}
+      activation-url: ${AQUAFISH_LICENSE_ONLINE_ACTIVATION_URL:}
+      # 在线授权中心可使用独立可轮换签名键；公钥可以随发行包内置或由环境变量覆盖。
+      key-id: ${AQUAFISH_LICENSE_ONLINE_KEY_ID:online-2026-01}
+      public-key: ${AQUAFISH_LICENSE_ONLINE_PUBLIC_KEY:}
+      # 轮换窗口内可同时信任上一把在线公钥；完成全量升级并等旧租约过期后再移除。
+      previous-key-id: ${AQUAFISH_LICENSE_ONLINE_PREVIOUS_KEY_ID:}
+      previous-public-key: ${AQUAFISH_LICENSE_ONLINE_PREVIOUS_PUBLIC_KEY:}
+      refresh-seconds: ${AQUAFISH_LICENSE_ONLINE_REFRESH_SECONDS:3600}
+      # 本地允许使用签名租约的上限，默认与授权中心 30 天租约一致。
+      offline-grace-seconds: ${AQUAFISH_LICENSE_OFFLINE_GRACE_SECONDS:2592000}
+      connect-timeout-millis: ${AQUAFISH_LICENSE_ONLINE_CONNECT_TIMEOUT_MILLIS:2000}
+      request-timeout-millis: ${AQUAFISH_LICENSE_ONLINE_REQUEST_TIMEOUT_MILLIS:3000}
+
+  # Halo 式实例工作目录。
+  #
+  # 注意：
+  # 这里的 workdir 只作为普通发行包的相对默认值。
+  # Gradle bootRun 默认改用用户目录，Docker/1Panel 使用 /app/workdir。
+  #
+  # 真实值优先由 AQUAFISH_WORK_DIR 和实例 application.yaml 提供。
+  work-dir: ${AQUAFISH_WORK_DIR:workdir}
+
+  # 兼容旧路线。
+  #
+  # 旧代码里还有部分地方读取 aquafish.storage-path。
+  # 这一阶段先保留，不立刻删除，避免旧安装流程报错。
+  storage-path: ${AQUAFISH_STORAGE_PATH:workdir/storage}
+
+  external-url: ${AQUAFISH_EXTERNAL_URL:http://127.0.0.1:8080}
+
+  # 可信反向代理地址或 CIDR，多个值使用英文逗号分隔。
+  #
+  # 安全规则：
+  # 1. 默认只信任本机回环代理；
+  # 2. Docker、1Panel 或独立 Nginx 部署时，应配置实际代理网段；
+  # 3. 不可信来源携带的 X-Forwarded-For 和 X-Real-IP 会被忽略。
+  network:
+    trusted-proxies: ${AQUAFISH_TRUSTED_PROXIES:127.0.0.1/32,::1/128}
+
+  database:
+    # 使用完整 AQUAFISH_DATABASE_* 名称，与 aquafish.database.* 一一对应。
+    # 旧 Compose 的 AQUAFISH_DB_* 无法被当前运行时服务读取，不能继续使用。
+    type: ${AQUAFISH_DATABASE_TYPE:mysql}
+    host: ${AQUAFISH_DATABASE_HOST:127.0.0.1}
+    port: ${AQUAFISH_DATABASE_PORT:3306}
+    name: ${AQUAFISH_DATABASE_NAME:aquafish}
+    username: ${AQUAFISH_DATABASE_USERNAME:aquafish}
+    password: ${AQUAFISH_DATABASE_PASSWORD:}
+    table-prefix: ${AQUAFISH_TABLE_PREFIX:aq_}
+    # 已安装实例启动时自动执行尚未应用的 r2dbc-migrate 版本。
+    # 首次安装和未配置数据库的纯净分发包会自动跳过。
+    auto-upgrade: ${AQUAFISH_DATABASE_AUTO_UPGRADE:true}
+
+  # Redis 是可选能力；未启用时不阻断单机安装。
+  redis:
+    enabled: ${AQUAFISH_REDIS_ENABLED:false}
+    host: ${AQUAFISH_REDIS_HOST:127.0.0.1}
+    port: ${AQUAFISH_REDIS_PORT:6379}
+    database: ${AQUAFISH_REDIS_DATABASE:0}
+    username: ${AQUAFISH_REDIS_USERNAME:}
+    password: ${AQUAFISH_REDIS_PASSWORD:}
+    ssl: ${AQUAFISH_REDIS_SSL:false}
+
+  theme:
+    active: ${AQUAFISH_THEME:default}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+
+# Halo 同路线的 R2DBC 数据库迁移。
+#
+# 当前暂时关闭：
+# 1. 旧 Flyway 安装入口尚未完成替换；
+# 2. 首次启动时数据库配置可能尚未写入；
+# 3. 完成 R2DBC 迁移服务改造后再由安装流程显式启用。
+r2dbc:
+  migrate:
+    enable: false

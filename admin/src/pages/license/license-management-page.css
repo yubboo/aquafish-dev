@@ -1,0 +1,435 @@
+/*
+ * 关联页面：admin/src/pages/license/LicenseManagementPage.vue。
+ * 负责授权状态总览、设备码、授权码输入、有效授权和取消激活区域；状态真假与颜色对应由
+ * Vue 数据类名驱动，后端 license 模块才是授权有效性的权威来源。
+ */
+.license-page {
+  --license-ink: #25223f;
+  --license-muted: #77738f;
+  --license-line: rgba(105, 92, 190, 0.16);
+  --license-purple: #7659ef;
+  --license-pink: #ed62bd;
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  color: var(--license-ink);
+}
+
+.license-hero,
+.license-panel,
+.license-overview-card,
+.license-active-panel {
+  border: 1px solid var(--license-line);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 55px rgba(78, 65, 156, 0.08);
+}
+
+.license-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px 32px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(237, 98, 189, 0.13), transparent 28%),
+    linear-gradient(135deg, #fff 30%, #f6f4ff 100%);
+}
+
+.license-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--license-purple);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.license-hero h1,
+.license-panel h2,
+.license-active-panel h2 {
+  margin: 0;
+}
+
+.license-hero h1 {
+  font-size: clamp(28px, 3vw, 42px);
+  letter-spacing: -0.04em;
+}
+
+.license-hero p,
+.license-panel-heading p,
+.license-overview-card p,
+.license-active-copy p {
+  margin: 8px 0 0;
+  color: var(--license-muted);
+  line-height: 1.7;
+}
+
+.license-hero-actions,
+.license-active-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.license-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.license-status-pill i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 5px color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.license-status-pill.is-success { color: #168a63; background: #e7f8f0; }
+.license-status-pill.is-warning { color: #b36c08; background: #fff5dc; }
+.license-status-pill.is-danger { color: #d13e63; background: #ffedf2; }
+.license-status-pill.is-neutral { color: #6d6880; background: #f0eef7; }
+
+.license-ghost-button,
+.license-device-box button,
+.license-danger-button,
+.license-enter-button,
+.license-activate-button {
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.license-ghost-button {
+  min-height: 40px;
+  padding: 0 16px;
+  color: #5e5678;
+  background: #fff;
+  border: 1px solid var(--license-line);
+}
+
+.license-dev-banner,
+.license-message {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 20px;
+  border-radius: 16px;
+}
+
+.license-dev-banner {
+  color: #7a5611;
+  background: #fff7df;
+  border: 1px solid #f4dda3;
+}
+
+.license-message {
+  color: #147755;
+  background: #eaf9f2;
+  border: 1px solid #bdebd8;
+}
+
+.license-message.is-error {
+  color: #b42e51;
+  background: #fff0f3;
+  border-color: #ffcbd7;
+}
+
+.license-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.license-overview-card {
+  padding: 23px 24px;
+  border-radius: 20px;
+}
+
+.license-overview-card > span {
+  color: var(--license-muted);
+  font-size: 13px;
+}
+
+.license-overview-card strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 22px;
+  word-break: break-word;
+}
+
+.license-primary-card {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, #6650e8, #a75ee4 55%, #ed62bd);
+  box-shadow: 0 20px 52px rgba(118, 89, 239, 0.24);
+}
+
+.license-primary-card > span,
+.license-primary-card p { color: rgba(255, 255, 255, 0.78); }
+
+.license-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.license-panel {
+  padding: 27px;
+  border-radius: 24px;
+  scroll-margin-top: 20px;
+}
+
+.license-panel-heading {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.license-heading-icon {
+  display: grid;
+  flex: 0 0 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--license-purple);
+  background: #efecff;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.license-device-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--license-line);
+  border-radius: 17px;
+  background: #f8f7fd;
+}
+
+.license-device-box span,
+.license-code-field > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--license-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.license-device-box code {
+  color: #433b6b;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.license-device-box button {
+  flex: 0 0 auto;
+  padding: 11px 14px;
+  color: #5e47d0;
+  background: #eae5ff;
+}
+
+/*
+ * LicenseManagementPage.vue 设备码操作区。
+ * “前往授权中心”只消费后端返回的 portalUrl；设备码不会作为查询参数拼到外链。
+ */
+.license-device-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 9px;
+}
+
+.license-device-box .license-portal-button {
+  color: #fff;
+  background: linear-gradient(90deg, var(--license-purple), var(--license-pink));
+  box-shadow: 0 9px 22px rgba(118, 89, 239, 0.18);
+}
+
+.license-explain-list {
+  display: grid;
+  gap: 13px;
+  margin-top: 22px;
+}
+
+.license-explain-list div {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  color: var(--license-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.license-explain-list b {
+  display: grid;
+  flex: 0 0 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--license-purple);
+  background: #f0edff;
+  font-size: 11px;
+}
+
+.license-code-field {
+  display: block;
+  margin-top: 24px;
+}
+
+/*
+ * LicenseManagementPage.vue 在线激活区。
+ * 短码输入与离线 AQF1 文本框分开，避免客户把两种凭据粘贴到错误入口。
+ */
+.license-online-box {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid rgba(118, 89, 239, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f5f2ff, #fff5fb);
+}
+
+.license-method-label {
+  display: inline-flex;
+  margin-bottom: 13px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #6751d3;
+  background: #e8e2ff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.license-short-code-field { display: block; color: #4d4666; font-size: 13px; font-weight: 750; }
+.license-short-code-field input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 14px 15px;
+  border: 1px solid var(--license-line);
+  border-radius: 14px;
+  color: #393253;
+  background: #fff;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  outline: none;
+}
+.license-short-code-field input:focus { border-color: rgba(118, 89, 239, 0.65); box-shadow: 0 0 0 4px rgba(118, 89, 239, 0.1); }
+.license-method-divider { display: flex; align-items: center; gap: 12px; margin: 23px 0 0; color: #9690a8; font-size: 11px; }
+.license-method-divider::before,
+.license-method-divider::after { height: 1px; flex: 1; content: ""; background: var(--license-line); }
+
+.license-code-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--license-line);
+  border-radius: 16px;
+  padding: 15px 16px;
+  color: #393253;
+  background: #fbfaff;
+  font: 13px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+  outline: none;
+}
+
+.license-code-field textarea:focus {
+  border-color: rgba(118, 89, 239, 0.65);
+  box-shadow: 0 0 0 4px rgba(118, 89, 239, 0.1);
+}
+
+.license-activate-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  color: #fff;
+  background: linear-gradient(90deg, var(--license-purple), var(--license-pink));
+  box-shadow: 0 14px 30px rgba(118, 89, 239, 0.22);
+}
+
+.license-active-panel {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 22px;
+  padding: 25px 27px;
+  border-radius: 24px;
+  background: linear-gradient(125deg, #f2fff9, #fff 55%, #f6f3ff);
+}
+
+.license-active-mark {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  border-radius: 20px;
+  color: #fff;
+  background: linear-gradient(135deg, #22bd83, #53d6a7);
+  box-shadow: 0 15px 30px rgba(34, 189, 131, 0.22);
+  font-size: 30px;
+  font-weight: 850;
+}
+
+.license-active-copy > span {
+  color: #16966a;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.license-feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.license-feature-list span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #5c4ab5;
+  background: #efebff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.license-active-actions { flex-direction: column; align-items: stretch; }
+.license-enter-button,
+.license-danger-button { min-width: 155px; min-height: 42px; padding: 0 16px; }
+.license-enter-button { color: #fff; background: linear-gradient(90deg, var(--license-purple), var(--license-pink)); }
+.license-danger-button { color: #bd3658; background: #fff0f3; }
+
+.license-page button:hover:not(:disabled) { transform: translateY(-1px); }
+.license-page button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+@media (max-width: 1050px) {
+  .license-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .license-content-grid { grid-template-columns: 1fr; }
+  .license-active-panel { grid-template-columns: auto 1fr; }
+  .license-active-actions { grid-column: 1 / -1; flex-direction: row; }
+}
+
+@media (max-width: 700px) {
+  .license-overview-grid { grid-template-columns: 1fr; }
+  .license-hero { align-items: flex-start; flex-direction: column; padding: 24px; }
+  .license-hero-actions { width: 100%; justify-content: space-between; }
+  .license-dev-banner,
+  .license-message { align-items: flex-start; flex-direction: column; }
+  .license-panel { padding: 22px 18px; }
+  .license-device-box { align-items: stretch; flex-direction: column; }
+  .license-device-actions { flex-direction: column; }
+  .license-active-panel { grid-template-columns: 1fr; }
+  .license-active-actions { grid-column: auto; flex-direction: column; }
+}

@@ -1,0 +1,146 @@
+/*
+ * 关联页面：admin/src/pages/common/AdminComingSoonPage.vue。
+ * 为尚未完成的菜单路由提供统一占位视觉；标题和说明来自 route.meta，本文件不针对某个
+ * 业务模块写专属样式，真实页面完成后应使用自己的 CSS。
+ */
+.admin-coming-soon-page {
+  min-height: calc(100vh - 36px);
+  padding: 34px;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(126, 167, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 0%, rgba(255, 183, 222, 0.2), transparent 28%),
+    linear-gradient(135deg, #f8fbff 0%, #f2f6ff 52%, #fff7fd 100%);
+}
+
+.admin-coming-hero {
+  position: relative;
+  border-radius: 34px;
+  padding: 42px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(255, 255, 255, 0.92), transparent 20%),
+    linear-gradient(135deg, rgba(231, 247, 255, 0.95), rgba(245, 236, 255, 0.94));
+  box-shadow:
+    0 24px 70px rgba(64, 82, 130, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.admin-coming-hero::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  top: -70px;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: rgba(255, 139, 212, 0.18);
+  filter: blur(2px);
+}
+
+.admin-coming-kicker {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 8px 16px;
+  margin-bottom: 22px;
+  background: rgba(255, 255, 255, 0.66);
+  color: #6354ff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-coming-hero h1 {
+  margin: 0;
+  color: #121a2f;
+  font-size: 38px;
+  line-height: 1.16;
+  letter-spacing: -0.5px;
+}
+
+.admin-coming-hero p {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: #5d6b87;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.admin-coming-path {
+  width: fit-content;
+  margin-top: 24px;
+  border-radius: 18px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.68);
+  color: #697794;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.76);
+}
+
+.admin-coming-path span {
+  font-size: 13px;
+}
+
+.admin-coming-path strong {
+  color: #162039;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.admin-coming-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-coming-card {
+  border-radius: 28px;
+  padding: 26px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 18px 48px rgba(65, 82, 128, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.78);
+}
+
+.admin-coming-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, rgba(116, 142, 255, 0.18), rgba(255, 153, 218, 0.2));
+  font-size: 24px;
+}
+
+.admin-coming-card h2 {
+  margin: 0;
+  color: #141d33;
+  font-size: 18px;
+}
+
+.admin-coming-card p {
+  margin: 10px 0 0;
+  color: #64728f;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 1100px) {
+  .admin-coming-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-coming-soon-page {
+    padding: 20px;
+  }
+
+  .admin-coming-hero {
+    padding: 28px;
+  }
+
+  .admin-coming-hero h1 {
+    font-size: 30px;
+  }
+}

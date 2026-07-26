@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section
+  class="af-auth-shell"
+  th:fragment="auth(initialMode)"
+  th:attr="data-initial-mode=${initialMode}"
+>
+  <div class="af-auth-visual">
+    <img
+      class="af-auth-visual__image"
+      src="/theme-assets/images/login/aquafish-keeper-v1.webp"
+      th:src="${theme != null ? theme.settings.loginImage : '/theme-assets/images/login/aquafish-keeper-v1.webp'}"
+      alt=""
+      aria-hidden="true">
+    <div class="af-auth-visual__shade"></div>
+    <div class="af-auth-visual__content">
+      <a class="af-auth-back" href="/site">← 返回内容前台</a>
+      <span class="af-auth-eyebrow">Aquafish Community</span>
+      <h1 th:text="${site != null ? site.name : 'Aquafish'}">Aquafish</h1>
+      <p>登录同一个账号，即可进入内容社区、个人中心，并按账号权限直接访问管理后台。</p>
+    </div>
+  </div>
+
+  <div class="af-auth-stage">
+    <div class="af-auth-card" aria-live="polite">
+      <div class="af-auth-brand" aria-hidden="true">A</div>
+      <h2 class="af-auth-title">Aquafish</h2>
+      <p class="af-auth-subtitle" data-auth-subtitle>统一账号登录</p>
+
+      <div class="af-auth-tabs" role="tablist" aria-label="账号操作">
+        <button type="button" role="tab" data-auth-mode="login">登录</button>
+        <button type="button" role="tab" data-auth-mode="register">注册</button>
+      </div>
+
+      <form class="af-auth-form" data-auth-form="login" novalidate>
+        <label>
+          <span>用户名或邮箱</span>
+          <input name="loginName" autocomplete="username" maxlength="191" required>
+        </label>
+        <label>
+          <span>密码</span>
+          <input name="password" type="password" autocomplete="current-password" maxlength="256" required>
+        </label>
+        <label class="af-auth-check">
+          <input name="rememberMe" type="checkbox">
+          <span>记住登录状态</span>
+        </label>
+        <p class="af-auth-message" data-auth-message="login" aria-live="polite"></p>
+        <button class="af-auth-submit" type="submit">登录</button>
+      </form>
+
+      <form class="af-auth-form" data-auth-form="register" novalidate>
+        <div class="af-auth-fields">
+          <label>
+            <span>用户名</span>
+            <input name="username" autocomplete="username" minlength="3" maxlength="32" required>
+          </label>
+          <label>
+            <span>显示名称</span>
+            <input name="displayName" autocomplete="nickname" maxlength="100" required>
+          </label>
+          <label class="is-wide">
+            <span>邮箱</span>
+            <input name="email" type="email" autocomplete="email" maxlength="191" required>
+          </label>
+          <label>
+            <span>密码</span>
+            <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+          </label>
+          <label>
+            <span>确认密码</span>
+            <input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+          </label>
+        </div>
+        <label class="af-auth-check">
+          <input name="acceptedTerms" type="checkbox" required>
+          <span>我已阅读并同意用户协议与隐私政策</span>
+        </label>
+        <p class="af-auth-message" data-auth-message="register" aria-live="polite"></p>
+        <button class="af-auth-submit" type="submit">注册并登录</button>
+      </form>
+
+      <div class="af-auth-links">
+        <a href="/site">← 返回前台</a>
+        <button type="button" data-auth-alternate>注册账号</button>
+      </div>
+      <small class="af-auth-note">管理员与普通会员共用同一个账号入口</small>
+    </div>
+  </div>
+
+  <script src="/theme-assets/js/member-auth.js" defer></script>
+</section>
+</body>
+</html>

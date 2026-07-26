@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${(forum != null ? forum.name : '板块详情') + ' - ' + (site != null ? site.name : 'Aquafish')}">板块详情 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-page-head">
+    <a class="af-back" href="/forum">← 返回论坛首页</a>
+    <span class="af-kicker">Forum Section</span>
+    <h1 th:text="${forum != null ? forum.name : '板块详情'}">板块详情</h1>
+    <p th:text="${forum != null ? forum.description : '这里展示 BBS 板块说明和帖子列表。'}">
+      这里展示 BBS 板块说明和帖子列表。
+    </p>
+    <div class="af-stats" th:if="${forum != null}">
+      <span><strong th:text="${forum.threadCount}">0</strong> 主题</span>
+      <span><strong th:text="${forum.postCount}">0</strong> 帖子</span>
+    </div>
+  </section>
+
+  <section class="af-section">
+    <div class="af-list" th:if="${threads != null}">
+      <article class="af-list-item" th:each="thread : ${threads}">
+        <span class="af-thread-status" th:text="${thread.pinnedLevel > 0 ? '置顶' : '主题'}">主题</span>
+        <div>
+        <h2>
+          <a th:attr="href=${thread.url}" th:text="${thread.title}">帖子标题</a>
+        </h2>
+        <small>
+          <span th:text="${thread.authorName}">作者</span>
+          <span> · 回复 </span>
+          <span th:text="${thread.replyCount}">0</span>
+          <span> · 浏览 </span>
+          <span th:text="${thread.viewCount}">0</span>
+          <span> · </span>
+          <span th:text="${thread.lastActivityAt}">最后活动</span>
+        </small>
+        </div>
+      </article>
+    </div>
+
+    <div class="af-empty" th:if="${threads == null || threads.isEmpty()}">
+      暂无帖子。
+    </div>
+
+    <div data-hook="forum.forumdisplay.after"></div>
+  </section>
+</main>
+</body>
+</html>

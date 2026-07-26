@@ -1,0 +1,83 @@
+dependencies {
+    /*
+     * core 核心模块。
+     *
+     * 当前用于：
+     * 1. WorkDirResolver；
+     * 2. AquafishProperties；
+     * 3. 后续模板缓存目录、fallback 模板目录解析。
+     */
+    implementation project(':core')
+
+    /*
+     * theme 主题模块。
+     *
+     * 当前用于：
+     * 1. ActiveThemeResolver；
+     * 2. ThemeDescriptor；
+     * 3. 根据当前启用主题查找模板文件。
+     */
+    implementation project(':theme')
+
+    /*
+     * Thymeleaf 模板引擎。
+     *
+     * 当前用于：
+     * 1. 渲染 workdir/themes/default/templates 下的 HTML 模板；
+     * 2. 支持 th:text、th:each、th:replace、th:href 等基础语法；
+     * 3. 作为 Aquafish 第一阶段主题模板底层引擎。
+     *
+     * 注意：
+     * 后续 aq:* 语法和 Discuz 风格短语法是在 Thymeleaf 之上的安全封装层，
+     * 不是让业务模块直接操作 Thymeleaf。
+     */
+    implementation 'org.thymeleaf:thymeleaf'
+
+    /*
+     * Pebble 模板引擎。
+     *
+     * 当前用于：
+     * 1. 为 Aquafish 提供第二种服务端主题模板引擎；
+     * 2. 后续实现 engine: pebble 类型的第三方主题；
+     * 3. 与 Thymeleaf 共用统一 ThemeEngine 接口、
+     *    ThemeEngineRegistry 和 Theme ViewModel；
+     * 4. 允许主题作者根据自身习惯选择 Pebble 模板语法。
+     *
+     * 当前阶段说明：
+     * 1. 本步骤只加入 Pebble 核心依赖；
+     * 2. 尚未创建 PebbleThemeEngine 实现；
+     * 3. 尚未启用任何 Pebble 主题；
+     * 4. 现有 default 主题仍然使用 Thymeleaf；
+     * 5. 现有页面渲染行为不会发生变化。
+     *
+     * 版本需要明确写出，
+     * 因为 Pebble 不由当前 Spring 依赖管理统一提供版本。
+     */
+    implementation 'io.pebbletemplates:pebble:4.1.2'
+
+    /*
+     * JUnit 5 自动化测试框架。
+     *
+     * 当前用于：
+     * 1. 真正执行 PebbleThemeEngine；
+     * 2. 验证模板文件读取；
+     * 3. 验证页面数据注入；
+     * 4. 验证 Pebble HTML 自动转义；
+     * 5. 防止后续升级 Pebble 时出现运行时兼容问题。
+     *
+     * 版本由根项目导入的 Spring Boot BOM 统一管理，
+     * 因此这里不需要单独填写 JUnit 版本号。
+     */
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+
+
+    /*
+     * Spring Context。
+     *
+     * 当前用于：
+     * 1. @Component；
+     * 2. 把 ThemeTemplateResolver、ThymeleafTemplateRenderService 注册成 Spring Bean。
+     */
+    implementation 'org.springframework:spring-context'
+}

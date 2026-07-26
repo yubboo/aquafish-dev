@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${(thread != null ? thread.title : '主题详情') + ' - ' + (site != null ? site.name : 'Aquafish')}">主题详情 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-page-head">
+    <a class="af-back" th:attr="href=${forum != null ? forum.url : '/forum'}">← 返回板块</a>
+    <span class="af-kicker">Forum Thread</span>
+    <h1 th:text="${thread != null ? thread.title : '主题详情'}">主题详情</h1>
+    <div class="af-stats" th:if="${thread != null}">
+      <span th:text="${thread.authorName}">作者</span>
+      <span th:text="${thread.replyCount + ' 回复'}">0 回复</span>
+      <span th:text="${thread.viewCount + ' 浏览'}">0 浏览</span>
+    </div>
+  </section>
+
+  <section class="af-thread" th:if="${posts != null && !posts.isEmpty()}">
+    <article class="af-post" th:each="post : ${posts}">
+      <aside>
+        <strong th:text="${post.authorName}">用户</strong>
+        <small th:text="${'#' + post.floorNumber + ' 楼'}">#1 楼</small>
+      </aside>
+      <div>
+        <time th:text="${post.createdAt}">发布时间</time>
+        <p th:text="${post.content}">帖子正文</p>
+      </div>
+    </article>
+  </section>
+  <section class="af-empty" th:if="${posts == null || posts.isEmpty()}">
+    暂无可见楼层。
+  </section>
+  <section>
+    <div data-hook="forum.viewthread.after"></div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'内容 - ' + (site != null ? site.name : 'Aquafish')}">内容 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">content/index</span>
+    <h1>内容首页</h1>
+    <p>这里展示文章、页面、资源、专题等内容。</p>
+  </section>
+</main>
+</body>
+</html>

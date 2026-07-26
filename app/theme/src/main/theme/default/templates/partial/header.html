@@ -1,0 +1,60 @@
+<header class="af-header"
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="header">
+  <!-- BEGIN：站点品牌与账号导航 -->
+  <div class="af-header-brand">
+    <div class="af-container af-header-brand-inner">
+      <a class="af-logo" href="/site">
+        <span>
+          <strong th:text="${site != null ? site.name : 'Aquafish'}">Aquafish</strong>
+          <small>内容 · 论坛 · 社区</small>
+        </span>
+      </a>
+
+      <!--
+        账号导航来自 options.site.navigation。
+        服务端已按匿名、登录会员和管理员角色过滤，主题只负责循环渲染。
+      -->
+      <nav
+        class="af-account-nav"
+        aria-label="账号导航"
+        th:if="${navigation != null}"
+      >
+        <a
+          th:each="item : ${navigation.account}"
+          th:href="${item.url}"
+          th:target="${item.target}"
+          th:rel="${item.target == '_blank' ? 'noopener noreferrer' : null}"
+          th:classappend="${item.key == 'admin' ? ' af-header-admin' : ''}"
+          th:text="${item.label}"
+        >账号入口</a>
+        <button
+          type="button"
+          data-member-logout
+          th:if="${viewer != null && viewer.authenticated}"
+        >退出登录</button>
+      </nav>
+    </div>
+  </div>
+  <!-- END：站点品牌与账号导航 -->
+
+  <!-- BEGIN：数据库驱动的主导航 -->
+  <div class="af-header-navigation">
+    <div class="af-container af-header-inner">
+      <nav
+        class="af-nav"
+        aria-label="站点导航"
+        th:if="${navigation != null}"
+      >
+        <a
+          th:each="item : ${navigation.primary}"
+          th:href="${item.url}"
+          th:target="${item.target}"
+          th:rel="${item.target == '_blank' ? 'noopener noreferrer' : null}"
+          th:text="${item.label}"
+        >导航项目</a>
+      </nav>
+    </div>
+  </div>
+  <!-- END：数据库驱动的主导航 -->
+</header>

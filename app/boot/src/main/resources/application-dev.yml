@@ -1,0 +1,15 @@
+spring:
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    com.aquafish: INFO
+
+# 开发环境仍然完整计算并展示授权状态，但不拦截业务接口。
+# 正式包使用 prod Profile，默认必须激活有效授权码后才能使用系统平台。
+aquafish:
+  license:
+    enforcement-enabled: false
+    # 本机授权中心联调入口；正式环境通过 AQUAFISH_LICENSE_PORTAL_URL 配置 HTTPS 地址。
+    portal-url: ${AQUAFISH_LICENSE_PORTAL_URL:http://127.0.0.1:5200/portal}

@@ -1,0 +1,9 @@
+id: default
+name: default
+title: Aquafish 默认主题
+version: 0.5.2
+engine: thymeleaf
+author:
+  name: Aquafish Team
+parent: ""
+description: 面向内容、论坛与用户社区的 Aquafish 官方默认主题。

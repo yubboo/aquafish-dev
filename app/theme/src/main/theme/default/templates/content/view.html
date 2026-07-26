@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${(article != null ? article.title : '文章详情') + ' - ' + (site != null ? site.name : 'Aquafish')}">文章详情 - Aquafish</title>
+</head>
+<body>
+<main>
+  <article class="af-article-view">
+    <a class="af-back" href="/content">← 返回内容中心</a>
+    <span class="af-kicker">Published Story</span>
+    <h1 th:text="${article != null ? article.title : '文章详情'}">文章详情</h1>
+    <p class="af-article-lead" th:text="${article != null ? article.summary : '这里显示文章内容。'}">这里显示文章内容。</p>
+    <div class="af-article-meta" th:if="${article != null}">
+      <span th:text="${article.authorName}">作者</span>
+      <span th:text="${article.publishedAt}">发布时间</span>
+      <span th:text="${'浏览 ' + article.viewCount}">浏览 0</span>
+    </div>
+    <div class="af-prose" th:text="${article != null ? article.content : ''}">文章正文</div>
+  </article>
+</main>
+</body>
+</html>

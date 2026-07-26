@@ -1,0 +1,6 @@
+/*
+ * 关联入口：admin/src/styles/index.css。
+ * Aquafish Admin 的 Tailwind CSS 4 加载点；仅负责引入框架，页面级样式仍放在对应
+ * pages/components 目录，避免工具类入口变成业务样式集合。
+ */
+@import "tailwindcss";

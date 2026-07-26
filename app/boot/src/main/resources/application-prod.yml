@@ -1,0 +1,13 @@
+spring:
+  thymeleaf:
+    cache: true
+
+logging:
+  level:
+    com.aquafish: INFO
+
+# 正式 Profile 必须保持授权强制校验。即使环境变量以更高优先级覆盖为 false，
+# LicenseEnforcementPolicy 也会在启动阶段拒绝运行，不会静默全部放行。
+aquafish:
+  license:
+    enforcement-enabled: true

@@ -1,0 +1,285 @@
+/*
+ * 关联历史页面：早期双栏安装向导方案，当前 SetupPage.vue 未导入本文件。
+ * 现行安装器使用 ../setup-page.css 与 ../setup-page-v2.css；保留本文件只为迁移参考，
+ * 不要在这里修复当前安装页面。
+ */
+.setup-page {
+  min-height: 100vh;
+  padding: 36px 24px 56px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 182, 193, 0.28), transparent 320px),
+    radial-gradient(circle at top right, rgba(147, 197, 253, 0.28), transparent 340px),
+    linear-gradient(180deg, #f8fbff 0%, #f4f7fb 48%, #eef3f9 100%);
+}
+
+.setup-layout {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 860px);
+  justify-content: center;
+  gap: 28px;
+  align-items: start;
+}
+
+.setup-sidebar {
+  position: relative;
+}
+
+.setup-main {
+  width: 100%;
+  max-width: 860px;
+}
+
+.setup-hero {
+  margin-bottom: 22px;
+}
+
+.setup-page__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(148, 163, 184, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.setup-page__title {
+  margin: 18px 0 12px;
+  font-size: 38px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #111827;
+}
+
+.setup-page__desc {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.setup-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.setup-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 240, 245, 0.95), rgba(239, 246, 255, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  color: #7c3aed;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(167, 139, 250, 0.12);
+}
+
+.setup-card {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 22px;
+  padding: 24px;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.82));
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 18px 45px rgba(148, 163, 184, 0.18),
+    0 4px 16px rgba(255, 255, 255, 0.75) inset;
+  backdrop-filter: blur(14px);
+}
+
+.setup-card::before {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.setup-card::after {
+  content: '';
+  position: absolute;
+  left: -70px;
+  bottom: -70px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.setup-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.setup-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.setup-card__title,
+.setup-status-card__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #111827;
+}
+
+.setup-card__subtitle,
+.setup-status-card__desc {
+  margin: 8px 0 0;
+  color: #6b7280;
+  line-height: 1.75;
+  font-size: 14px;
+}
+
+.setup-status-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.setup-card--status {
+  position: sticky;
+  top: 24px;
+}
+
+.setup-loading,
+.setup-empty {
+  margin: 12px 0 0;
+  color: #6b7280;
+}
+
+.setup-status p {
+  margin: 12px 0;
+  line-height: 1.8;
+  color: #374151;
+}
+
+.setup-status strong {
+  color: #111827;
+}
+
+.setup-text-ok {
+  color: #16a34a;
+  font-weight: 800;
+}
+
+.setup-text-warn {
+  color: #d97706;
+  font-weight: 800;
+}
+
+.setup-text-error {
+  color: #dc2626;
+}
+
+.setup-form {
+  display: grid;
+  gap: 2px;
+}
+
+.setup-form :deep(.el-form-item__label) {
+  font-weight: 700;
+  color: #374151;
+}
+
+.setup-form :deep(.el-input__wrapper),
+.setup-form :deep(.el-textarea__inner) {
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.08);
+}
+
+.setup-form__check {
+  margin-top: 6px;
+}
+
+.setup-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.setup-message {
+  margin: 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.setup-rules {
+  margin: 0;
+  padding-left: 22px;
+  line-height: 2;
+  color: #374151;
+}
+
+.setup-rules li + li {
+  margin-top: 4px;
+}
+
+@media (max-width: 1180px) {
+  .setup-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-main {
+    max-width: 100%;
+  }
+
+  .setup-card--status {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .setup-page {
+    padding: 24px 14px 40px;
+  }
+
+  .setup-page__title {
+    font-size: 30px;
+  }
+
+  .setup-card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .setup-card__title,
+  .setup-status-card__title {
+    font-size: 24px;
+  }
+
+  .setup-status-card__top,
+  .setup-card__header,
+  .setup-form__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

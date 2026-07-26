@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <title>文章标签页 - Aquafish</title>
+
+    <!--
+        Aquafish 核心内置只读 fallback。
+
+        该文件随 template 模块打包进 JAR，
+        不依赖当前主题、父主题或外置 default 的资源。
+    -->
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            color-scheme: light;
+            background: #f4f6f8;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 32px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family:
+                Inter,
+                "PingFang SC",
+                "Microsoft YaHei",
+                Arial,
+                sans-serif;
+            color: #172033;
+            background:
+                radial-gradient(
+                    circle at top,
+                    #ffffff 0,
+                    #f4f6f8 48%,
+                    #e9edf2 100%
+                );
+        }
+
+        .aq-core-fallback {
+            width: min(720px, 100%);
+            padding: 42px;
+            border: 1px solid #dce2ea;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow:
+                0 22px 60px rgba(23, 32, 51, 0.10);
+        }
+
+        .aq-brand {
+            margin: 0 0 8px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .aq-label {
+            display: inline-flex;
+            margin-bottom: 24px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #eef2f7;
+            color: #506079;
+            font-size: 13px;
+        }
+
+        h1 {
+            margin: 0 0 14px;
+            font-size: clamp(30px, 6vw, 48px);
+            line-height: 1.12;
+        }
+
+        .aq-description {
+            margin: 0;
+            color: #5d687a;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .aq-notice {
+            margin-top: 28px;
+            padding: 18px 20px;
+            border-left: 4px solid #334155;
+            border-radius: 10px;
+            background: #f6f8fa;
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        .aq-actions {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .aq-actions a {
+            display: inline-flex;
+            min-height: 42px;
+            padding: 0 18px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: #ffffff;
+            background: #172033;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .aq-code {
+            margin-top: 28px;
+            color: #8791a1;
+            font-size: 12px;
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            .aq-core-fallback {
+                padding: 28px 22px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="aq-core-fallback">
+        <p class="aq-brand">Aquafish</p>
+
+        <div class="aq-label">
+            核心内置安全模板
+        </div>
+
+        <h1>文章标签页</h1>
+
+        <p class="aq-description">
+            当前主题无法提供标签列表模板，系统正在使用核心安全页面。
+        </p>
+
+        <div class="aq-notice">
+            当前活动主题、父主题继承链和外置官方
+            default 均未提供此页面模板。
+            系统已自动切换到随核心程序发布的只读页面，
+            以避免访客看到空白页或服务器异常信息。
+        </div>
+
+        <div class="aq-actions">
+            <a href="/">返回网站首页</a>
+        </div>
+
+        <div class="aq-code">
+            fallback-type: tag
+        </div>
+    </main>
+</body>
+</html>

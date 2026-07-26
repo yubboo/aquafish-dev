@@ -1,0 +1,95 @@
+dependencies {
+    /*
+     * Jackson YAML 正式解析器。
+     *
+     * 用于把 theme.yaml 解析为结构化 ThemeManifest，
+     * 替代 ThemeScanner 中只能处理少量字段的逐行字符串解析。
+     *
+     * 版本由根项目 Spring Boot BOM 统一管理。
+     */
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
+    /*
+     * Apache Commons Compress。
+     *
+     * 用于只读检查主题 ZIP：
+     * 1. 获取完整 ZIP 条目元数据；
+     * 2. 检查不可读取的压缩方式；
+     * 3. 检查 Unix 符号链接；
+     * 4. 读取 Unix 文件类型和权限；
+     * 5. 后续安全读取 theme.yaml。
+     *
+     * 当前阶段只扫描，不执行解压。
+     */
+    implementation 'org.apache.commons:commons-compress:1.28.0'
+
+    /*
+     * JUnit 5 自动化测试框架。
+     *
+     * 当前用于验证：
+     * 1. theme.yaml 中 engine 字段的默认值；
+     * 2. Thymeleaf 和 Pebble 标识标准化；
+     * 3. 未支持模板引擎的拒绝规则；
+     * 4. ThemeDescriptor 的引擎辅助判断方法；
+     * 5. 后续修改主题描述对象时避免规则回退。
+     *
+     * JUnit 版本由根项目 Spring Boot BOM 统一管理，
+     * 因此这里不单独填写版本号。
+     */
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    /*
+     * core 核心模块。
+     *
+     * 当前用于：
+     * 1. AquafishProperties；
+     * 2. WorkDirResolver；
+     * 3. 读取 workdir/application.yaml；
+     * 4. 获取 workdir/themes 运行主题目录。
+     */
+    implementation project(':core')
+
+    /*
+     * Spring Context。
+     *
+     * 当前用于：
+     * 1. @Component；
+     * 2. 让 ThemeScanner、ActiveThemeResolver 注册成 Spring Bean；
+     * 3. 方便 setup、boot、后续后台模块通过构造方法注入。
+     */
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-webflux'
+    implementation 'org.springframework.security:spring-security-core'
+}
+
+/*
+ * 内置 default 主题只在 theme 模块保留一份可审查源码。
+ *
+ * 构建阶段把 src/main/theme/default 打成独立 ZIP 并放入 JAR：
+ * classpath:/aquafish/builtin-themes/aquafish-default.zip
+ *
+ * 这样源码仓库不再出现根 themes 目录，实例安装后的主题仍只存在于
+ * AQUAFISH_WORK_DIR/themes，边界与 Halo 的“内置主题包 + 运行目录”一致。
+ */
+def generatedBuiltinThemeResources =
+    layout.buildDirectory.dir('generated/builtin-theme-resources')
+
+tasks.register('packageBuiltinDefaultTheme', Zip) {
+    group = 'build'
+    description = '把 Aquafish 内置 default 主题源码打成可分发 ZIP。'
+    from layout.projectDirectory.dir('src/main/theme/default')
+    archiveFileName.set('aquafish-default.zip')
+    destinationDirectory.set(
+        generatedBuiltinThemeResources.map {
+            it.dir('aquafish/builtin-themes')
+        }
+    )
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+sourceSets.main.resources.srcDir(generatedBuiltinThemeResources)
+
+tasks.named('processResources') {
+    dependsOn tasks.named('packageBuiltinDefaultTheme')
+}

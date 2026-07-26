@@ -1,0 +1,102 @@
+dependencies {
+    /*
+     * Aquafish 框架级响应式数据库底座。
+     *
+     * 这里必须使用 api，而不是 implementation。
+     *
+     * 原因：
+     * 1. core 模块向 admin、user 等下游模块提供响应式数据库能力；
+     * 2. 下游模块可能直接使用 DatabaseClient；
+     * 3. 提供 Spring Data R2DBC；
+     * 4. 提供 Spring R2DBC；
+     * 5. 提供响应式事务 TransactionalOperator；
+     * 6. 提供 Reactor Mono、Flux；
+     * 7. 提供 R2DBC ConnectionFactory 等接口。
+     *
+     * 之前出现的以下编译错误，都由缺少该依赖引起：
+     * - DatabaseClient 找不到；
+     * - TransactionalOperator 找不到；
+     * - Mono 找不到；
+     * - ConnectionFactory 找不到；
+     * - R2dbcTransactionManager 找不到。
+     */
+    api 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+
+    /*
+     * Halo 同路线的 R2DBC 数据库迁移工具。
+     *
+     * 迁移工厂、迁移计划和安装期迁移服务均位于 core，
+     * 因此依赖必须声明在 core，而不是 boot。
+     *
+     * 当前 application.yml 仍保持 enable=false，
+     * 后续由安装流程显式调用迁移，不在未安装启动阶段自动执行。
+     */
+    implementation 'name.nkonev.r2dbc-migrate:r2dbc-migrate-spring-boot-starter:4.0.1'
+
+    /*
+     * Spring Security 密码加密组件。
+     *
+     * 作用：
+     * 1. 提供 PasswordEncoder；
+     * 2. 提供 BCryptPasswordEncoder；
+     * 3. 安装阶段创建管理员时生成密码哈希；
+     * 4. 后台登录时校验用户密码；
+     * 5. 数据库中严禁保存明文密码。
+     */
+    implementation 'org.springframework.security:spring-security-crypto'
+
+    /*
+     * Spring Context 核心容器。
+     *
+     * 作用：
+     * 1. 提供 @Component、@Service 等注解；
+     * 2. 让 core 模块中的服务注册为 Spring Bean；
+     * 3. 支持构造方法依赖注入；
+     * 4. 让其他模块复用 core 中的服务。
+     *
+     * 当前主要使用场景：
+     * 1. TableNameResolver；
+     * 2. DatabaseRuntimeSettingsService；
+     * 3. SetupAdminAccountInitializer；
+     * 4. SetupFinishService；
+     * 5. R2DBC 运行配置；
+     * 6. R2DBC 数据库迁移服务。
+     */
+    implementation 'org.springframework:spring-context'
+
+    /*
+     * Jackson JSON 数据处理组件。
+     *
+     * 作用：
+     * 1. 提供 ObjectMapper；
+     * 2. 读取 JSON 配置；
+     * 3. 写入 JSON 配置；
+     * 4. 保存 workdir 中的运行时设置。
+     *
+     * 当前主要使用场景：
+     * workdir/settings/permalink.json
+     */
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    /*
+     * core 模块单元测试依赖。
+     *
+     * 作用：
+     * 1. 提供 JUnit 5；
+     * 2. 提供 Mockito；
+     * 3. 提供 Spring 测试工具；
+     * 4. 支持安装、迁移和运行时配置测试。
+     */
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    /*
+     * Reactor 响应式测试组件。
+     *
+     * 用于：
+     * 1. 验证 Mono、Flux 正常完成；
+     * 2. 验证响应式异常传播；
+     * 3. 测试 R2DBC 迁移执行链路；
+     * 4. 不需要在测试中调用 block()。
+     */
+    testImplementation 'io.projectreactor:reactor-test'
+}

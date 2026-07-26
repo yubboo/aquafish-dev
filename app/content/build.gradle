@@ -1,0 +1,19 @@
+
+dependencies {
+    implementation project(':common')
+    implementation project(':core')
+    /*
+     * user 提供前台公共模板上下文：会员会话、角色可见性和数据库导航。
+     * content 不自行读取 Cookie，也不在主题中硬编码管理后台入口。
+     */
+    implementation project(':user')
+    /*
+     * 前台页面统一通过 template 模块进入“活动主题 → default → 核心 fallback
+     * → 紧急页面”渲染链，content 不直接读取主题文件。
+     */
+    implementation project(':template')
+    implementation 'org.springframework:spring-webflux'
+    implementation 'org.springframework.security:spring-security-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

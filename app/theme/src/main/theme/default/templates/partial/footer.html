@@ -1,0 +1,40 @@
+<footer class="af-footer" xmlns:th="http://www.thymeleaf.org" th:fragment="footer">
+  <div class="af-container af-footer-inner">
+    <!-- BEGIN：站点说明 -->
+    <div>
+      <strong th:text="${site != null ? site.name : 'Aquafish'}">Aquafish</strong>
+      <p th:text="${site != null ? site.description : '让内容沉淀、讨论现场与会员关系自然连在一起。'}">
+        让内容沉淀、讨论现场与会员关系自然连在一起。
+      </p>
+    </div>
+    <!-- END：站点说明 -->
+
+    <!--
+      BEGIN：页脚导航
+      与公共头部共用数据库导航模型，服务端已经按登录状态和管理员角色过滤。
+      后台以后修改 site.navigation 时，页脚和头部会同时生效。
+    -->
+    <div class="af-footer-links" th:if="${navigation != null}">
+      <a
+        th:each="item : ${navigation.primary}"
+        th:href="${item.url}"
+        th:target="${item.target}"
+        th:rel="${item.target == '_blank' ? 'noopener noreferrer' : null}"
+        th:text="${item.label}"
+      >主导航</a>
+      <a
+        th:each="item : ${navigation.account}"
+        th:href="${item.url}"
+        th:target="${item.target}"
+        th:rel="${item.target == '_blank' ? 'noopener noreferrer' : null}"
+        th:text="${item.label}"
+      >账号导航</a>
+      <button
+        type="button"
+        data-member-logout
+        th:if="${viewer != null && viewer.authenticated}"
+      >退出登录</button>
+    </div>
+    <!-- END：页脚导航 -->
+  </div>
+</footer>

@@ -1,0 +1,8035 @@
+/*
+ * P0-3-2B-9：安装器表单交互与视觉精修。
+ *
+ * 本文件只负责：
+ * 1. 第 3 步站点与管理员表单的稳定栅格；
+ * 2. 输入框正确/错误状态；
+ * 3. 密码强度与规则提示；
+ * 4. 步骤切换、提示、按钮和进度项动画；
+ * 5. 响应式布局和减少动态效果适配。
+ */
+
+/* ==================== 安装器整体比例 ==================== */
+
+.setup-card--wizard {
+  width: min(1240px, calc(100vw - 48px));
+}
+
+.setup-header--with-step-summary {
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 390px);
+  align-items: stretch;
+  gap: clamp(24px, 4vw, 52px);
+}
+
+.setup-header__intro {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.setup-header__step-summary {
+  min-height: 124px;
+  align-items: center;
+  padding: 22px 24px;
+}
+
+.setup-header__step-copy {
+  align-content: center;
+}
+
+.setup-wizard__body {
+  position: relative;
+}
+
+.setup-step-panel-shell {
+  min-width: 0;
+}
+
+/* ==================== 第三步稳定栅格 ==================== */
+
+.setup-identity-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.setup-fieldset--identity {
+  padding: 24px;
+}
+
+.setup-form-grid--identity {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: 18px 20px;
+}
+
+.setup-field {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.setup-field--half {
+  grid-column: span 6;
+}
+
+.setup-field--full {
+  grid-column: 1 / -1;
+}
+
+.setup-field > span {
+  color: #39352f;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.setup-input-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.setup-input-shell > input {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.setup-field-status-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.setup-field-status-icon.is-valid {
+  color: #315d48;
+}
+
+.setup-field-status-icon.is-invalid {
+  color: #a34238;
+}
+
+.setup-field-message {
+  min-height: 19px;
+  margin: 0;
+  color: #777066;
+  font-size: 11px;
+  line-height: 1.55;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.setup-field.is-valid .setup-field-message {
+  color: #315d48;
+}
+
+.setup-field.is-invalid .setup-field-message {
+  color: #a34238;
+}
+
+.setup-field.is-valid input {
+  border-color: rgba(49, 93, 72, 0.68);
+  box-shadow: 0 0 0 3px rgba(49, 93, 72, 0.09);
+}
+
+.setup-field.is-invalid input {
+  border-color: rgba(163, 66, 56, 0.72);
+  box-shadow: 0 0 0 3px rgba(163, 66, 56, 0.09);
+}
+
+.setup-field.is-valid input:focus {
+  border-color: #315d48;
+  box-shadow: 0 0 0 4px rgba(49, 93, 72, 0.12);
+}
+
+.setup-field.is-invalid input:focus {
+  border-color: #a34238;
+  box-shadow: 0 0 0 4px rgba(163, 66, 56, 0.12);
+}
+
+.setup-field--neutral select {
+  width: 100%;
+}
+
+/* 修复 Chromium 自动填充时突然出现的蓝色输入框背景。 */
+.setup-form input:-webkit-autofill,
+.setup-form input:-webkit-autofill:hover,
+.setup-form input:-webkit-autofill:focus,
+.setup-form input:-webkit-autofill:active {
+  -webkit-text-fill-color: #27241f;
+  -webkit-box-shadow: 0 0 0 1000px #fffefa inset;
+  caret-color: #27241f;
+  transition: background-color 9999s ease-out;
+}
+
+/* ==================== 密码强度 ==================== */
+
+.setup-password-strength {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 13px;
+  padding: 17px 18px;
+  border: 1px solid #ddd5c8;
+  border-radius: 12px;
+  background: #f8f4ed;
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.setup-password-strength__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.setup-password-strength__heading > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.setup-password-strength__heading span {
+  color: #746d63;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.setup-password-strength__heading strong {
+  color: #4b463f;
+  font-size: 15px;
+}
+
+.setup-password-strength__heading em {
+  color: #8a8176;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.setup-password-strength__bars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.setup-password-strength__bars i {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ded7cb;
+  transition:
+    background-color 240ms ease,
+    transform 240ms ease;
+}
+
+.setup-password-strength__bars i.is-active {
+  transform: scaleY(1.12);
+}
+
+.setup-password-strength.is-empty
+.setup-password-strength__heading strong {
+  color: #777066;
+}
+
+.setup-password-strength.is-weak {
+  border-color: rgba(163, 66, 56, 0.28);
+  background: #fbf1ee;
+}
+
+.setup-password-strength.is-weak
+.setup-password-strength__heading strong {
+  color: #a34238;
+}
+
+.setup-password-strength.is-weak
+.setup-password-strength__bars i.is-active {
+  background: #a34238;
+}
+
+.setup-password-strength.is-medium {
+  border-color: rgba(165, 111, 43, 0.3);
+  background: #faf5e9;
+}
+
+.setup-password-strength.is-medium
+.setup-password-strength__heading strong {
+  color: #92601f;
+}
+
+.setup-password-strength.is-medium
+.setup-password-strength__bars i.is-active {
+  background: #a66f2c;
+}
+
+.setup-password-strength.is-strong {
+  border-color: rgba(49, 93, 72, 0.3);
+  background: #eef4ef;
+  box-shadow: 0 8px 22px rgba(49, 93, 72, 0.06);
+}
+
+.setup-password-strength.is-strong
+.setup-password-strength__heading strong {
+  color: #315d48;
+}
+
+.setup-password-strength.is-strong
+.setup-password-strength__bars i.is-active {
+  background: #315d48;
+}
+
+.setup-password-rules {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 16px;
+  list-style: none;
+}
+
+.setup-password-rules li {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #827a70;
+  font-size: 11px;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.setup-password-rules li.is-pass {
+  color: #315d48;
+  transform: translateX(2px);
+}
+
+.setup-password-rules svg,
+.setup-password-rule-dot {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+}
+
+.setup-password-rules svg {
+  color: #315d48;
+}
+
+.setup-password-rule-dot {
+  border: 1px solid #bbb2a6;
+  border-radius: 50%;
+  background: #fffdf8;
+}
+
+.setup-password-strength > p {
+  margin: 0;
+  color: #827a70;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+/* ==================== 重装确认输入状态 ==================== */
+
+.setup-confirmation-field .setup-input-shell {
+  margin-top: 8px;
+}
+
+.setup-confirmation-field .setup-field-status-icon {
+  right: 16px;
+}
+
+/* ==================== 通用交互动效 ==================== */
+
+.setup-form input,
+.setup-form select,
+.setup-primary,
+.setup-secondary,
+.setup-link-button,
+.setup-text-button,
+.setup-test-button,
+.setup-step,
+.setup-fieldset,
+.setup-managed-card,
+.setup-test-row,
+.setup-review-section,
+.setup-review-grid article,
+.setup-check-item {
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease,
+    opacity 190ms ease;
+}
+
+.setup-primary:hover:not(:disabled),
+.setup-secondary:hover:not(:disabled),
+.setup-link-button:hover,
+.setup-text-button:hover:not(:disabled),
+.setup-test-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.setup-primary:active:not(:disabled),
+.setup-secondary:active:not(:disabled),
+.setup-link-button:active,
+.setup-text-button:active:not(:disabled),
+.setup-test-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+
+.setup-step:hover:not(:disabled) {
+  background: rgba(255, 253, 248, 0.72);
+  transform: translateY(-1px);
+}
+
+.setup-step--active:hover:not(:disabled) {
+  background: #fffdf8;
+}
+
+/* ==================== 步骤页面切换 ==================== */
+
+.setup-step-panel-enter-active,
+.setup-step-panel-leave-active {
+  transition:
+    opacity 210ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-step-panel-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.setup-step-panel-leave-to {
+  opacity: 0;
+  transform: translateY(-7px);
+}
+
+.setup-feedback-enter-active,
+.setup-feedback-leave-active {
+  overflow: hidden;
+  transition:
+    opacity 200ms ease,
+    transform 220ms ease,
+    max-height 240ms ease,
+    margin 220ms ease;
+}
+
+.setup-feedback-enter-from,
+.setup-feedback-leave-to {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.setup-feedback-enter-to,
+.setup-feedback-leave-from {
+  max-height: 160px;
+}
+
+/* ==================== 输入状态图标 ==================== */
+
+.setup-field-status-enter-active,
+.setup-field-status-leave-active {
+  transition:
+    opacity 160ms ease,
+    transform 190ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-field-status-enter-from,
+.setup-field-status-leave-to {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.55) rotate(-12deg);
+}
+
+/* ==================== 进度与完成状态 ==================== */
+
+.setup-progress-list article {
+  animation: setup-progress-item-in 260ms ease both;
+}
+
+.setup-progress-list article:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.setup-progress-list article:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.setup-progress-list article:nth-child(4) {
+  animation-delay: 105ms;
+}
+
+.setup-progress-list article:nth-child(5) {
+  animation-delay: 140ms;
+}
+
+.setup-complete__icon {
+  animation: setup-complete-icon-in 420ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes setup-progress-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes setup-complete-icon-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  72% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 900px) {
+  .setup-header--with-step-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-header__step-summary {
+    min-height: 0;
+  }
+
+  .setup-field--half,
+  .setup-field--full {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .setup-card--wizard {
+    width: calc(100vw - 24px);
+  }
+
+  .setup-fieldset--identity {
+    padding: 18px 15px;
+  }
+
+  .setup-form-grid--identity {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .setup-password-rules {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-password-strength__heading {
+    align-items: flex-start;
+  }
+}
+
+/* 用户主动关闭动画时，不强制播放。 */
+@media (prefers-reduced-motion: reduce) {
+  .setup-step-panel-enter-active,
+  .setup-step-panel-leave-active,
+  .setup-feedback-enter-active,
+  .setup-feedback-leave-active,
+  .setup-field-status-enter-active,
+  .setup-field-status-leave-active,
+  .setup-form input,
+  .setup-form select,
+  .setup-primary,
+  .setup-secondary,
+  .setup-link-button,
+  .setup-text-button,
+  .setup-test-button,
+  .setup-step,
+  .setup-fieldset,
+  .setup-managed-card,
+  .setup-test-row,
+  .setup-review-section,
+  .setup-review-grid article,
+  .setup-check-item {
+    transition: none !important;
+  }
+
+  .setup-progress-list article,
+  .setup-complete__icon {
+    animation: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-9B：密码显示按钮与校验图标分离 */
+/* ============================================================ */
+
+/*
+ * 屏蔽 Windows Edge、旧版 Edge 和 Chromium 浏览器可能提供的
+ * 原生密码显示按钮，避免它与安装器自己的状态图标重叠。
+ */
+.setup-password-input::-ms-reveal,
+.setup-password-input::-ms-clear {
+  display: none;
+}
+
+.setup-password-input::-webkit-credentials-auto-fill-button,
+.setup-password-input::-webkit-contacts-auto-fill-button {
+  position: absolute;
+  right: 0;
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 密码输入框同时为状态图标和眼睛按钮预留空间。 */
+.setup-input-shell--password > input {
+  padding-right: 82px;
+}
+
+/*
+ * 正确/错误图标位于眼睛按钮左侧，两个区域不再重叠。
+ */
+.setup-input-shell--password .setup-field-status-icon {
+  right: 46px;
+  z-index: 3;
+}
+
+.setup-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #70685e;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.setup-password-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+
+.setup-password-toggle:hover {
+  color: #315d48;
+  background: rgba(49, 93, 72, 0.09);
+}
+
+.setup-password-toggle:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.setup-password-toggle:focus-visible {
+  outline: none;
+  color: #315d48;
+  box-shadow: 0 0 0 3px rgba(49, 93, 72, 0.13);
+}
+
+.setup-password-toggle.is-visible {
+  color: #315d48;
+  background: rgba(49, 93, 72, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-password-toggle {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-9C：基于真实耗时的自适应平滑安装进度 */
+/* ============================================================ */
+
+/*
+ * 进度条固定为完整宽度，只改变 transform。
+ * transform 不触发布局重排，requestAnimationFrame 更新时更稳定。
+ */
+.setup-progress-track {
+  overflow: hidden;
+  contain: paint;
+}
+
+.setup-progress-track span,
+.setup-install-progress.is-reinstall .setup-progress-track span {
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+  transition: none !important;
+}
+
+/* 为移动中的进度增加非常轻的层次，不使用霓虹或蓝紫发光。 */
+.setup-progress-track span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+  transform: translateX(-100%);
+  animation: setup-progress-soft-sheen 1.8s ease-in-out infinite;
+}
+
+@keyframes setup-progress-soft-sheen {
+  0%, 30% {
+    transform: translateX(-100%);
+  }
+
+  72%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-progress-track span::after {
+    animation: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-10：数据库与 Redis 配置页 UI 精修 */
+/* ============================================================ */
+
+.setup-services {
+  gap: 18px;
+}
+
+.setup-services .setup-subsection-heading {
+  align-items: center;
+}
+
+/* ==================== 数据库类型卡片 ==================== */
+
+.setup-database-types {
+  gap: 14px;
+}
+
+.setup-database-card {
+  position: relative;
+  min-height: 132px;
+  padding: 18px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  gap: 12px 14px;
+  overflow: hidden;
+  border: 1px solid #d9d2c6;
+  border-radius: 14px;
+  color: #332f2a;
+  background: #fffdf8;
+  box-shadow:
+    0 7px 18px rgba(58, 48, 38, 0.045);
+  animation:
+    setup-service-card-enter 260ms ease both;
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease;
+}
+
+.setup-database-card:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.setup-database-card:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.setup-database-card:hover {
+  border-color: #b9afa1;
+  background: #fffefa;
+  box-shadow:
+    0 12px 26px rgba(58, 48, 38, 0.085);
+  transform: translateY(-3px);
+}
+
+.setup-database-card:focus-visible {
+  outline: none;
+  border-color: #9b5b35;
+  box-shadow:
+    0 0 0 4px rgba(155, 91, 53, 0.12),
+    0 12px 26px rgba(58, 48, 38, 0.08);
+}
+
+.setup-database-card.is-selected {
+  border-color: #9b5b35;
+  background: #faf4ec;
+  box-shadow:
+    inset 0 0 0 1px rgba(155, 91, 53, 0.14),
+    0 12px 28px rgba(82, 58, 39, 0.1);
+  transform: translateY(-2px);
+}
+
+.setup-database-brand {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #edf2ef;
+  transition:
+    background-color 190ms ease,
+    transform 190ms ease;
+}
+
+.setup-database-brand svg {
+  width: 37px;
+  height: 37px;
+  overflow: visible;
+}
+
+.setup-database-brand ellipse,
+.setup-database-brand path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setup-database-brand text {
+  fill: currentColor;
+  stroke: none;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.setup-database-brand.is-mysql {
+  color: #2f6f69;
+  background: #e8f1ee;
+}
+
+.setup-database-brand.is-mariadb {
+  color: #805d45;
+  background: #f2ebe4;
+}
+
+.setup-database-brand.is-postgresql {
+  color: #4d626a;
+  background: #e9eef0;
+}
+
+.setup-database-card:hover
+.setup-database-brand,
+.setup-database-card.is-selected
+.setup-database-brand {
+  transform: scale(1.04);
+}
+
+.setup-database-card__copy,
+.setup-database-card__copy strong,
+.setup-database-card__copy small,
+.setup-database-card__copy b {
+  display: block;
+}
+
+.setup-database-card__copy {
+  min-width: 0;
+}
+
+.setup-database-card__copy strong {
+  margin: 1px 0 5px;
+  color: #302c27;
+  font-size: 16px;
+}
+
+.setup-database-card__copy small {
+  color: #756e65;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.setup-database-card__copy b {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #765038;
+  background: #f3e8dc;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.setup-database-card > em {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #6f685f;
+  background: #f2eee7;
+}
+
+.setup-database-card__check {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  width: 19px;
+  height: 19px;
+  color: #315d48;
+}
+
+.setup-service-check-enter-active,
+.setup-service-check-leave-active {
+  transition:
+    opacity 150ms ease,
+    transform 180ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-service-check-enter-from,
+.setup-service-check-leave-to {
+  opacity: 0;
+  transform:
+    scale(0.55)
+    rotate(-10deg);
+}
+
+/* ==================== 数据库连接参数 ==================== */
+
+.setup-service-fieldset {
+  padding: 22px;
+  border-color: #dbd4c8;
+  border-radius: 14px;
+  background: #fffefa;
+}
+
+.setup-service-fieldset__intro {
+  margin: 0 0 18px;
+  color: #777066;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.setup-service-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px 18px;
+}
+
+.setup-service-form-grid > label {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.setup-service-form-grid
+> label
+> span {
+  color: #3b3731;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.setup-service-form-grid
+> label
+> small {
+  min-height: 17px;
+  color: #80786e;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.setup-service-form-grid input,
+.setup-service-form-grid select {
+  width: 100%;
+  min-width: 0;
+}
+
+.setup-service-form-grid--database
+> label:nth-child(1) {
+  grid-column: span 8;
+}
+
+.setup-service-form-grid--database
+> label:nth-child(2) {
+  grid-column: span 4;
+}
+
+.setup-service-form-grid--database
+> label:nth-child(3),
+.setup-service-form-grid--database
+> label:nth-child(4),
+.setup-service-form-grid--database
+> label:nth-child(5),
+.setup-service-form-grid--database
+> label:nth-child(6) {
+  grid-column: span 6;
+}
+
+.setup-input-shell--service > input {
+  padding-right: 48px;
+}
+
+.setup-input-shell--service
+.setup-password-toggle {
+  right: 8px;
+}
+
+/* ==================== 连接测试状态 ==================== */
+
+.setup-service-test-row {
+  position: relative;
+  padding: 17px 18px;
+  overflow: hidden;
+  border-color: #d8d1c5;
+  border-radius: 13px;
+  background: #f8f5ee;
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    box-shadow 190ms ease;
+}
+
+.setup-service-test-row::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: #a79d90;
+  transition:
+    background-color 190ms ease;
+}
+
+.setup-service-test-row.is-testing {
+  border-color:
+    rgba(155, 91, 53, 0.3);
+  background: #faf4ec;
+}
+
+.setup-service-test-row.is-testing::before {
+  background: #9b5b35;
+}
+
+.setup-service-test-row.is-success {
+  border-color:
+    rgba(49, 93, 72, 0.27);
+  background: #edf4ef;
+  box-shadow:
+    0 8px 20px
+      rgba(49, 93, 72, 0.055);
+}
+
+.setup-service-test-row.is-success::before {
+  background: #315d48;
+}
+
+.setup-service-test-row
+.setup-test-button {
+  border-color: #c3cfc6;
+  color: #315d48;
+  background: #eef4ef;
+}
+
+.setup-service-test-row.is-testing
+.setup-test-button {
+  border-color: #d9bda8;
+  color: #7c4327;
+  background: #f8ede3;
+}
+
+.setup-service-test-row
+.setup-test-button
+svg {
+  transition:
+    transform 180ms ease;
+}
+
+.setup-service-test-row
+.setup-test-button:hover:not(:disabled)
+svg {
+  transform: scale(1.08);
+}
+
+/* ==================== Redis 增强能力卡片 ==================== */
+
+.setup-service-divider {
+  margin: 4px 0 0;
+  background: #ddd6ca;
+}
+
+.setup-redis-service-card {
+  display: grid;
+  gap: 15px;
+  padding: 20px;
+  border:
+    1px solid #dcd4c8;
+  border-radius: 15px;
+  background: #fffefa;
+  box-shadow:
+    0 8px 22px
+      rgba(58, 48, 38, 0.045);
+  transition:
+    border-color 210ms ease,
+    background-color 210ms ease,
+    box-shadow 210ms ease,
+    transform 210ms ease;
+}
+
+.setup-redis-service-card.is-enabled {
+  border-color:
+    rgba(157, 64, 52, 0.3);
+  background: #fdf8f4;
+}
+
+.setup-redis-service-card.is-success {
+  border-color:
+    rgba(49, 93, 72, 0.27);
+  box-shadow:
+    0 10px 24px
+      rgba(49, 93, 72, 0.06);
+}
+
+.setup-redis-heading {
+  margin: 0;
+}
+
+.setup-redis-heading__main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.setup-redis-brand {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #9d4034;
+  background: #f6e9e5;
+}
+
+.setup-redis-brand svg {
+  width: 31px;
+  height: 31px;
+}
+
+.setup-redis-brand path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setup-service-recommendation {
+  margin: 0;
+  padding: 11px 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border:
+    1px solid #dfd5c7;
+  border-radius: 10px;
+  color: #625b52;
+  background: #f7f2e9;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.setup-service-recommendation strong {
+  flex: 0 0 auto;
+  color: #7c4327;
+}
+
+.setup-redis-managed-card {
+  border-color: #d7d0c5;
+  background: #f7f4ee;
+}
+
+.setup-redis-switch {
+  border-color: #d9d1c4;
+  border-radius: 12px;
+  background: #faf7f1;
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease;
+}
+
+.setup-redis-switch:hover {
+  border-color: #c6bbae;
+  background: #fffdfa;
+  transform: translateY(-1px);
+}
+
+.setup-redis-switch__input {
+  position: relative;
+  width: 46px !important;
+  height: 25px !important;
+  flex: 0 0 46px;
+  margin: 0;
+  appearance: none;
+  border:
+    1px solid #bbb2a6;
+  border-radius: 999px;
+  background: #d9d3ca;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.setup-redis-switch__input::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fffdf8;
+  box-shadow:
+    0 2px 6px
+      rgba(46, 39, 32, 0.2);
+  transition:
+    transform 190ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-redis-switch__input:checked {
+  border-color: #9d4034;
+  background: #9d4034;
+}
+
+.setup-redis-switch__input:checked::after {
+  transform: translateX(21px);
+}
+
+.setup-redis-switch__input:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px
+      rgba(157, 64, 52, 0.13);
+}
+
+.setup-redis-fieldset {
+  border-color: #ded5ca;
+  background: #fffdf9;
+}
+
+.setup-service-form-grid--redis
+> label:nth-child(1),
+.setup-service-form-grid--redis
+> label:nth-child(4),
+.setup-service-form-grid--redis
+> label:nth-child(5) {
+  grid-column: span 6;
+}
+
+.setup-service-form-grid--redis
+> label:nth-child(2),
+.setup-service-form-grid--redis
+> label:nth-child(3) {
+  grid-column: span 3;
+}
+
+.setup-service-form-grid--redis
+> label:nth-child(6) {
+  grid-column: 1 / -1;
+}
+
+.setup-redis-ssl-card {
+  min-height: 58px;
+  border-color: #d8d0c4;
+  border-radius: 11px;
+  background: #f8f4ed;
+}
+
+.setup-redis-ssl-card input {
+  accent-color: #315d48;
+}
+
+.setup-redis-disabled-note {
+  margin: 0;
+  color: #625c53;
+  background: #f2eee6;
+}
+
+/* Redis 参数展开和收起。 */
+.setup-service-expand-enter-active,
+.setup-service-expand-leave-active {
+  overflow: hidden;
+  transition:
+    opacity 210ms ease,
+    transform 230ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    max-height 260ms ease,
+    margin 230ms ease;
+}
+
+.setup-service-expand-enter-from,
+.setup-service-expand-leave-to {
+  max-height: 0;
+  margin-top: -8px;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.setup-service-expand-enter-to,
+.setup-service-expand-leave-from {
+  max-height: 620px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes setup-service-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .setup-database-types {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-form-grid--database
+  > label,
+  .setup-service-form-grid--redis
+  > label {
+    grid-column:
+      1 / -1 !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .setup-redis-service-card,
+  .setup-service-fieldset {
+    padding: 16px;
+  }
+
+  .setup-redis-heading__main,
+  .setup-service-recommendation {
+    align-items: flex-start;
+  }
+
+  .setup-service-recommendation {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-database-card,
+  .setup-database-brand,
+  .setup-database-card__check,
+  .setup-service-test-row,
+  .setup-redis-service-card,
+  .setup-redis-switch,
+  .setup-redis-switch__input,
+  .setup-redis-switch__input::after,
+  .setup-service-expand-enter-active,
+  .setup-service-expand-leave-active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-10B：数据库图标、页面密度与 Redis 动画修正 */
+/* ============================================================ */
+
+/* 第 2 步整体密度：减少内部滚动和拥挤感。 */
+.setup-services {
+  gap: 14px;
+}
+
+.setup-services .setup-subsection-heading {
+  margin-bottom: 0;
+}
+
+.setup-database-types {
+  gap: 11px;
+}
+
+.setup-database-card {
+  min-height: 105px;
+  padding: 14px 15px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  gap: 8px 11px;
+  border-radius: 12px;
+  box-shadow:
+    0 5px 14px rgba(58, 48, 38, 0.04);
+}
+
+.setup-database-card:hover {
+  box-shadow:
+    0 9px 20px rgba(58, 48, 38, 0.07);
+  transform: translateY(-2px);
+}
+
+.setup-database-card.is-selected {
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(155, 91, 53, 0.12),
+    0 8px 20px
+      rgba(82, 58, 39, 0.075);
+  transform: translateY(-1px);
+}
+
+.setup-database-brand {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.setup-database-brand__icon {
+  width: 31px;
+  height: 31px;
+  overflow: visible;
+}
+
+.setup-database-brand__icon ellipse,
+.setup-database-brand__icon path,
+.setup-database-brand__icon circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setup-database-brand__icon circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.setup-database-brand.is-mysql {
+  color: #1f7772;
+  background: #e5f1ef;
+}
+
+.setup-database-brand.is-mariadb {
+  color: #8a563c;
+  background: #f3e9e2;
+}
+
+.setup-database-brand.is-postgresql {
+  color: #3f6372;
+  background: #e7eef1;
+}
+
+.setup-database-card__copy strong {
+  margin: 0 0 3px;
+  font-size: 14px;
+}
+
+.setup-database-card__copy small {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.setup-database-card__copy b {
+  margin-top: 5px;
+  padding: 3px 6px;
+  font-size: 8px;
+}
+
+.setup-database-card > em {
+  padding: 4px 7px;
+  font-size: 9px;
+}
+
+.setup-database-card__check {
+  top: 9px;
+  right: 9px;
+  width: 17px;
+  height: 17px;
+}
+
+.setup-service-fieldset {
+  padding: 17px;
+  border-radius: 12px;
+}
+
+.setup-service-fieldset__intro {
+  margin-bottom: 13px;
+  line-height: 1.55;
+}
+
+.setup-service-form-grid {
+  gap: 12px 14px;
+}
+
+.setup-service-form-grid > label {
+  gap: 5px;
+}
+
+.setup-service-form-grid
+> label
+> small {
+  min-height: 14px;
+}
+
+.setup-service-test-row {
+  padding: 14px 15px;
+}
+
+.setup-service-divider {
+  margin-top: 0;
+}
+
+/* Redis 卡片缩小，并减少状态切换时同时发生的位移。 */
+.setup-redis-service-card {
+  gap: 12px;
+  padding: 16px;
+  border-radius: 13px;
+  box-shadow:
+    0 6px 16px rgba(58, 48, 38, 0.04);
+  transition:
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.setup-redis-service-card.is-enabled,
+.setup-redis-service-card.is-success {
+  transform: none;
+}
+
+.setup-redis-brand {
+  width: 40px;
+  height: 40px;
+  flex-basis: 40px;
+  border-radius: 10px;
+}
+
+.setup-redis-brand svg {
+  width: 27px;
+  height: 27px;
+}
+
+.setup-service-recommendation {
+  padding: 9px 11px;
+  gap: 8px;
+}
+
+.setup-redis-switch {
+  padding: 13px 14px;
+  border-radius: 11px;
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.setup-redis-switch:hover {
+  transform: none;
+  box-shadow:
+    0 5px 14px rgba(58, 48, 38, 0.055);
+}
+
+.setup-redis-switch__input {
+  transition:
+    border-color 230ms ease,
+    background-color 230ms ease,
+    box-shadow 230ms ease;
+}
+
+.setup-redis-switch__input::after {
+  transition:
+    transform 240ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease;
+}
+
+/*
+ * Redis 展开/收起改为 grid-template-rows。
+ * 不再估算 max-height，字段多少变化时也不会突然跳动。
+ */
+.setup-service-expand-shell {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+
+.setup-service-expand-shell
+> .setup-redis-fieldset {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.setup-service-expand-enter-active,
+.setup-service-expand-leave-active {
+  display: grid;
+  overflow: hidden;
+  will-change:
+    grid-template-rows,
+    opacity,
+    transform;
+  transition:
+    grid-template-rows 280ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 190ms ease,
+    transform 280ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-service-expand-enter-from,
+.setup-service-expand-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.setup-service-expand-enter-to,
+.setup-service-expand-leave-from {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.setup-redis-disabled-note {
+  margin-top: 0;
+  padding: 12px 14px;
+}
+
+@media (max-width: 900px) {
+  .setup-database-card {
+    min-height: 92px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-database-card,
+  .setup-database-brand,
+  .setup-redis-service-card,
+  .setup-redis-switch,
+  .setup-redis-switch__input,
+  .setup-redis-switch__input::after,
+  .setup-service-expand-enter-active,
+  .setup-service-expand-leave-active {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-10C：数据库与 Redis 桌面端两栏布局 */
+/* ============================================================ */
+
+/*
+ * 第 2 步只保留一个总栅格。
+ * 左栏数据库约 65%，右栏 Redis 约 35%。
+ */
+.setup-services {
+  display: block;
+}
+
+.setup-services-layout {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(310px, 0.85fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.setup-services-column {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 11px;
+}
+
+.setup-services-column--database {
+  padding-right: 1px;
+}
+
+.setup-services-column--redis {
+  align-self: start;
+}
+
+/* ==================== 左栏数据库密度 ==================== */
+
+.setup-services-column--database
+.setup-subsection-heading {
+  min-height: 40px;
+}
+
+.setup-services-column--database
+.setup-database-types {
+  gap: 8px;
+}
+
+.setup-services-column--database
+.setup-database-card {
+  min-height: 88px;
+  padding: 11px 12px;
+  grid-template-columns:
+    34px minmax(0, 1fr);
+  gap: 6px 9px;
+  border-radius: 10px;
+}
+
+.setup-services-column--database
+.setup-database-brand {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+.setup-services-column--database
+.setup-database-brand__icon {
+  width: 27px;
+  height: 27px;
+}
+
+.setup-services-column--database
+.setup-database-card__copy strong {
+  font-size: 13px;
+}
+
+.setup-services-column--database
+.setup-database-card__copy small {
+  font-size: 9px;
+}
+
+.setup-services-column--database
+.setup-database-card__copy b {
+  margin-top: 4px;
+  padding: 2px 5px;
+}
+
+.setup-services-column--database
+.setup-database-card > em {
+  padding: 3px 6px;
+  font-size: 8px;
+}
+
+.setup-services-column--database
+.setup-service-fieldset {
+  padding: 14px;
+}
+
+.setup-services-column--database
+.setup-service-fieldset__intro {
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+
+.setup-services-column--database
+.setup-service-form-grid {
+  gap: 9px 11px;
+}
+
+.setup-services-column--database
+.setup-service-form-grid > label {
+  gap: 4px;
+}
+
+.setup-services-column--database
+.setup-service-form-grid
+> label
+> span {
+  font-size: 11px;
+}
+
+.setup-services-column--database
+.setup-service-form-grid input,
+.setup-services-column--database
+.setup-service-form-grid select {
+  min-height: 40px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.setup-services-column--database
+.setup-service-form-grid
+> label
+> small {
+  min-height: 12px;
+  font-size: 9px;
+}
+
+.setup-services-column--database
+.setup-service-test-row {
+  padding: 12px 13px;
+}
+
+.setup-services-column--database
+.setup-service-test-row strong {
+  font-size: 12px;
+}
+
+.setup-services-column--database
+.setup-service-test-row span {
+  font-size: 10px;
+}
+
+.setup-services-column--database
+.setup-managed-card {
+  padding: 14px;
+  gap: 9px;
+}
+
+/* ==================== 右栏 Redis 卡片 ==================== */
+
+.setup-services-column--redis
+.setup-redis-service-card {
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.setup-services-column--redis
+.setup-redis-heading {
+  align-items: flex-start;
+}
+
+.setup-services-column--redis
+.setup-redis-heading__main {
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.setup-services-column--redis
+.setup-redis-brand {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+}
+
+.setup-services-column--redis
+.setup-redis-brand svg {
+  width: 24px;
+  height: 24px;
+}
+
+.setup-services-column--redis
+.setup-redis-heading h3 {
+  font-size: 14px;
+}
+
+.setup-services-column--redis
+.setup-redis-heading p {
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.setup-services-column--redis
+.setup-status-pill {
+  padding: 5px 7px;
+  font-size: 9px;
+}
+
+.setup-services-column--redis
+.setup-service-recommendation {
+  padding: 8px 9px;
+  gap: 5px;
+  flex-direction: column;
+  font-size: 9px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch {
+  padding: 11px 12px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch strong {
+  font-size: 12px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch small {
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.setup-services-column--redis
+.setup-redis-switch__input {
+  width: 42px !important;
+  height: 23px !important;
+  flex-basis: 42px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch__input::after {
+  width: 15px;
+  height: 15px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch__input:checked::after {
+  transform: translateX(19px);
+}
+
+/*
+ * Redis 右栏较窄：
+ * 主机独占一行；
+ * 端口和数据库编号同一行；
+ * 用户名和密码独占一行；
+ * TLS 独占一行。
+ */
+.setup-services-column--redis
+.setup-service-form-grid--redis {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 8px 9px;
+}
+
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(1),
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(4),
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(5),
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(6) {
+  grid-column: 1 / -1 !important;
+}
+
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(2),
+.setup-services-column--redis
+.setup-service-form-grid--redis
+> label:nth-child(3) {
+  grid-column: span 1 !important;
+}
+
+.setup-services-column--redis
+.setup-service-fieldset {
+  padding: 11px;
+}
+
+.setup-services-column--redis
+.setup-service-fieldset__intro {
+  margin-bottom: 8px;
+  font-size: 9px;
+}
+
+.setup-services-column--redis
+.setup-service-form-grid input,
+.setup-services-column--redis
+.setup-service-form-grid select {
+  min-height: 37px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.setup-services-column--redis
+.setup-service-form-grid
+> label
+> span {
+  font-size: 10px;
+}
+
+.setup-services-column--redis
+.setup-service-form-grid
+> label
+> small {
+  min-height: 11px;
+  font-size: 8px;
+}
+
+.setup-services-column--redis
+.setup-redis-ssl-card {
+  min-height: 46px;
+}
+
+.setup-services-column--redis
+.setup-service-test-row {
+  padding: 11px;
+  display: grid;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.setup-services-column--redis
+.setup-service-test-row strong {
+  font-size: 11px;
+}
+
+.setup-services-column--redis
+.setup-service-test-row span {
+  font-size: 9px;
+}
+
+.setup-services-column--redis
+.setup-test-button {
+  width: 100%;
+  min-height: 37px;
+  justify-content: center;
+}
+
+.setup-services-column--redis
+.setup-redis-disabled-note {
+  padding: 10px 11px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* ==================== Redis 更平滑的展开动画 ==================== */
+
+.setup-services-column--redis
+.setup-service-expand-enter-active,
+.setup-services-column--redis
+.setup-service-expand-leave-active {
+  transition:
+    grid-template-rows 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms ease,
+    transform 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.setup-services-column--redis
+.setup-service-expand-enter-from,
+.setup-services-column--redis
+.setup-service-expand-leave-to {
+  opacity: 0;
+  transform: translateY(-3px);
+}
+
+/* 两栏初次进入时只做极轻微淡入。 */
+.setup-services-column--database {
+  animation:
+    setup-services-left-enter
+    220ms ease both;
+}
+
+.setup-services-column--redis {
+  animation:
+    setup-services-right-enter
+    260ms ease both;
+}
+
+@keyframes setup-services-left-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes setup-services-right-enter {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/*
+ * 中等宽度开始切换单栏，
+ * 防止数据库和 Redis 被强行压窄。
+ */
+@media (max-width: 1080px) {
+  .setup-services-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-services-column--redis {
+    width: 100%;
+  }
+
+  .setup-services-column--redis
+  .setup-service-form-grid--redis {
+    grid-template-columns:
+      repeat(12, minmax(0, 1fr));
+  }
+
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(1),
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(4),
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(5) {
+    grid-column: span 6 !important;
+  }
+
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(2),
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(3) {
+    grid-column: span 3 !important;
+  }
+
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label:nth-child(6) {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .setup-services-column--redis
+  .setup-service-form-grid--redis
+  > label {
+    grid-column:
+      1 / -1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-services-column--database,
+  .setup-services-column--redis {
+    animation: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-10D：两栏对齐与 Redis 无跳动切换 */
+/* ============================================================ */
+
+/* 桌面端数据库与 Redis 比例调整为约 60:40。 */
+.setup-services-layout {
+  grid-template-columns:
+    minmax(0, 3fr)
+    minmax(350px, 2fr);
+  gap: 14px;
+}
+
+/* ==================== 数据库连接参数严格 1:1 ==================== */
+
+.setup-services-column--database
+.setup-service-form-grid--database {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  column-gap: 12px;
+  row-gap: 10px;
+}
+
+/*
+ * 覆盖此前 8/12、4/12 的设置。
+ * 六个字段全部占据一列，形成三行两列。
+ */
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(1),
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(2),
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(3),
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(4),
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(5),
+.setup-services-column--database
+.setup-service-form-grid--database
+> label:nth-child(6) {
+  grid-column: auto !important;
+}
+
+/* 每个字段使用相同的内部三行结构。 */
+.setup-services-column--database
+.setup-service-form-grid--database
+> label {
+  min-width: 0;
+  display: grid;
+  grid-template-rows:
+    auto
+    40px
+    minmax(13px, auto);
+  align-content: start;
+  gap: 4px;
+}
+
+/* 普通输入框、密码容器和选择框高度完全一致。 */
+.setup-services-column--database
+.setup-service-form-grid--database
+> label
+> input,
+.setup-services-column--database
+.setup-service-form-grid--database
+> label
+> select,
+.setup-services-column--database
+.setup-service-form-grid--database
+> label
+> .setup-input-shell {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  align-self: stretch;
+}
+
+.setup-services-column--database
+.setup-service-form-grid--database
+.setup-input-shell
+> input {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+}
+
+/*
+ * 帮助文字固定占据第三行。
+ * 有提示和没有提示时，下一行都不会上下错位。
+ */
+.setup-services-column--database
+.setup-service-form-grid--database
+> label
+> small {
+  min-height: 13px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 左栏标题、字段集和测试卡片使用同一宽度。 */
+.setup-services-column--database
+> .setup-subsection-heading,
+.setup-services-column--database
+> .setup-database-types,
+.setup-services-column--database
+> .setup-service-fieldset,
+.setup-services-column--database
+> .setup-service-test-row,
+.setup-services-column--database
+> .setup-managed-card,
+.setup-services-column--database
+> .setup-database-state-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ==================== Redis 无跳动展开 ==================== */
+
+/*
+ * 外壳始终留在 DOM 中。
+ * 关闭时行高为 0，开启时行高为 1fr。
+ */
+.setup-service-expand-slot {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-block: -4px;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition:
+    grid-template-rows 260ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 170ms ease,
+    transform 260ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    margin 260ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s linear 260ms;
+}
+
+.setup-service-expand-slot.is-open {
+  grid-template-rows: 1fr;
+  margin-block: 0;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.setup-service-expand-slot
+> .setup-service-expand-shell {
+  min-height: 0;
+  display: block;
+  overflow: hidden;
+}
+
+/*
+ * 覆盖旧 Transition 的 max-height 动画。
+ * 现在实际高度由稳定 slot 控制。
+ */
+.setup-service-expand-enter-active,
+.setup-service-expand-leave-active,
+.setup-service-expand-enter-from,
+.setup-service-expand-leave-to,
+.setup-service-expand-enter-to,
+.setup-service-expand-leave-from {
+  max-height: none;
+  margin: 0;
+  transition: none;
+}
+
+/* Redis 连接测试区平滑加入，避免突然撑高。 */
+.setup-redis-test-enter-active,
+.setup-redis-test-leave-active {
+  overflow: hidden;
+  transition:
+    max-height 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms ease,
+    transform 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    padding 230ms ease,
+    border-width 230ms ease;
+}
+
+.setup-redis-test-enter-from,
+.setup-redis-test-leave-to {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-width: 0;
+  border-bottom-width: 0;
+  opacity: 0;
+  transform: translateY(-3px);
+}
+
+.setup-redis-test-enter-to,
+.setup-redis-test-leave-from {
+  max-height: 120px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+ * 未启用提示不再通过 v-else 突然删除。
+ * Redis 开启时同步收起，使右栏高度连续变化。
+ */
+.setup-redis-disabled-note {
+  max-height: 62px;
+  margin: 0;
+  padding: 10px 11px;
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    max-height 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 150ms ease,
+    transform 230ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    padding 230ms ease,
+    margin 230ms ease,
+    visibility 0s linear 0s;
+}
+
+.setup-redis-disabled-note.is-hidden {
+  max-height: 0;
+  margin-block: -4px;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-3px);
+  transition-delay:
+    0s,
+    0s,
+    0s,
+    0s,
+    0s,
+    230ms;
+}
+
+/*
+ * Redis 卡片本身不再使用位移。
+ * 只有内部内容的高度平滑改变。
+ */
+.setup-services-column--redis
+.setup-redis-service-card,
+.setup-services-column--redis
+.setup-redis-service-card.is-enabled,
+.setup-services-column--redis
+.setup-redis-service-card.is-success {
+  align-self: start;
+  transform: none;
+}
+
+/* 右栏紧凑一些，去掉开关下面多余空条。 */
+.setup-services-column--redis
+.setup-redis-service-card {
+  gap: 8px;
+}
+
+.setup-services-column--redis
+.setup-redis-switch {
+  margin: 0;
+}
+
+/* 中等宽度下保持两列，真正不足时才改回单列。 */
+@media (max-width: 980px) {
+  .setup-services-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .setup-services-column--database
+  .setup-service-form-grid--database {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-service-expand-slot,
+  .setup-redis-test-enter-active,
+  .setup-redis-test-leave-active,
+  .setup-redis-disabled-note {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-10E：删除 Redis 关闭状态空白占位 */
+/* ============================================================ */
+
+/*
+ * 右侧 Redis 卡片不再使用 grid gap。
+ *
+ * 原来的空白来源：
+ * 即使 setup-service-expand-slot 的内容高度是 0，
+ * 它仍然是 grid 中的一个项目，父级 gap 会继续为它保留间距。
+ */
+.setup-services-column--redis
+.setup-redis-service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 13px;
+}
+
+/* 标题之后的区块使用明确间距，不依赖父容器 gap。 */
+.setup-services-column--redis
+.setup-redis-heading
++ .setup-service-recommendation {
+  margin-top: 8px;
+}
+
+.setup-services-column--redis
+.setup-service-recommendation
++ .setup-redis-switch {
+  margin-top: 8px;
+}
+
+/*
+ * Redis 参数槽关闭时完全归零。
+ * 开启时才增加与开关之间的 8px 间距。
+ */
+.setup-services-column--redis
+.setup-service-expand-slot {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 auto;
+  grid-template-rows: 0fr;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition:
+    grid-template-rows 240ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    margin-top 240ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 150ms ease,
+    transform 240ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s linear 240ms;
+}
+
+.setup-services-column--redis
+.setup-service-expand-slot.is-open {
+  grid-template-rows: 1fr;
+  margin-top: 8px;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+/*
+ * 外层为 0fr 时，内部包装和字段集必须允许压缩到真正的 0。
+ */
+.setup-services-column--redis
+.setup-service-expand-slot
+> .setup-service-expand-shell {
+  min-width: 0;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+.setup-services-column--redis
+.setup-service-expand-slot
+.setup-redis-fieldset {
+  min-height: 0 !important;
+  margin: 0 !important;
+  transition:
+    padding 210ms
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-width 210ms ease,
+    opacity 150ms ease;
+}
+
+/*
+ * 关闭状态下字段集本身的 padding 和 border 也必须清零。
+ * 否则浏览器仍可能把它们计算进 grid 的最小内容高度。
+ */
+.setup-services-column--redis
+.setup-service-expand-slot:not(.is-open)
+.setup-redis-fieldset {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-top-width: 0 !important;
+  border-bottom-width: 0 !important;
+  opacity: 0;
+}
+
+/* ==================== 测试区和未启用提示交接 ==================== */
+
+/* Redis 测试区只有出现时才增加上边距。 */
+.setup-services-column--redis
+.setup-service-test-row--redis {
+  margin-top: 8px;
+}
+
+/*
+ * 未启用提示正常显示时与开关保持 8px。
+ * 隐藏时高度、间距和 padding 全部归零。
+ */
+.setup-services-column--redis
+.setup-redis-disabled-note {
+  width: 100%;
+  max-height: 58px;
+  margin: 8px 0 0;
+  padding: 9px 10px;
+  box-sizing: border-box;
+}
+
+.setup-services-column--redis
+.setup-redis-disabled-note.is-hidden {
+  max-height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  opacity: 0;
+}
+
+/*
+ * 测试区离开过程中不保留外部空白。
+ */
+.setup-services-column--redis
+.setup-redis-test-leave-to {
+  margin-top: 0;
+}
+
+/* ==================== 进一步缩短 Redis 卡片 ==================== */
+
+.setup-services-column--redis
+.setup-redis-heading__main {
+  gap: 9px;
+}
+
+.setup-services-column--redis
+.setup-redis-heading p {
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.setup-services-column--redis
+.setup-service-recommendation {
+  padding: 7px 9px;
+  line-height: 1.45;
+}
+
+.setup-services-column--redis
+.setup-redis-switch {
+  min-height: 58px;
+  padding: 10px 11px;
+}
+
+.setup-services-column--redis
+.setup-redis-disabled-note {
+  line-height: 1.45;
+}
+
+/*
+ * 覆盖此前隐藏槽使用的负 margin。
+ * 负 margin 会在部分浏览器缩放比例下产生视觉跳动。
+ */
+.setup-services-column--redis
+.setup-service-expand-slot,
+.setup-services-column--redis
+.setup-service-expand-slot.is-open {
+  margin-bottom: 0;
+}
+
+/* 窄屏仍保持完整宽度。 */
+@media (max-width: 980px) {
+  .setup-services-column--redis
+  .setup-redis-service-card {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-services-column--redis
+  .setup-service-expand-slot,
+  .setup-services-column--redis
+  .setup-redis-fieldset,
+  .setup-services-column--redis
+  .setup-redis-disabled-note {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-11：分发包服务配置三段式向导 */
+/* ============================================================ */
+
+/*
+ * 旧版两栏布局类不再出现在新模板中。
+ * 新服务页每次只显示一个任务。
+ */
+.setup-service-flow {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.setup-service-flow__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.setup-service-flow__header > div > span,
+.setup-service-stage__heading > span {
+  color: #97512f;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.setup-service-flow__header h3,
+.setup-service-stage__heading h3 {
+  margin: 4px 0 5px;
+  color: #27231f;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.setup-service-flow__header p,
+.setup-service-stage__heading p {
+  max-width: 650px;
+  margin: 0;
+  color: #756e65;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.setup-service-flow__header > strong {
+  min-width: 52px;
+  padding: 7px 10px;
+  border: 1px solid #d9d1c4;
+  border-radius: 999px;
+  color: #6b6259;
+  background: #f6f1e9;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ==================== 子步骤导航 ==================== */
+
+.setup-service-flow__steps {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 7px;
+  border: 1px solid #ddd5c9;
+  border-radius: 14px;
+  background: #f3efe7;
+}
+
+.setup-service-flow__steps button {
+  min-width: 0;
+  min-height: 62px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #81796e;
+  background: transparent;
+  text-align: left;
+  cursor: default;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.setup-service-flow__steps button.is-available {
+  cursor: pointer;
+}
+
+.setup-service-flow__steps button.is-available:hover {
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.setup-service-flow__steps button.is-active {
+  border-color: #d5cbbb;
+  color: #2e2924;
+  background: #fffdf8;
+  box-shadow:
+    0 7px 18px rgba(62, 51, 41, 0.07);
+  transform: translateY(-1px);
+}
+
+.setup-service-flow__steps button.is-complete {
+  color: #315d48;
+}
+
+.setup-service-flow__steps
+button
+> span {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #746c62;
+  background: #e4ded3;
+}
+
+.setup-service-flow__steps
+button.is-active
+> span {
+  color: #fffdf8;
+  background: #3b563d;
+}
+
+.setup-service-flow__steps
+button.is-complete
+> span {
+  color: #315d48;
+  background: #e5efe8;
+}
+
+.setup-service-flow__steps svg {
+  width: 16px;
+  height: 16px;
+}
+
+.setup-service-flow__steps b {
+  font-size: 11px;
+}
+
+.setup-service-flow__steps
+button
+> div {
+  min-width: 0;
+}
+
+.setup-service-flow__steps strong,
+.setup-service-flow__steps small {
+  display: block;
+}
+
+.setup-service-flow__steps strong {
+  font-size: 11px;
+}
+
+.setup-service-flow__steps small {
+  margin-top: 3px;
+  overflow: hidden;
+  color: #8a8278;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 子页面切换 ==================== */
+
+.setup-service-stage-panel {
+  min-width: 0;
+}
+
+.setup-service-stage {
+  min-width: 0;
+  display: grid;
+  gap: 17px;
+}
+
+.setup-service-stage__heading {
+  text-align: center;
+}
+
+.setup-service-stage__heading p {
+  margin-inline: auto;
+}
+
+.setup-service-stage-enter-active,
+.setup-service-stage-leave-active {
+  transition:
+    opacity 190ms ease,
+    transform 230ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-service-stage-enter-from {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.setup-service-stage-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.setup-service-stage__note {
+  margin: 0;
+  color: #81796f;
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ==================== 2-1 数据库选择 ==================== */
+
+.setup-service-database-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.setup-service-database-card {
+  position: relative;
+  min-width: 0;
+  min-height: 222px;
+  padding: 23px 21px 18px;
+  display: grid;
+  grid-template-rows:
+    auto
+    1fr
+    auto;
+  justify-items: center;
+  gap: 15px;
+  overflow: hidden;
+  border: 1px solid #dad2c6;
+  border-radius: 17px;
+  color: #342f29;
+  background: #fffdf8;
+  box-shadow:
+    0 8px 22px rgba(54, 45, 36, 0.05);
+  cursor: pointer;
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease;
+}
+
+.setup-service-database-card:hover {
+  border-color: #bdb2a4;
+  box-shadow:
+    0 15px 34px rgba(54, 45, 36, 0.1);
+  transform: translateY(-4px);
+}
+
+.setup-service-database-card:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(151, 81, 47, 0.12),
+    0 15px 34px rgba(54, 45, 36, 0.09);
+}
+
+.setup-service-database-card.is-selected {
+  border-color: #97512f;
+  background: #faf3ea;
+  box-shadow:
+    inset 0 0 0 1px rgba(151, 81, 47, 0.12),
+    0 16px 36px rgba(86, 57, 38, 0.12);
+  transform: translateY(-3px);
+}
+
+.setup-service-database-card__icon {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+}
+
+.setup-service-database-card.is-mysql
+.setup-service-database-card__icon {
+  color: #237873;
+  background: #e4f1ef;
+}
+
+.setup-service-database-card.is-mariadb
+.setup-service-database-card__icon {
+  color: #8c583f;
+  background: #f3e8e0;
+}
+
+.setup-service-database-card.is-postgresql
+.setup-service-database-card__icon {
+  color: #426775;
+  background: #e6eef1;
+}
+
+.setup-service-database-card__icon svg {
+  width: 52px;
+  height: 52px;
+}
+
+.setup-service-database-card__icon
+ellipse,
+.setup-service-database-card__icon
+path,
+.setup-service-database-card__icon
+circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setup-service-database-card__icon circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.setup-service-database-card__copy {
+  min-width: 0;
+  text-align: center;
+}
+
+.setup-service-database-card__copy
+strong,
+.setup-service-database-card__copy
+small,
+.setup-service-database-card__copy
+em {
+  display: block;
+}
+
+.setup-service-database-card__copy
+strong {
+  color: #2a2621;
+  font-size: 19px;
+}
+
+.setup-service-database-card__copy
+small {
+  margin-top: 7px;
+  color: #756e65;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.setup-service-database-card__copy
+em {
+  width: fit-content;
+  margin: 11px auto 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #77482e;
+  background: #f0e5d8;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.setup-service-database-card__port {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #71695f;
+  background: #f2eee7;
+  font-size: 9px;
+}
+
+.setup-service-database-card__check {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 22px;
+  height: 22px;
+  color: #315d48;
+}
+
+/* ==================== 2-2 数据库连接 ==================== */
+
+.setup-service-stage--database-connection {
+  width: 100%;
+  max-width: 870px;
+  margin-inline: auto;
+}
+
+.setup-service-selected-summary {
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #d9d1c4;
+  border-radius: 12px;
+  background: #f7f2ea;
+}
+
+.setup-service-selected-summary
+> div {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.setup-service-selected-summary span,
+.setup-service-selected-summary small {
+  color: #796f65;
+  font-size: 10px;
+}
+
+.setup-service-selected-summary strong {
+  color: #2e2924;
+  font-size: 15px;
+}
+
+.setup-service-selected-summary button {
+  padding: 7px 10px;
+  border: 1px solid #cfc5b7;
+  border-radius: 8px;
+  color: #71462f;
+  background: #fffdf8;
+  cursor: pointer;
+}
+
+.setup-service-connection-fieldset,
+.setup-service-redis-fieldset {
+  padding: 20px;
+  border-color: #d9d1c5;
+  border-radius: 14px;
+  background: #fffefa;
+}
+
+.setup-service-connection-fieldset
+> p,
+.setup-service-redis-fieldset
+> p {
+  margin: 0 0 15px;
+  color: #7a7268;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.setup-service-connection-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 13px 16px;
+}
+
+.setup-service-connection-grid
+> label {
+  min-width: 0;
+  display: grid;
+  grid-template-rows:
+    auto
+    42px
+    minmax(16px, auto);
+  gap: 5px;
+}
+
+.setup-service-connection-grid
+> label
+> span {
+  color: #38332e;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.setup-service-connection-grid
+input,
+.setup-service-connection-grid
+select,
+.setup-service-connection-grid
+.setup-input-shell {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+}
+
+.setup-service-connection-grid
+.setup-input-shell
+input {
+  height: 42px;
+}
+
+.setup-service-connection-grid
+small {
+  min-height: 16px;
+  color: #827a70;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.setup-service-connection-test {
+  padding: 14px 15px;
+  border-radius: 12px;
+}
+
+.setup-service-connection-test.is-testing {
+  border-color: #d8b79f;
+  background: #faf2e9;
+}
+
+.setup-service-connection-test.is-success {
+  border-color: #b8cdbf;
+  background: #edf4ef;
+}
+
+.setup-service-inspection {
+  display: grid;
+  gap: 14px;
+  padding: 17px;
+  border: 1px solid #d8d0c4;
+  border-radius: 14px;
+  background: #fffdf9;
+}
+
+.setup-service-inspection
+> header {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.setup-service-inspection
+> header
+> span {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #74442d;
+  background: #f1e5d9;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.setup-service-inspection
+h3 {
+  margin: 0 0 4px;
+  color: #2f2a25;
+  font-size: 14px;
+}
+
+.setup-service-inspection
+p {
+  margin: 0;
+  color: #766f66;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+/* ==================== 2-3 Redis ==================== */
+
+.setup-service-stage--redis {
+  width: 100%;
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.setup-redis-choice-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.setup-redis-choice-card {
+  position: relative;
+  min-width: 0;
+  min-height: 150px;
+  padding: 19px;
+  display: grid;
+  grid-template-columns:
+    52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #d9d1c5;
+  border-radius: 15px;
+  color: #302b26;
+  background: #fffdf8;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 190ms ease,
+    background-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease;
+}
+
+.setup-redis-choice-card:hover {
+  border-color: #bfb4a6;
+  box-shadow:
+    0 12px 28px rgba(57, 47, 38, 0.08);
+  transform: translateY(-3px);
+}
+
+.setup-redis-choice-card.is-selected {
+  border-color: #97512f;
+  background: #faf3ea;
+  box-shadow:
+    inset 0 0 0 1px rgba(151, 81, 47, 0.12),
+    0 13px 30px rgba(75, 51, 35, 0.1);
+}
+
+.setup-redis-choice-card
+> svg {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 21px;
+  height: 21px;
+  color: #315d48;
+}
+
+.setup-redis-choice-card__icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+}
+
+.setup-redis-choice-card__icon.is-basic {
+  color: #5d655d;
+  background: #e9ede8;
+}
+
+.setup-redis-choice-card__icon.is-redis {
+  color: #9d4034;
+  background: #f5e7e3;
+}
+
+.setup-redis-choice-card__icon svg {
+  width: 35px;
+  height: 35px;
+}
+
+.setup-redis-choice-card
+strong,
+.setup-redis-choice-card
+small,
+.setup-redis-choice-card
+em {
+  display: block;
+}
+
+.setup-redis-choice-card
+strong {
+  font-size: 15px;
+}
+
+.setup-redis-choice-card
+small {
+  margin-top: 6px;
+  color: #777067;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.setup-redis-choice-card
+em {
+  width: fit-content;
+  margin-top: 9px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #77482e;
+  background: #f0e5d8;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.setup-service-redis-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+  align-items: start;
+  gap: 12px 14px;
+}
+
+.setup-service-redis-grid
+> label {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.setup-service-redis-grid
+> label:nth-child(1),
+.setup-service-redis-grid
+> label:nth-child(4),
+.setup-service-redis-password {
+  grid-column: span 3;
+}
+
+.setup-service-redis-grid
+> label:nth-child(2),
+.setup-service-redis-grid
+> label:nth-child(3) {
+  grid-column: span 2;
+}
+
+.setup-service-redis-ssl {
+  grid-column: span 2;
+}
+
+.setup-service-redis-grid
+> label
+> span {
+  color: #39342f;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.setup-service-redis-grid
+input,
+.setup-service-redis-grid
+select,
+.setup-service-redis-grid
+.setup-input-shell {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+}
+
+.setup-service-redis-grid
+.setup-input-shell
+input {
+  height: 40px;
+}
+
+.setup-service-redis-test {
+  grid-column: 1 / -1;
+  margin-top: 3px;
+}
+
+.setup-service-basic-mode-note {
+  margin: 0;
+  text-align: center;
+}
+
+/* Redis 参数展开。 */
+.setup-service-expand-enter-active,
+.setup-service-expand-leave-active {
+  overflow: hidden;
+  transition:
+    opacity 190ms ease,
+    transform 230ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.setup-service-expand-enter-from,
+.setup-service-expand-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 820px) {
+  .setup-service-flow__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-flow__steps button {
+    min-height: 52px;
+  }
+
+  .setup-service-database-grid,
+  .setup-redis-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-database-card {
+    min-height: 170px;
+  }
+
+  .setup-service-connection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-redis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-redis-grid
+  > label {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .setup-service-flow__header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .setup-service-selected-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .setup-service-selected-summary
+  > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .setup-service-connection-fieldset,
+  .setup-service-redis-fieldset {
+    padding: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-service-flow__steps button,
+  .setup-service-database-card,
+  .setup-redis-choice-card,
+  .setup-service-stage-enter-active,
+  .setup-service-stage-leave-active,
+  .setup-service-expand-enter-active,
+  .setup-service-expand-leave-active {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-12：分发包数据库与 Redis 两小步服务向导 */
+/* ============================================================ */
+
+.setup-service-flow--two-step {
+  max-width: 1080px;
+  gap: 14px;
+  overflow-anchor: none;
+}
+
+.setup-service-flow--two-step
+.setup-service-flow__steps {
+  width: min(720px, 100%);
+  margin-inline: auto;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+}
+
+.setup-service-flow--two-step
+.setup-service-stage-panel {
+  animation:
+    setup-service-two-step-enter
+    180ms ease both;
+}
+
+@keyframes setup-service-two-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 第一小步：服务选择。 */
+
+.setup-service-stage--service-selection {
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-grid {
+  gap: 13px;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card {
+  min-height: 194px;
+  padding-top: 19px;
+  padding-bottom: 16px;
+}
+
+.setup-service-optional-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #8a7e72;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.setup-service-optional-divider::before,
+.setup-service-optional-divider::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: #e0d8cd;
+}
+
+.setup-service-redis-option-card {
+  position: relative;
+  width: min(460px, 100%);
+  min-height: 118px;
+  margin-inline: auto;
+  padding: 17px 18px;
+  display: grid;
+  grid-template-columns:
+    50px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #d8d0c4;
+  border-radius: 15px;
+  color: #302a25;
+  background: #fffdf8;
+  box-shadow:
+    0 8px 22px rgba(57, 46, 37, 0.05);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.setup-service-redis-option-card:hover {
+  border-color: #bdaea0;
+  box-shadow:
+    0 13px 30px rgba(57, 46, 37, 0.09);
+  transform: translateY(-2px);
+}
+
+.setup-service-redis-option-card:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(151, 81, 47, 0.12),
+    0 13px 30px rgba(57, 46, 37, 0.08);
+}
+
+.setup-service-redis-option-card.is-selected {
+  border-color: #a75b3c;
+  background: #faf1ea;
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(167, 91, 60, 0.12),
+    0 14px 31px
+      rgba(81, 50, 34, 0.1);
+}
+
+.setup-service-redis-option-card__icon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #a44a3d;
+  background: #f5e6e2;
+}
+
+.setup-service-redis-option-card__icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+.setup-service-redis-option-card__copy {
+  min-width: 0;
+}
+
+.setup-service-redis-option-card__copy
+> span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.setup-service-redis-option-card__copy b,
+.setup-service-redis-option-card__copy em {
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.setup-service-redis-option-card__copy b {
+  color: #7c482f;
+  background: #f1e4d7;
+}
+
+.setup-service-redis-option-card__copy em {
+  color: #6d665e;
+  background: #ede9e2;
+}
+
+.setup-service-redis-option-card.is-selected
+.setup-service-redis-option-card__copy em {
+  color: #315d48;
+  background: #e5efe8;
+}
+
+.setup-service-redis-option-card__copy
+strong,
+.setup-service-redis-option-card__copy
+small {
+  display: block;
+}
+
+.setup-service-redis-option-card__copy
+strong {
+  margin-top: 7px;
+  font-size: 15px;
+}
+
+.setup-service-redis-option-card__copy
+small {
+  margin-top: 5px;
+  color: #756d64;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.setup-service-redis-option-card__selector {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cfc5b8;
+  border-radius: 50%;
+  color: #315d48;
+  background: #fffdf8;
+}
+
+.setup-service-redis-option-card__selector
+svg {
+  width: 18px;
+  height: 18px;
+}
+
+.setup-service-redis-option-card__selector
+> span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ded7cc;
+}
+
+/* 第二小步：数据库与 Redis 左右双栏。 */
+
+.setup-service-stage--connection-pair {
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  gap: 13px;
+}
+
+.setup-service-selected-summary--pair {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+}
+
+.setup-service-selected-summary--pair
+> div {
+  display: grid;
+  grid-template-columns:
+    auto auto;
+  justify-content: start;
+  align-items: baseline;
+  gap: 3px 8px;
+}
+
+.setup-service-selected-summary--pair
+> div
+> small {
+  grid-column: 1 / -1;
+}
+
+.setup-service-dual-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.08fr)
+    minmax(360px, 0.92fr);
+  align-items: stretch;
+  gap: 14px;
+  overflow-anchor: none;
+}
+
+.setup-service-column-card {
+  min-width: 0;
+  min-height: 508px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #d9d1c5;
+  border-radius: 15px;
+  background: #fffdf9;
+  box-shadow:
+    0 8px 22px
+      rgba(55, 45, 36, 0.045);
+}
+
+.setup-service-column-card--redis.is-disabled {
+  background: #faf7f1;
+}
+
+.setup-service-column-card__heading {
+  min-height: 58px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e4ddd3;
+}
+
+.setup-service-column-card__heading
+> div
+> span {
+  color: #97512f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.setup-service-column-card__heading h3 {
+  margin: 3px 0 4px;
+  color: #2e2924;
+  font-size: 15px;
+}
+
+.setup-service-column-card__heading p {
+  margin: 0;
+  color: #786f66;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.setup-service-column-card__heading
+> strong {
+  flex: 0 0 auto;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-size: 8px;
+}
+
+.setup-service-column-card__heading
+> strong.is-pending {
+  color: #875d2b;
+  background: #f7ebd5;
+}
+
+.setup-service-column-card__heading
+> strong.is-success {
+  color: #315d48;
+  background: #e5efe8;
+}
+
+.setup-service-column-card__heading
+> strong.is-muted {
+  color: #716a62;
+  background: #ece8e1;
+}
+
+.setup-service-column-card
+.setup-service-connection-fieldset,
+.setup-service-column-card
+.setup-service-redis-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: #fffefa;
+  box-shadow: none;
+}
+
+.setup-service-column-card
+.setup-service-connection-fieldset
+> p,
+.setup-service-column-card
+.setup-service-redis-fieldset
+> p {
+  margin-bottom: 10px;
+  font-size: 9px;
+}
+
+/* 数据库字段严格 1:1 两列。 */
+
+.setup-service-column-card--database
+.setup-service-connection-grid {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 9px 11px;
+}
+
+.setup-service-column-card--database
+.setup-service-connection-grid
+> label {
+  grid-template-rows:
+    auto 38px minmax(13px, auto);
+  gap: 4px;
+}
+
+.setup-service-column-card--database
+.setup-service-connection-grid input,
+.setup-service-column-card--database
+.setup-service-connection-grid select,
+.setup-service-column-card--database
+.setup-service-connection-grid
+.setup-input-shell,
+.setup-service-column-card--database
+.setup-service-connection-grid
+.setup-input-shell input {
+  height: 38px;
+  min-height: 38px;
+}
+
+.setup-service-column-card--database
+.setup-service-connection-grid small {
+  min-height: 13px;
+  font-size: 8px;
+}
+
+.setup-service-column-card
+.setup-service-connection-test,
+.setup-service-column-card
+.setup-service-redis-test {
+  margin: 0;
+  padding: 11px;
+}
+
+.setup-service-column-card
+.setup-service-connection-test strong,
+.setup-service-column-card
+.setup-service-redis-test strong {
+  font-size: 10px;
+}
+
+.setup-service-column-card
+.setup-service-connection-test span,
+.setup-service-column-card
+.setup-service-redis-test span {
+  font-size: 8px;
+}
+
+.setup-service-column-card
+.setup-test-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 9px;
+}
+
+/* Redis 在右栏固定显示，不做展开动画。 */
+
+.setup-service-column-card--redis
+.setup-service-redis-grid {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.setup-service-column-card--redis
+.setup-service-redis-grid
+> label,
+.setup-service-column-card--redis
+.setup-service-redis-grid
+> label:nth-child(1),
+.setup-service-column-card--redis
+.setup-service-redis-grid
+> label:nth-child(2),
+.setup-service-column-card--redis
+.setup-service-redis-grid
+> label:nth-child(3),
+.setup-service-column-card--redis
+.setup-service-redis-grid
+> label:nth-child(4),
+.setup-service-column-card--redis
+.setup-service-redis-password,
+.setup-service-column-card--redis
+.setup-service-redis-ssl {
+  grid-column: span 1 !important;
+}
+
+.setup-service-column-card--redis
+.setup-service-redis-password {
+  grid-column: 1 / -1 !important;
+}
+
+.setup-service-column-card--redis
+.setup-service-redis-grid input,
+.setup-service-column-card--redis
+.setup-service-redis-grid select,
+.setup-service-column-card--redis
+.setup-service-redis-grid
+.setup-input-shell,
+.setup-service-column-card--redis
+.setup-service-redis-grid
+.setup-input-shell input {
+  height: 38px;
+  min-height: 38px;
+}
+
+.setup-service-column-card--redis
+.setup-service-redis-test {
+  grid-column: 1 / -1;
+}
+
+/*
+ * 未选择 Redis 时仍保留稳定的右栏高度。
+ * 不插入表单，不执行展开或收起动画。
+ */
+.setup-service-redis-disabled-panel {
+  min-height: 410px;
+  flex: 1;
+  padding: 25px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px dashed #d7cec2;
+  border-radius: 12px;
+  color: #665e56;
+  background: #f7f3ec;
+  text-align: center;
+}
+
+.setup-service-redis-disabled-panel__icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  color: #6a746b;
+  background: #e8ede8;
+}
+
+.setup-service-redis-disabled-panel__icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.setup-service-redis-disabled-panel strong {
+  color: #34302b;
+  font-size: 15px;
+}
+
+.setup-service-redis-disabled-panel p {
+  max-width: 300px;
+  margin: 6px 0 0;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.setup-service-redis-disabled-panel ul {
+  width: min(310px, 100%);
+  margin: 0;
+  padding: 11px 14px 11px 29px;
+  border-radius: 10px;
+  background:
+    rgba(255, 253, 248, 0.72);
+  font-size: 9px;
+  line-height: 1.9;
+  text-align: left;
+}
+
+.setup-service-redis-disabled-panel button {
+  padding: 8px 11px;
+  border: 1px solid #cfc5b8;
+  border-radius: 8px;
+  color: #71462f;
+  background: #fffdf8;
+  cursor: pointer;
+}
+
+.setup-service-stage__note--pair {
+  margin-top: -2px;
+}
+
+.setup-service-column-card--database
+.setup-service-inspection {
+  padding: 13px;
+  gap: 10px;
+  border-radius: 12px;
+}
+
+/* 响应式。 */
+
+@media (max-width: 980px) {
+  .setup-service-dual-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-column-card {
+    min-height: 0;
+  }
+
+  .setup-service-redis-disabled-panel {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 720px) {
+  .setup-service-flow--two-step
+  .setup-service-flow__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-selected-summary--pair {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-selected-summary--pair
+  > button {
+    justify-self: start;
+  }
+
+  .setup-service-redis-option-card {
+    grid-template-columns:
+      44px minmax(0, 1fr) 24px;
+    padding: 14px;
+  }
+
+  .setup-service-column-card--database
+  .setup-service-connection-grid,
+  .setup-service-column-card--redis
+  .setup-service-redis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-column-card--redis
+  .setup-service-redis-grid
+  > label {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-service-flow--two-step
+  .setup-service-stage-panel,
+  .setup-service-redis-option-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13：安装器全局紧凑视口布局 */
+/* ============================================================ */
+
+/*
+ * 桌面安装器整体缩紧。
+ * 仍维持固定视口和内部滚动兜底，不让浏览器外层滚动。
+ */
+@media (min-width: 901px) {
+  .setup-page {
+    padding: 14px;
+  }
+
+  .setup-card--wizard {
+    width:
+      min(
+        1180px,
+        calc(100vw - 28px)
+      );
+    height:
+      calc(100dvh - 28px);
+    max-height:
+      calc(100dvh - 28px);
+    padding: 22px 26px;
+    gap: 12px;
+  }
+
+  .setup-header--with-step-summary {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(270px, 330px);
+    align-items: stretch;
+    gap:
+      clamp(
+        22px,
+        3vw,
+        38px
+      );
+  }
+
+  .setup-header__intro {
+    justify-content: center;
+  }
+
+  .setup-header__badges {
+    gap: 6px;
+  }
+
+  .setup-kicker,
+  .setup-mode-badge {
+    min-height: 28px;
+    padding: 5px 9px;
+    font-size: 9px;
+  }
+
+  .setup-header h1 {
+    margin: 8px 0 4px;
+    font-size:
+      clamp(
+        30px,
+        3.4vw,
+        38px
+      );
+    line-height: 1.08;
+  }
+
+  .setup-header__intro > p {
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .setup-header__step-summary {
+    min-height: 88px;
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .setup-header__step-copy {
+    gap: 3px;
+  }
+
+  .setup-header__step-copy > span {
+    font-size: 9px;
+  }
+
+  .setup-header__step-copy > strong {
+    font-size: 16px;
+  }
+
+  .setup-header__step-copy > p {
+    max-width: 280px;
+    font-size: 9px;
+    line-height: 1.45;
+  }
+
+  .setup-header__refresh {
+    min-height: 31px;
+    padding-inline: 9px;
+    font-size: 9px;
+  }
+
+  .setup-steps {
+    gap: 4px;
+    padding: 5px;
+    border-radius: 11px;
+  }
+
+  .setup-step {
+    min-width: 0;
+    padding: 7px 6px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+
+  .setup-step > span {
+    width: 23px;
+    height: 23px;
+    font-size: 9px;
+  }
+
+  .setup-step > strong,
+  .setup-step strong {
+    font-size: 9px;
+  }
+
+  .setup-form {
+    gap: 11px;
+  }
+
+  .setup-wizard__body {
+    padding-right: 3px;
+    scrollbar-width: thin;
+    scrollbar-color:
+      #a79f92
+      transparent;
+  }
+
+  .setup-wizard__body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .setup-wizard__body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .setup-wizard__body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #aaa296;
+  }
+
+  .setup-actions {
+    padding-top: 9px;
+    gap: 9px;
+  }
+
+  .setup-actions button,
+  .setup-primary,
+  .setup-secondary {
+    min-height: 36px;
+    padding: 8px 14px;
+    font-size: 10px;
+  }
+
+  /* 服务配置公共区域。 */
+  .setup-service-flow--two-step {
+    gap: 9px;
+  }
+
+  .setup-service-flow__header {
+    gap: 12px;
+  }
+
+  .setup-service-flow__header h3 {
+    margin: 2px 0 3px;
+    font-size: 17px;
+  }
+
+  .setup-service-flow__header p {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  .setup-service-flow__header > strong {
+    min-width: 44px;
+    padding: 5px 8px;
+    font-size: 9px;
+  }
+
+  .setup-service-flow--two-step
+  .setup-service-flow__steps {
+    width: min(680px, 100%);
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .setup-service-flow__steps button {
+    min-height: 46px;
+    padding: 7px 9px;
+    gap: 8px;
+  }
+
+  .setup-service-flow__steps
+  button
+  > span {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+  }
+
+  .setup-service-flow__steps strong {
+    font-size: 9px;
+  }
+
+  .setup-service-flow__steps small {
+    margin-top: 1px;
+    font-size: 8px;
+  }
+
+  .setup-service-stage {
+    gap: 10px;
+  }
+
+  .setup-service-stage__heading > span {
+    font-size: 8px;
+  }
+
+  .setup-service-stage__heading h3 {
+    margin: 2px 0 3px;
+    font-size: 18px;
+  }
+
+  .setup-service-stage__heading p,
+  .setup-service-stage__note {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+
+  /*
+   * 第一小步：
+   * 三张数据库卡片和下方 Redis 同屏展示。
+   */
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    gap: 9px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card {
+    min-height: 142px;
+    padding: 11px 12px 10px;
+    gap: 7px;
+    border-radius: 13px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card.is-selected {
+    transform: translateY(-1px);
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__icon
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__copy
+  strong {
+    font-size: 15px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__copy
+  small {
+    margin-top: 3px;
+    font-size: 8px;
+    line-height: 1.35;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__copy
+  em {
+    margin-top: 5px;
+    padding: 3px 6px;
+    font-size: 7px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__port {
+    padding: 4px 7px;
+    font-size: 7px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card__check {
+    top: 9px;
+    right: 9px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .setup-service-optional-divider {
+    gap: 8px;
+    font-size: 7px;
+  }
+
+  .setup-service-redis-option-card {
+    width: min(430px, 100%);
+    min-height: 82px;
+    padding: 10px 12px;
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      24px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .setup-service-redis-option-card__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .setup-service-redis-option-card__icon
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .setup-service-redis-option-card__copy
+  strong {
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  .setup-service-redis-option-card__copy
+  small {
+    margin-top: 3px;
+    font-size: 8px;
+    line-height: 1.35;
+  }
+
+  .setup-service-redis-option-card__copy
+  b,
+  .setup-service-redis-option-card__copy
+  em {
+    padding: 2px 5px;
+    font-size: 7px;
+  }
+
+  .setup-service-redis-option-card__selector {
+    width: 21px;
+    height: 21px;
+  }
+
+  /*
+   * 第二小步：
+   * 左右表单继续保持稳定，但整体更紧凑。
+   */
+  .setup-service-stage--connection-pair {
+    gap: 9px;
+  }
+
+  .setup-service-selected-summary--pair {
+    padding: 9px 11px;
+    border-radius: 10px;
+  }
+
+  .setup-service-selected-summary--pair
+  strong {
+    font-size: 12px;
+  }
+
+  .setup-service-selected-summary--pair
+  span,
+  .setup-service-selected-summary--pair
+  small {
+    font-size: 8px;
+  }
+
+  .setup-service-selected-summary--pair
+  button {
+    padding: 5px 8px;
+    font-size: 8px;
+  }
+
+  .setup-service-dual-layout {
+    gap: 10px;
+  }
+
+  .setup-service-column-card {
+    min-height: 430px;
+    padding: 11px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+
+  .setup-service-column-card__heading {
+    min-height: 48px;
+    padding-bottom: 7px;
+  }
+
+  .setup-service-column-card__heading h3 {
+    margin: 2px 0 2px;
+    font-size: 13px;
+  }
+
+  .setup-service-column-card__heading p {
+    font-size: 8px;
+    line-height: 1.35;
+  }
+
+  .setup-service-column-card
+  .setup-service-connection-fieldset,
+  .setup-service-column-card
+  .setup-service-redis-fieldset {
+    padding: 10px;
+  }
+
+  .setup-service-column-card--database
+  .setup-service-connection-grid {
+    gap: 7px 9px;
+  }
+
+  .setup-service-column-card--database
+  .setup-service-connection-grid
+  > label {
+    grid-template-rows:
+      auto
+      34px
+      minmax(11px, auto);
+    gap: 3px;
+  }
+
+  .setup-service-column-card--database
+  .setup-service-connection-grid
+  input,
+  .setup-service-column-card--database
+  .setup-service-connection-grid
+  select,
+  .setup-service-column-card--database
+  .setup-service-connection-grid
+  .setup-input-shell,
+  .setup-service-column-card--database
+  .setup-service-connection-grid
+  .setup-input-shell
+  input,
+  .setup-service-column-card--redis
+  .setup-service-redis-grid
+  input,
+  .setup-service-column-card--redis
+  .setup-service-redis-grid
+  select,
+  .setup-service-column-card--redis
+  .setup-service-redis-grid
+  .setup-input-shell,
+  .setup-service-column-card--redis
+  .setup-service-redis-grid
+  .setup-input-shell
+  input {
+    height: 34px;
+    min-height: 34px;
+  }
+
+  .setup-service-column-card--redis
+  .setup-service-redis-grid {
+    gap: 7px;
+  }
+
+  .setup-service-redis-disabled-panel {
+    min-height: 330px;
+    padding: 18px 16px;
+    gap: 10px;
+  }
+
+  /* 环境检测页。 */
+  .setup-check-list {
+    gap: 8px;
+  }
+
+  .setup-check-item {
+    padding: 11px 12px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+
+  .setup-check-item strong {
+    font-size: 10px;
+  }
+
+  .setup-check-item p,
+  .setup-check-item em {
+    font-size: 8px;
+  }
+
+  /* 站点与管理员页。 */
+  .setup-identity-grid {
+    gap: 12px;
+  }
+
+  .setup-fieldset--identity {
+    padding: 15px;
+  }
+
+  .setup-form-grid--identity {
+    gap: 9px 12px;
+  }
+
+  .setup-form-grid--identity
+  input,
+  .setup-form-grid--identity
+  select,
+  .setup-form-grid--identity
+  .setup-input-shell,
+  .setup-form-grid--identity
+  .setup-input-shell
+  input {
+    min-height: 38px;
+    height: 38px;
+  }
+
+  .setup-password-rules {
+    gap: 6px;
+  }
+
+  /* 执行安装与完成页。 */
+  .setup-install-progress {
+    min-height: 350px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .setup-progress-list {
+    gap: 7px;
+  }
+
+  .setup-progress-list article {
+    padding: 9px 11px;
+  }
+
+  .setup-complete {
+    min-height: 360px;
+    gap: 14px;
+    padding: 12px 0 18px;
+  }
+
+  .setup-complete__icon {
+    width: 68px;
+    height: 68px;
+  }
+
+  .setup-complete h2 {
+    font-size: 24px;
+  }
+}
+
+/*
+ * 浏览器高度不足 860px 时再收紧一档。
+ * 这是桌面窗口最容易触发内滚动的场景。
+ */
+@media
+  (min-width: 901px)
+  and (max-height: 860px) {
+  .setup-page {
+    padding: 9px;
+  }
+
+  .setup-card--wizard {
+    height:
+      calc(100dvh - 18px);
+    max-height:
+      calc(100dvh - 18px);
+    padding: 16px 22px;
+    gap: 8px;
+  }
+
+  .setup-header h1 {
+    font-size: 30px;
+  }
+
+  .setup-header__step-summary {
+    min-height: 76px;
+    padding: 9px 12px;
+  }
+
+  .setup-step {
+    padding-block: 5px;
+  }
+
+  .setup-service-flow__header p,
+  .setup-service-stage__heading p {
+    display: none;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card {
+    min-height: 126px;
+  }
+
+  .setup-service-redis-option-card {
+    min-height: 72px;
+  }
+
+  .setup-service-column-card {
+    min-height: 400px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-service-redis-option-card,
+  .setup-service-database-card {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13A：隐藏服务配置顶部说明并上移卡片 */
+/* ============================================================ */
+
+/*
+ * 隐藏服务配置页顶部冗余块：
+ * 1. “分发包服务配置 / 两步完成数据库与缓存配置”
+ * 2. 中间那条 1/2 小步骤条
+ */
+.setup-service-flow__header,
+.setup-service-flow--two-step .setup-service-flow__steps {
+  display: none !important;
+}
+
+/* 整个服务配置区域上移，去掉多余空隙 */
+.setup-service-flow--two-step {
+  gap: 0 !important;
+}
+
+.setup-service-stage,
+.setup-service-stage--service-selection,
+.setup-service-stage--connection-pair {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 第一步标题更贴近上方主步骤栏 */
+.setup-service-stage__heading {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.setup-service-stage__heading > span {
+  margin-top: 0 !important;
+}
+
+.setup-service-stage__heading h3 {
+  margin-top: 0 !important;
+}
+
+/* 让数据库卡片区域再往上靠一点 */
+.setup-service-stage--service-selection .setup-service-database-grid {
+  margin-top: 8px !important;
+}
+
+/* Redis 分隔线与卡片也轻微收紧 */
+.setup-service-optional-divider {
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.setup-service-redis-option-card {
+  margin-top: 0 !important;
+}
+
+/* 第二小步顶部选中摘要也收紧 */
+.setup-service-selected-summary--pair {
+  margin-top: 0 !important;
+}
+
+/* 小屏幕也同步隐藏顶部冗余块 */
+@media (max-width: 900px) {
+  .setup-service-flow__header,
+  .setup-service-flow--two-step .setup-service-flow__steps {
+    display: none !important;
+  }
+
+  .setup-service-flow--two-step {
+    gap: 0 !important;
+  }
+
+  .setup-service-stage__heading {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13B：安装向导固定底部操作栏 */
+/* ============================================================ */
+
+/*
+ * 原来 setup-wizard__body 本身滚动，
+ * footer 也在这个滚动区域里，所以按钮会停留在内容结束位置。
+ *
+ * 现在把表单改成：
+ *
+ * ┌─────────────────────┐
+ * │ 内容面板：可滚动     │  minmax(0, 1fr)
+ * ├─────────────────────┤
+ * │ 错误提示：按需出现   │  auto
+ * ├─────────────────────┤
+ * │ 操作按钮：固定底部   │  auto
+ * └─────────────────────┘
+ */
+.setup-card--wizard
+.setup-wizard__body {
+  min-height: 0;
+  display: grid !important;
+  grid-template-rows:
+    minmax(0, 1fr)
+    auto
+    auto;
+  align-content: stretch !important;
+  row-gap: 0 !important;
+  padding-right: 0 !important;
+  overflow: hidden !important;
+}
+
+/*
+ * 只有真正的步骤内容允许滚动。
+ * 普通页面内容放得下时，不会出现滚动条。
+ */
+.setup-card--wizard
+.setup-step-panel-shell {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  align-self: stretch;
+  padding:
+    0
+    4px
+    12px
+    0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color:
+    #aaa296
+    transparent;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar {
+  width: 6px;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #aaa296;
+}
+
+/*
+ * 错误提示出现在内容与底栏之间。
+ * 控制高度，避免错误出现时按钮大幅跳动。
+ */
+.setup-card--wizard
+.setup-message {
+  margin:
+    0
+    0
+    8px;
+}
+
+/*
+ * 固定底部操作栏。
+ *
+ * 这里不是固定在浏览器窗口上，
+ * 而是固定在白色安装器卡片内部，
+ * 不会遮住浏览器内容。
+ */
+.setup-card--wizard
+.setup-actions {
+  position: relative;
+  z-index: 6;
+  min-height: 54px;
+  margin: 0 !important;
+  padding:
+    10px
+    0
+    1px !important;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  border-top:
+    1px solid
+    #e4ddd3;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 253, 248, 0.88),
+      #fffdf8 28%
+    );
+  box-shadow:
+    0 -10px 20px
+    rgba(64, 53, 42, 0.025);
+}
+
+/* 上一步固定左侧。 */
+.setup-card--wizard
+.setup-actions
+.setup-secondary {
+  margin-right: auto;
+}
+
+/* 下一步固定右侧。 */
+.setup-card--wizard
+.setup-actions
+.setup-primary {
+  margin-left: auto;
+}
+
+/*
+ * 所有步骤统一按钮尺寸，
+ * 避免文案长短变化导致底栏视觉晃动。
+ */
+.setup-card--wizard
+.setup-actions
+> button {
+  min-height: 36px;
+  max-width: min(300px, 45%);
+  padding-inline: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/*
+ * 服务配置页面不再给底部按钮保留重复空白。
+ */
+.setup-service-flow--two-step,
+.setup-service-stage--service-selection,
+.setup-service-stage--connection-pair {
+  padding-bottom: 0 !important;
+}
+
+/*
+ * 高度较矮的桌面窗口也保持固定底栏。
+ */
+@media
+  (min-width: 901px)
+  and (max-height: 860px) {
+  .setup-card--wizard
+  .setup-actions {
+    min-height: 47px;
+    padding-top: 7px !important;
+  }
+
+  .setup-card--wizard
+  .setup-step-panel-shell {
+    padding-bottom: 8px;
+  }
+}
+
+/*
+ * 手机端按钮继续纵向排列，
+ * 但仍固定在安装器卡片内容底部。
+ */
+@media (max-width: 760px) {
+  .setup-card--wizard
+  .setup-actions {
+    min-height: 0;
+    gap: 8px;
+    padding-top: 10px !important;
+  }
+
+  .setup-card--wizard
+  .setup-actions
+  > button {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-card--wizard
+  .setup-actions {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13C：服务卡片居中与 Redis 放大 */
+/* ============================================================ */
+
+/* 第一步：数据库三卡片整体居中 */
+.setup-service-stage--service-selection .setup-service-card-grid,
+.setup-service-selection-grid,
+.setup-service-choice-grid {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  justify-content: center !important;
+  justify-items: center;
+  column-gap: 18px;
+  row-gap: 18px;
+}
+
+/* 三张数据库卡片统一宽度，避免左右发散 */
+.setup-service-stage--service-selection .setup-service-card-grid > *,
+.setup-service-selection-grid > *,
+.setup-service-choice-grid > * {
+  width: min(100%, 270px);
+  max-width: 270px;
+}
+
+/* Redis 区域整体居中 */
+.setup-service-stage--service-selection .setup-optional-service-panel,
+.setup-service-stage--service-selection .setup-redis-choice-wrap,
+.setup-service-stage--service-selection .setup-redis-selection-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+}
+
+/* Redis 卡片放大一点，更稳重 */
+.setup-service-stage--service-selection .setup-optional-service-panel > *,
+.setup-service-stage--service-selection .setup-redis-choice-wrap > *,
+.setup-service-stage--service-selection .setup-redis-selection-wrap > * {
+  width: min(100%, 430px);
+  max-width: 430px;
+}
+
+/* Redis 卡片内部更舒展一点 */
+.setup-service-stage--service-selection .setup-optional-service-panel .setup-service-card,
+.setup-service-stage--service-selection .setup-redis-choice-wrap .setup-service-card,
+.setup-service-stage--service-selection .setup-redis-selection-wrap .setup-service-card,
+.setup-service-stage--service-selection .setup-optional-service-panel .setup-redis-card,
+.setup-service-stage--service-selection .setup-redis-choice-wrap .setup-redis-card,
+.setup-service-stage--service-selection .setup-redis-selection-wrap .setup-redis-card {
+  min-height: 92px;
+  padding: 14px 16px;
+}
+
+/* 第一屏标题和卡片组更聚拢，减少松散感 */
+.setup-service-stage--service-selection .setup-step-panel-shell,
+.setup-service-stage--service-selection .setup-step-panel {
+  align-content: start;
+}
+
+.setup-service-stage--service-selection .setup-service-selection-header,
+.setup-service-stage--service-selection .setup-service-choice-header {
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+/* 小屏兼容 */
+@media (max-width: 1100px) {
+  .setup-service-stage--service-selection .setup-service-card-grid,
+  .setup-service-selection-grid,
+  .setup-service-choice-grid {
+    max-width: 100%;
+  }
+
+  .setup-service-stage--service-selection .setup-service-card-grid > *,
+  .setup-service-selection-grid > *,
+  .setup-service-choice-grid > * {
+    width: min(100%, 250px);
+    max-width: 250px;
+  }
+
+  .setup-service-stage--service-selection .setup-optional-service-panel > *,
+  .setup-service-stage--service-selection .setup-redis-choice-wrap > *,
+  .setup-service-stage--service-selection .setup-redis-selection-wrap > * {
+    width: min(100%, 390px);
+    max-width: 390px;
+  }
+}
+
+@media (max-width: 760px) {
+  .setup-service-stage--service-selection .setup-service-card-grid,
+  .setup-service-selection-grid,
+  .setup-service-choice-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-stage--service-selection .setup-service-card-grid > *,
+  .setup-service-selection-grid > *,
+  .setup-service-choice-grid > *,
+  .setup-service-stage--service-selection .setup-optional-service-panel > *,
+  .setup-service-stage--service-selection .setup-redis-choice-wrap > *,
+  .setup-service-stage--service-selection .setup-redis-selection-wrap > * {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13C：方案 B 高级对称服务卡片 */
+/* ============================================================ */
+
+/*
+ * 服务选择区域使用固定的视觉中心宽度。
+ *
+ * 上层数据库网格最大宽度 900px：
+ * - 三列等宽；
+ * - 列间距 12px；
+ * - 每张卡片约 292px。
+ *
+ * 下层 Redis 卡片宽度 596px：
+ * - 约等于两张数据库卡片加一个中间间距；
+ * - 形成稳定的“3 + 1”对称关系。
+ */
+.setup-service-stage--service-selection {
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
+  justify-items: stretch;
+}
+
+/* ==================== 数据库卡片居中 ==================== */
+
+.setup-service-stage--service-selection
+.setup-service-database-grid {
+  width: min(900px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  justify-content: center;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+/*
+ * 三张卡片内部保持相同的纵向结构，
+ * 避免文字长度不同导致内容上下错位。
+ */
+.setup-service-stage--service-selection
+.setup-service-database-card {
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card__copy {
+  width: 100%;
+  align-self: center;
+}
+
+/* ==================== 可选服务分隔线 ==================== */
+
+.setup-service-stage--service-selection
+.setup-service-optional-divider {
+  width: min(900px, 100%);
+  margin:
+    7px
+    auto
+    8px;
+}
+
+/* ==================== Redis 高级对称卡片 ==================== */
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card {
+  /*
+   * 596px 对应上方两张约 292px 卡片，
+   * 再加中间 12px 间距。
+   */
+  width: min(596px, 100%);
+  max-width: 596px;
+  min-height: 104px;
+  margin:
+    0
+    auto;
+  padding:
+    14px
+    18px;
+  grid-template-columns:
+    48px
+    minmax(0, 1fr)
+    27px;
+  align-items: center;
+  gap: 14px;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+/* Redis 图标适当放大。 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__icon
+svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Redis 文案增加层次。 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy
+strong {
+  margin-top: 5px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy
+small {
+  max-width: 450px;
+  margin-top: 4px;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy
+b,
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy
+em {
+  padding:
+    3px
+    6px;
+  font-size: 7px;
+}
+
+/* Redis 选择圆点适当放大。 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__selector {
+  width: 24px;
+  height: 24px;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__selector
+svg {
+  width: 19px;
+  height: 19px;
+}
+
+/*
+ * 选中后的阴影更稳定，
+ * 不使用过大的上浮，避免界面晃动。
+ */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card:hover {
+  transform: translateY(-1px);
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card.is-selected {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(167, 91, 60, 0.13),
+    0 13px 28px
+      rgba(81, 50, 34, 0.085);
+}
+
+/* Redis 下方说明文字和卡片保持同一视觉中心。 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card
++ .setup-service-stage__note {
+  width: min(650px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* ==================== 中等宽度桌面 ==================== */
+
+@media
+  (min-width: 821px)
+  and (max-width: 1100px) {
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    width: min(820px, 100%);
+    gap: 10px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-optional-divider {
+    width: min(820px, 100%);
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    /*
+     * 中等桌面下对应两张约 266px 卡片。
+     */
+    width: min(542px, 100%);
+    max-width: 542px;
+  }
+}
+
+/* ==================== 平板和手机 ==================== */
+
+@media (max-width: 820px) {
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card {
+    width: 100%;
+    max-width: none;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-optional-divider {
+    width: 100%;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    min-height: 96px;
+    padding:
+      12px
+      13px;
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      23px;
+    gap: 10px;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card__icon {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-13D：强制覆盖方案 B 高级对称版 */
+/* 目的：真正让数据库三卡片 + Redis 卡片按方案 B 居中排版 */
+/* ============================================================ */
+
+.setup-service-stage--service-selection {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-top: 26px !important; /* 整体往下移动一点 */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box;
+}
+
+/* 标题区往下收一点，让画面更舒服 */
+.setup-service-stage--service-selection
+.setup-service-stage__heading {
+  margin-bottom: 18px !important;
+  text-align: center !important;
+}
+
+/* 三张数据库卡片整体居中 */
+.setup-service-stage--service-selection
+.setup-service-database-grid {
+  width: min(920px, 100%) !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  margin: 8px auto 0 !important;
+}
+
+/* 数据库卡片统一尺寸 */
+.setup-service-stage--service-selection
+.setup-service-database-card {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 152px !important;
+  margin: 0 !important;
+  border-radius: 18px !important;
+}
+
+/* 上面三张卡片下面的分隔线 */
+.setup-service-stage--service-selection
+.setup-service-optional-divider {
+  width: min(920px, 100%) !important;
+  margin: 18px auto 16px !important;
+}
+
+/* Redis 卡片：方案 B，宽度对齐中间两张数据库卡片的视觉范围 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card {
+  width: min(620px, 100%) !important;
+  max-width: 620px !important;
+  min-height: 118px !important;
+  margin: 0 auto !important;
+  padding: 18px 22px !important;
+  border-radius: 18px !important;
+  display: grid !important;
+  grid-template-columns: 56px minmax(0, 1fr) 28px !important;
+  align-items: center !important;
+  gap: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Redis 图标放大一点 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__icon {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 16px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__icon svg {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+/* Redis 标题和描述更清晰 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy strong {
+  display: block !important;
+  margin-top: 4px !important;
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy small {
+  display: block !important;
+  margin-top: 6px !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  max-width: 460px !important;
+}
+
+/* Redis 卡片下方说明文字也居中 */
+.setup-service-stage--service-selection
+.setup-service-redis-option-card
++ .setup-service-stage__note {
+  width: min(620px, 100%) !important;
+  margin: 10px auto 0 !important;
+  text-align: center !important;
+}
+
+/* 让第一步整体看起来更聚拢，不要太散 */
+.setup-service-stage--service-selection
+.setup-service-stage__body {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* 平板 */
+@media (max-width: 1100px) {
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    width: min(860px, 100%) !important;
+    gap: 14px !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-optional-divider {
+    width: min(860px, 100%) !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    width: min(580px, 100%) !important;
+    max-width: 580px !important;
+  }
+}
+
+/* 手机/窄屏回退单列，避免炸布局 */
+@media (max-width: 820px) {
+  .setup-service-stage--service-selection {
+    padding-top: 18px !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card {
+    min-height: 132px !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-optional-divider {
+    width: 100% !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 104px !important;
+    grid-template-columns: 48px minmax(0, 1fr) 24px !important;
+    padding: 14px 16px !important;
+    gap: 12px !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-14A：数据库摘要信息下沉到连接卡片 */
+/* ============================================================ */
+
+/*
+ * 顶部摘要现在只保留 Redis 状态和“重新选择”。
+ * 不再重复显示数据库类型与默认端口。
+ */
+.setup-service-selected-summary--pair
+.setup-service-selected-summary--redis-only,
+.setup-service-selected-summary--redis-only {
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto !important;
+}
+
+.setup-service-selected-summary--redis-only
+> div {
+  min-width: 0;
+}
+
+/*
+ * 左侧数据库标题：
+ *
+ * 左侧：
+ * 数据库  MySQL
+ * 数据库连接
+ * 说明文字
+ *
+ * 右侧：
+ * 默认端口 3306
+ * 等待测试
+ */
+.setup-service-column-card--database
+.setup-service-column-card__heading--database {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.setup-service-column-card__copy {
+  min-width: 0;
+}
+
+.setup-service-database-identity {
+  min-height: 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+
+/*
+ * 不增加新的边框和背景盒子，
+ * 只用字号、颜色建立信息层级。
+ */
+.setup-service-database-identity
+> span {
+  color: #97512f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.setup-service-database-identity
+> strong {
+  color: #29241f;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.setup-service-column-card__heading--database
+h3 {
+  margin-top: 3px;
+}
+
+/* 右侧默认端口与测试状态。 */
+.setup-service-column-card__meta {
+  min-width: 82px;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 7px;
+  text-align: right;
+}
+
+.setup-service-database-port {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.setup-service-database-port
+> span {
+  color: #8a8177;
+  font-size: 8px;
+}
+
+.setup-service-database-port
+> strong {
+  color: #342e28;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * 测试状态仍保留，但与端口信息分开。
+ */
+.setup-service-column-card__status {
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.setup-service-column-card__status.is-pending {
+  color: #875d2b;
+  background: #f7ebd5;
+}
+
+.setup-service-column-card__status.is-success {
+  color: #315d48;
+  background: #e5efe8;
+}
+
+/*
+ * 覆盖旧的“标题直接子 strong”规则，
+ * 避免迁移后产生错误宽度或重复外观。
+ */
+.setup-service-column-card__heading--database
+> strong {
+  display: none;
+}
+
+/* 中等宽度下仍保持左右布局。 */
+@media
+  (min-width: 721px)
+  and (max-width: 1100px) {
+  .setup-service-column-card--database
+  .setup-service-column-card__heading--database {
+    gap: 10px;
+  }
+
+  .setup-service-column-card__meta {
+    min-width: 76px;
+  }
+}
+
+/* 手机端上下排列，防止标题区域过窄。 */
+@media (max-width: 720px) {
+  .setup-service-column-card--database
+  .setup-service-column-card__heading--database {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-column-card__meta {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-14B：Redis 摘要下沉与重新选择按钮迁移 */
+/* ============================================================ */
+
+/*
+ * 顶部摘要条已经从 Vue 中删除。
+ * 双栏内容直接紧贴五步导航下方。
+ */
+.setup-service-stage--connection-pair {
+  margin-top: 0 !important;
+}
+
+/*
+ * Redis 标题与左侧数据库标题完全采用相同结构：
+ *
+ * Redis  已启用
+ * Redis 缓存与会话          默认端口 6379
+ * 说明文字                  等待测试
+ */
+.setup-service-column-card--redis
+.setup-service-column-card__heading--redis {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.setup-service-redis-identity {
+  min-height: 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+
+.setup-service-redis-identity
+> span {
+  color: #97512f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.setup-service-redis-identity
+> strong {
+  color: #29241f;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.setup-service-column-card__heading--redis
+h3 {
+  margin-top: 3px;
+}
+
+.setup-service-redis-port {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.setup-service-redis-port
+> span {
+  color: #8a8177;
+  font-size: 8px;
+}
+
+.setup-service-redis-port
+> strong {
+  color: #342e28;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Redis 未启用状态。 */
+.setup-service-column-card__status.is-muted {
+  color: #716a62;
+  background: #ece8e1;
+}
+
+/*
+ * 清除旧标题直接子元素状态徽章规则影响。
+ */
+.setup-service-column-card__heading--redis
+> strong {
+  display: none;
+}
+
+/* ==================== 底部重新选择按钮 ==================== */
+
+/*
+ * 固定底栏布局：
+ *
+ * 上一步       重新选择  下一步
+ * 左侧               右侧
+ */
+.setup-card--wizard
+.setup-actions.has-service-reselect
+> .setup-secondary:first-child {
+  margin-right: auto;
+}
+
+.setup-card--wizard
+.setup-actions
+.setup-service-reselect-action {
+  min-width: 76px;
+  margin:
+    0
+    8px
+    0
+    0 !important;
+  color: #71462f;
+  border-color: #cfc5b8;
+  background: #fffaf3;
+}
+
+.setup-card--wizard
+.setup-actions
+.setup-service-reselect-action:hover:not(:disabled) {
+  border-color: #b99d8a;
+  color: #5f3521;
+  background: #f8eee4;
+}
+
+.setup-card--wizard
+.setup-actions.has-service-reselect
+.setup-primary {
+  margin-left: 0 !important;
+}
+
+/* 中等宽度保持标题对称。 */
+@media
+  (min-width: 721px)
+  and (max-width: 1100px) {
+  .setup-service-column-card--redis
+  .setup-service-column-card__heading--redis {
+    gap: 10px;
+  }
+}
+
+/* 手机端标题上下排列。 */
+@media (max-width: 720px) {
+  .setup-service-column-card--redis
+  .setup-service-column-card__heading--redis {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-card--wizard
+  .setup-actions.has-service-reselect {
+    display: grid;
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .setup-card--wizard
+  .setup-actions.has-service-reselect
+  > .setup-secondary:first-child {
+    grid-column: 1 / -1;
+    margin: 0 !important;
+  }
+
+  .setup-card--wizard
+  .setup-actions
+  .setup-service-reselect-action {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  .setup-card--wizard
+  .setup-actions.has-service-reselect
+  .setup-primary {
+    width: 100%;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-14C：数据库与 Redis 真实测试统一到底部 */
+/* ============================================================ */
+
+/*
+ * 左右连接卡片只负责填写参数。
+ * 两个真实测试区统一放在双栏表单下方，减少内部碎框。
+ */
+.setup-service-column-card--database,
+.setup-service-column-card--redis {
+  min-height: 0 !important;
+}
+
+.setup-service-test-dock {
+  width: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid #d9d1c5;
+  border-radius: 14px;
+  background: #fffdf9;
+  box-shadow:
+    0 8px 22px
+    rgba(55, 45, 36, 0.04);
+}
+
+.setup-service-test-dock__heading {
+  min-height: 44px;
+  padding: 9px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e4ddd3;
+  background: #faf6ef;
+}
+
+.setup-service-test-dock__heading
+> div {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.setup-service-test-dock__heading
+span {
+  color: #97512f;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.setup-service-test-dock__heading
+strong {
+  color: #2f2924;
+  font-size: 12px;
+}
+
+.setup-service-test-dock__heading
+p {
+  margin: 0;
+  color: #7b7369;
+  font-size: 8px;
+}
+
+.setup-service-test-dock__grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.setup-service-test-dock__item {
+  min-width: 0;
+  padding: 11px 14px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+}
+
+.setup-service-test-dock__item
++ .setup-service-test-dock__item {
+  border-left: 1px solid #e4ddd3;
+}
+
+.setup-service-test-dock__label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.setup-service-test-dock__label
+span {
+  color: #97512f;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.setup-service-test-dock__label
+strong {
+  color: #302a25;
+  font-size: 11px;
+}
+
+/*
+ * 复用原有测试状态和按钮逻辑，
+ * 只取消原本各自独立的边框、背景和外边距。
+ */
+.setup-service-test-dock
+.setup-test-row {
+  min-height: 48px;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.setup-service-test-dock
+.setup-test-row
+> div {
+  min-width: 0;
+}
+
+.setup-service-test-dock
+.setup-test-row
+strong {
+  font-size: 10px;
+}
+
+.setup-service-test-dock
+.setup-test-row
+span {
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.setup-service-test-dock
+.setup-test-button {
+  min-width: 112px;
+  min-height: 34px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  font-size: 9px;
+}
+
+.setup-service-test-row--skipped {
+  color: #716a62;
+}
+
+.setup-service-test-row--skipped
+> div {
+  display: grid;
+  gap: 3px;
+}
+
+.setup-service-test-row--skipped
+em {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #315d48;
+  background: #e5efe8;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+/*
+ * 原左右卡片底部不再保留测试区间距。
+ */
+.setup-service-column-card
+.setup-service-connection-test,
+.setup-service-column-card
+.setup-service-redis-test {
+  margin: 0 !important;
+}
+
+@media (max-width: 820px) {
+  .setup-service-test-dock__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .setup-service-test-dock__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-service-test-dock__item
+  + .setup-service-test-dock__item {
+    border-top: 1px solid #e4ddd3;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .setup-service-test-dock
+  .setup-test-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .setup-service-test-dock
+  .setup-test-button {
+    width: 100%;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-14D：真实连接测试移动到固定底栏 */
+/* ============================================================ */
+
+/*
+ * 当前页面不再显示独立的真实服务测试大盒子。
+ * 内容区只保留双栏表单和简短说明。
+ */
+.setup-service-stage--connection-pair
+.setup-service-stage__note--pair {
+  margin-top: 8px;
+}
+
+/*
+ * 固定底栏布局：
+ *
+ * 上一步 | 重新选择 | 数据库测试 | Redis 测试 | 下一步
+ */
+.setup-card--wizard
+.setup-actions.has-service-test-actions {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.setup-service-action-cluster {
+  min-width: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 重新选择继续使用浅色次按钮。 */
+.setup-service-action-cluster
+.setup-service-reselect-action {
+  min-width: 76px;
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+/* 两个测试按钮采用统一尺寸。 */
+.setup-footer-test-button {
+  min-width: 128px;
+  min-height: 36px;
+  padding: 8px 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 1px solid #bed0c5;
+  border-radius: 9px;
+  color: #315d48;
+  background: #edf4ef;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 760;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.setup-footer-test-button:hover:not(:disabled) {
+  border-color: #8eae9b;
+  background: #e4efe8;
+  box-shadow:
+    0 6px 15px
+    rgba(49, 93, 72, 0.09);
+  transform: translateY(-1px);
+}
+
+.setup-footer-test-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px
+    rgba(49, 93, 72, 0.12);
+}
+
+.setup-footer-test-button
+svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+}
+
+.setup-footer-test-button.is-testing {
+  color: #86572f;
+  border-color: #d8b79f;
+  background: #faf0e5;
+}
+
+.setup-footer-test-button.is-success {
+  color: #315d48;
+  border-color: #9ebba8;
+  background: #e5efe8;
+}
+
+/* Redis 未启用时保留位置，保证按钮组不跳动。 */
+.setup-footer-test-button.is-skipped {
+  color: #7a736a;
+  border-color: #d8d1c7;
+  background: #efebe5;
+}
+
+.setup-footer-test-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 下一步保持唯一的主色按钮。 */
+.setup-service-action-cluster
+.setup-primary {
+  min-width: 142px;
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+/*
+ * 旧的 has-service-reselect 布局不再参与当前页面。
+ */
+.setup-card--wizard
+.setup-actions.has-service-test-actions
+> .setup-secondary:first-child {
+  margin-right: auto;
+}
+
+/* 中等宽度允许右侧操作组紧凑排列。 */
+@media
+  (min-width: 761px)
+  and (max-width: 1120px) {
+  .setup-service-action-cluster {
+    gap: 6px;
+  }
+
+  .setup-footer-test-button {
+    min-width: 110px;
+    padding-inline: 8px;
+    font-size: 8px;
+  }
+
+  .setup-service-action-cluster
+  .setup-primary {
+    min-width: 124px;
+  }
+}
+
+/*
+ * 较窄页面允许操作组换行，
+ * 上一步仍然固定在左侧。
+ */
+@media (max-width: 900px) {
+  .setup-card--wizard
+  .setup-actions.has-service-test-actions {
+    align-items: flex-start;
+  }
+
+  .setup-service-action-cluster {
+    max-width: calc(100% - 92px);
+    flex-wrap: wrap;
+  }
+}
+
+/* 手机端改为两列，防止按钮文字挤压。 */
+@media (max-width: 760px) {
+  .setup-card--wizard
+  .setup-actions.has-service-test-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .setup-card--wizard
+  .setup-actions.has-service-test-actions
+  > .setup-secondary:first-child {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  .setup-service-action-cluster {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .setup-service-action-cluster
+  > button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .setup-service-action-cluster
+  .setup-primary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-footer-test-button {
+    transition: none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-15B：安装向导所有步骤跨设备自适应居中 */
+/* ============================================================ */
+
+/*
+ * setup-step-panel-shell 是所有正式安装步骤共用的内容视口。
+ *
+ * 使用“滚动容器 + 子面板 auto margin”：
+ *
+ * - 短内容的上下 auto margin 会平分剩余空间；
+ * - 长内容放不下时，auto margin 自动归零；
+ * - 内容从顶部开始，并仅在内容区域滚动。
+ *
+ * 不依赖分辨率、系统 DPI、浏览器缩放或固定像素位置。
+ */
+.setup-card--wizard
+.setup-step-panel-shell {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+
+  padding:
+    clamp(8px, 1.8vh, 18px)
+    7px
+    clamp(10px, 2vh, 20px) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
+  box-sizing: border-box;
+}
+
+/* 所有正式步骤使用同一个水平和垂直中心。 */
+.setup-card--wizard
+.setup-step-panel-shell
+> .setup-panel {
+  width: min(100%, 1080px) !important;
+  max-width: 1080px !important;
+  min-width: 0;
+
+  margin-block: auto !important;
+  margin-inline: auto !important;
+
+  flex: 0 0 auto;
+  box-sizing: border-box;
+}
+
+/*
+ * 清除此前为了某一台电脑手工添加的固定向下位移。
+ * 现在由公共内容壳自动计算真正的垂直中心。
+ */
+.setup-card--wizard
+.setup-service-stage--service-selection {
+  padding-top: 0 !important;
+}
+
+/* 每个步骤内部的主区域继续保持水平居中。 */
+.setup-card--wizard
+.setup-panel
+> .setup-check-list,
+
+.setup-card--wizard
+.setup-panel
+> .setup-inline-note,
+
+.setup-card--wizard
+.setup-panel
+> .setup-identity-grid,
+
+.setup-card--wizard
+.setup-panel
+> .setup-install-progress,
+
+.setup-card--wizard
+.setup-panel
+> .setup-complete,
+
+.setup-card--wizard
+.setup-service-stage-panel,
+
+.setup-card--wizard
+.setup-service-stage,
+
+.setup-card--wizard
+.setup-service-dual-layout {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/*
+ * 环境检测、站点设置、安装进度和完成页
+ * 都由外层 auto margin 决定位置。
+ */
+.setup-card--wizard
+.setup-panel:not(.setup-services) {
+  align-content: start;
+}
+
+/*
+ * 有滚动条和无滚动条时，都在左右保留对称滚动槽，
+ * 避免出现几像素的横向偏移。
+ */
+@supports (scrollbar-gutter: stable both-edges) {
+  .setup-card--wizard
+  .setup-step-panel-shell {
+    scrollbar-gutter: stable both-edges;
+  }
+}
+
+/* 中等宽度设备保持居中，内部已有栅格负责换列。 */
+@media (max-width: 1100px) {
+  .setup-card--wizard
+  .setup-step-panel-shell {
+    padding-inline: 5px !important;
+  }
+
+  .setup-card--wizard
+  .setup-step-panel-shell
+  > .setup-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/*
+ * 手机继续使用相同算法。
+ * 内容较长时自动顶部滚动，不会强行挤在屏幕中间。
+ */
+@media (max-width: 760px) {
+  .setup-card--wizard
+  .setup-step-panel-shell {
+    padding:
+      8px
+      2px
+      12px !important;
+
+    scrollbar-gutter: auto;
+  }
+
+  .setup-card--wizard
+  .setup-step-panel-shell
+  > .setup-panel {
+    margin-inline: 0 !important;
+  }
+}
+
+/* 很矮的窗口仅减少安全留白，不使用固定定位。 */
+@media (max-height: 700px) {
+  .setup-card--wizard
+  .setup-step-panel-shell {
+    padding-block:
+      6px
+      8px !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-15C：弹窗重装确认、耗时恢复与服务页视觉收口 */
+/* ============================================================ */
+
+@media (min-width: 901px) {
+  .setup-card--wizard {
+    height: min(760px, calc(100dvh - 28px)) !important;
+    max-height: min(760px, calc(100dvh - 28px)) !important;
+  }
+}
+
+/* 第一小步：提高可读性，并保留方案 B 的 3 + 1 对称结构。 */
+.setup-service-stage--service-selection {
+  width: 100%;
+  max-width: 960px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-stage__heading {
+  margin-bottom: 13px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-stage__heading > span {
+  font-size: 9px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-stage__heading h3 {
+  margin-bottom: 5px !important;
+  font-size: clamp(19px, 1.35vw, 22px) !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-stage__heading p {
+  display: block !important;
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-grid {
+  width: min(900px, 100%) !important;
+  gap: 14px !important;
+  margin-top: 0 !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card {
+  min-height: 164px !important;
+  padding: 15px 16px 13px !important;
+  gap: 8px !important;
+  border-radius: 16px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-brand {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 15px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-brand svg {
+  width: 35px !important;
+  height: 35px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card__copy strong {
+  font-size: 16px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card__copy small {
+  margin-top: 5px !important;
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-database-card__meta b,
+.setup-service-stage--service-selection
+.setup-service-database-card__meta span {
+  font-size: 9px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-optional-divider {
+  width: min(900px, 100%) !important;
+  margin: 12px auto 11px !important;
+  font-size: 9px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card {
+  width: min(620px, 100%) !important;
+  max-width: 620px !important;
+  min-height: 112px !important;
+  padding: 15px 19px !important;
+  grid-template-columns: 52px minmax(0, 1fr) 28px !important;
+  gap: 15px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__icon {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy strong {
+  font-size: 15px !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-redis-option-card__copy small {
+  margin-top: 5px !important;
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+}
+
+.setup-service-stage--service-selection
+.setup-service-stage__note {
+  margin-top: 8px !important;
+  font-size: 9px !important;
+}
+
+/* 原内联确认通过 Teleport 进入 body，变成真正的视口级弹窗。 */
+.setup-reinstall-confirmation {
+  position: fixed !important;
+  inset: 50% auto auto 50% !important;
+  z-index: 4100 !important;
+  width: min(620px, calc(100vw - 32px)) !important;
+  max-height: calc(100dvh - 48px) !important;
+  margin: 0 !important;
+  padding: 25px 28px 22px !important;
+  overflow-y: auto !important;
+  transform: translate(-50%, -50%) !important;
+  border: 1px solid rgba(177, 79, 67, 0.28) !important;
+  border-radius: 22px !important;
+  background: #fffaf7 !important;
+  box-shadow:
+    0 0 0 100vmax rgba(33, 28, 24, 0.46),
+    0 28px 80px rgba(43, 31, 25, 0.24) !important;
+  overscroll-behavior: contain;
+}
+
+.setup-reinstall-confirmation > strong {
+  font-size: 18px !important;
+}
+
+.setup-reinstall-confirmation > p {
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+}
+
+.setup-reinstall-confirmation__actions {
+  margin-top: 15px;
+  padding-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  border-top: 1px solid #ead8d2;
+}
+
+.setup-reinstall-confirmed-inline {
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #bfd1c5;
+  border-radius: 9px;
+  color: #315d48;
+  background: #edf4ef;
+}
+
+.setup-reinstall-confirmed-inline > svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+}
+
+.setup-reinstall-confirmed-inline > span {
+  min-width: 0;
+  flex: 1;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.setup-reinstall-confirmed-inline > button {
+  padding: 5px 7px;
+  border: 1px solid #b5c8bb;
+  border-radius: 7px;
+  color: #315d48;
+  background: #fff;
+  font-family: inherit;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+/* 底部测试按钮恢复真实耗时。 */
+.setup-footer-test-button {
+  min-width: 142px !important;
+  min-height: 43px !important;
+  padding: 6px 10px !important;
+}
+
+.setup-footer-test-button__copy {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  text-align: left;
+}
+
+.setup-footer-test-button__copy strong {
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+.setup-footer-test-button__copy small {
+  color: currentColor;
+  font-size: 7px;
+  font-weight: 650;
+  line-height: 1;
+  opacity: 0.76;
+}
+
+.setup-footer-test-button.is-error,
+.setup-service-column-card__status.is-error {
+  color: #9c3f36;
+  border-color: #d9aaa4;
+  background: #faeae7;
+}
+
+@media (max-width: 820px) {
+  .setup-service-stage--service-selection
+  .setup-service-database-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-database-card {
+    min-height: 132px !important;
+  }
+
+  .setup-service-stage--service-selection
+  .setup-service-redis-option-card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .setup-reinstall-confirmation {
+    padding: 20px 16px 17px !important;
+  }
+
+  .setup-reinstall-confirmation__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .setup-footer-test-button {
+    min-width: 0 !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-15D：统一危险重装弹窗与滚动收口 */
+/* ============================================================ */
+
+/*
+ * 第一层与最终确认共用同一套遮罩。
+ * WebKit 前缀保证 Chromium / Edge 模糊效果一致。
+ */
+.setup-dialog-backdrop,
+.setup-dialog-backdrop--preparation {
+  background:
+    rgba(
+      39,
+      34,
+      28,
+      0.52
+    ) !important;
+
+  -webkit-backdrop-filter:
+    blur(8px)
+    saturate(0.92);
+
+  backdrop-filter:
+    blur(8px)
+    saturate(0.92) !important;
+}
+
+.setup-dialog-backdrop--preparation {
+  z-index: 4050;
+}
+
+/*
+ * 复用 setup-confirm-dialog，
+ * 此处只补充第一层弹窗的内容差异。
+ */
+.setup-confirm-dialog--preparation {
+  width:
+    min(
+      640px,
+      100%
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh
+      - 48px
+    ) !important;
+
+  padding:
+    30px
+    34px
+    26px !important;
+
+  justify-items:
+    stretch !important;
+
+  gap:
+    17px !important;
+
+  border-color:
+    #d8c9bc !important;
+
+  border-radius:
+    18px !important;
+
+  background:
+    #fffdf8 !important;
+
+  box-shadow:
+    0 30px 90px
+      rgba(52, 43, 34, 0.26),
+    0 8px 25px
+      rgba(126, 49, 43, 0.1)
+      !important;
+}
+
+.setup-confirm-dialog--preparation
+.setup-confirm-dialog__icon {
+  justify-self: center;
+}
+
+.setup-confirm-dialog__content--preparation {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+
+.setup-confirm-dialog__content--preparation
+.setup-confirm-dialog__eyebrow {
+  margin: 0;
+  color: #9b5b35;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.setup-confirm-dialog__content--preparation
+h2 {
+  margin:
+    -3px
+    0
+    0;
+
+  color: #3f312a;
+
+  font-size:
+    clamp(
+      21px,
+      2vw,
+      27px
+    );
+
+  line-height: 1.25;
+  text-align: center;
+}
+
+.setup-confirm-dialog__content--preparation
+> p:not(
+  .setup-confirm-dialog__eyebrow
+) {
+  max-width: 540px;
+  margin: 0 auto;
+  color: #6f665d;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* 危险确认勾选改为完整可点击卡片。 */
+.setup-danger-checkbox--dialog {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 3px;
+  padding: 11px 13px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    #ead2cd;
+
+  border-radius: 12px;
+
+  color: #7f3e37;
+  background: #fcf1ee;
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.setup-danger-checkbox--dialog:hover {
+  border-color: #d9aaa3;
+  background: #faeae7;
+}
+
+.setup-danger-checkbox--dialog:focus-within {
+  border-color: #bd7167;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      163,
+      66,
+      56,
+      0.1
+    );
+}
+
+.setup-danger-checkbox--dialog
+input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex: 0 0 18px;
+  accent-color: #a34238;
+}
+
+.setup-danger-checkbox--dialog
+span {
+  color: #704139;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+/*
+ * Teleport 后已经脱离 .setup-form，
+ * 因此确认词输入框使用独立样式。
+ */
+.setup-confirmation-field--dialog {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.setup-confirmation-field--dialog
+> span {
+  color: #514a42;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.setup-confirmation-field--dialog
+code {
+  margin-inline: 3px;
+  padding: 2px 6px;
+
+  border-radius: 6px;
+
+  color: #7c4327;
+  background: #f3e9df;
+
+  font-family:
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+}
+
+.setup-confirmation-input {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  overflow: hidden;
+
+  border:
+    1px solid
+    #cfc5b7;
+
+  border-radius: 12px;
+  background: #fffefa;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.9),
+    0 5px 14px
+      rgba(60, 49, 40, 0.035);
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.setup-confirmation-input:focus-within {
+  border-color: #9b5b35;
+  background: #fffdf9;
+
+  box-shadow:
+    0 0 0 4px
+      rgba(155, 91, 53, 0.12),
+    0 8px 20px
+      rgba(80, 56, 40, 0.07);
+}
+
+.setup-confirmation-input.is-valid {
+  border-color: #91ad9b;
+  background: #fbfefb;
+}
+
+.setup-confirmation-input.is-valid:focus-within {
+  box-shadow:
+    0 0 0 4px
+      rgba(49, 93, 72, 0.11),
+    0 8px 20px
+      rgba(49, 93, 72, 0.06);
+}
+
+.setup-confirmation-input.is-invalid {
+  border-color: #d5a29b;
+  background: #fffafa;
+}
+
+.setup-confirmation-input.is-invalid:focus-within {
+  box-shadow:
+    0 0 0 4px
+      rgba(163, 66, 56, 0.1),
+    0 8px 20px
+      rgba(126, 49, 43, 0.05);
+}
+
+.setup-confirmation-input
+input {
+  width: 100%;
+  min-height: 48px;
+
+  padding:
+    0
+    48px
+    0
+    14px;
+
+  box-sizing: border-box;
+
+  border: 0;
+  outline: 0;
+
+  color: #2f2a25;
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 48px;
+}
+
+.setup-confirmation-input
+input::placeholder {
+  color: #aaa096;
+  font-weight: 500;
+}
+
+.setup-confirmation-input__status {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+
+  width: 20px;
+  height: 20px;
+
+  transform:
+    translateY(-50%);
+
+  pointer-events: none;
+}
+
+.setup-confirmation-input__status.is-valid {
+  color: #315d48;
+}
+
+.setup-confirmation-input__status.is-invalid {
+  color: #a34238;
+}
+
+.setup-confirmation-field__message {
+  min-height: 18px;
+  padding-inline: 2px;
+
+  color: #81786e;
+
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.setup-confirmation-field__message.is-valid {
+  color: #315d48;
+}
+
+.setup-confirm-dialog--preparation
+.setup-confirm-dialog__actions {
+  padding-top: 15px;
+
+  border-top:
+    1px solid
+    #e4ddd3;
+}
+
+.setup-confirm-dialog--preparation
+.setup-confirm-dialog__actions
+button {
+  min-width: 148px;
+}
+
+/*
+ * 15C 将桌面安装器限制在 760px，
+ * 容易导致短页面只多几像素便触发滚动。
+ */
+@media (min-width: 901px) {
+  .setup-card--wizard {
+    height:
+      min(
+        880px,
+        calc(
+          100dvh
+          - 28px
+        )
+      ) !important;
+
+    max-height:
+      min(
+        880px,
+        calc(
+          100dvh
+          - 28px
+        )
+      ) !important;
+  }
+
+  /*
+   * 数据库与 Redis 选择属于短页面。
+   * 桌面端禁止出现无意义滚动条。
+   */
+  .setup-card--wizard
+  .setup-step-panel-shell:has(
+    .setup-service-stage--service-selection
+  ) {
+    overflow-y:
+      hidden !important;
+  }
+}
+
+/*
+ * 长页面保留真实滚动能力，
+ * 但滚动条默认透明，鼠标进入或聚焦时才显示。
+ */
+.setup-card--wizard
+.setup-step-panel-shell {
+  scrollbar-gutter:
+    auto !important;
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    transparent
+    transparent;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell:hover,
+
+.setup-card--wizard
+.setup-step-panel-shell:focus-within {
+  scrollbar-color:
+    #a79f92
+    transparent;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar {
+  width: 5px;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar-track,
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+}
+
+.setup-card--wizard
+.setup-step-panel-shell:hover::-webkit-scrollbar-thumb,
+
+.setup-card--wizard
+.setup-step-panel-shell:focus-within::-webkit-scrollbar-thumb {
+  background: #aaa296;
+}
+
+/*
+ * 收紧站点与超级管理员页，
+ * 普通桌面尽量一次显示完整。
+ */
+.setup-card--wizard
+.setup-identity-grid {
+  gap:
+    11px !important;
+}
+
+.setup-card--wizard
+.setup-fieldset--identity {
+  padding:
+    17px
+    18px
+    14px !important;
+
+  border-radius:
+    12px !important;
+}
+
+.setup-card--wizard
+.setup-fieldset--identity
+legend {
+  padding-inline: 7px;
+
+  font-size:
+    13px !important;
+}
+
+.setup-card--wizard
+.setup-fieldset-intro {
+  margin:
+    0
+    0
+    11px !important;
+
+  font-size:
+    9px !important;
+
+  line-height:
+    1.45 !important;
+}
+
+.setup-card--wizard
+.setup-form-grid--identity {
+  gap:
+    10px
+    14px !important;
+}
+
+.setup-card--wizard
+.setup-form-grid--identity
+.setup-field {
+  gap:
+    5px !important;
+}
+
+.setup-card--wizard
+.setup-form-grid--identity
+.setup-field
+> span {
+  font-size:
+    10px !important;
+}
+
+.setup-card--wizard
+.setup-form-grid--identity
+.setup-field-message {
+  min-height:
+    13px !important;
+
+  font-size:
+    8px !important;
+
+  line-height:
+    1.35 !important;
+}
+
+.setup-card--wizard
+.setup-form-grid--identity
+input,
+
+.setup-card--wizard
+.setup-form-grid--identity
+select {
+  min-height:
+    38px !important;
+}
+
+/* 特别矮的桌面窗口继续允许内容滚动。 */
+@media
+  (min-width: 901px)
+  and (max-height: 760px) {
+  .setup-card--wizard {
+    height:
+      calc(
+        100dvh
+        - 18px
+      ) !important;
+
+    max-height:
+      calc(
+        100dvh
+        - 18px
+      ) !important;
+  }
+
+  .setup-card--wizard
+  .setup-fieldset--identity {
+    padding-block:
+      13px
+      11px !important;
+  }
+
+  .setup-card--wizard
+  .setup-form-grid--identity {
+    gap-block:
+      8px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .setup-confirm-dialog--preparation {
+    padding:
+      24px
+      17px
+      19px !important;
+
+    border-radius:
+      16px !important;
+  }
+
+  .setup-confirm-dialog--preparation
+  .setup-confirm-dialog__actions {
+    flex-direction:
+      column-reverse;
+  }
+
+  .setup-confirm-dialog--preparation
+  .setup-confirm-dialog__actions
+  button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-danger-checkbox--dialog,
+  .setup-confirmation-input {
+    transition:
+      none !important;
+  }
+}
+
+/* ============================================================ */
+/* P0-3-2B-15E：数据库检测结果弹窗化 */
+/* ============================================================ */
+
+/*
+ * 左侧数据库连接卡片只负责填写连接信息。
+ * 数据库识别、恢复和重新安装内容已经迁入弹窗。
+ */
+.setup-service-column-card--database {
+  align-content: start;
+}
+
+/* ==================== 底部数据库状态按钮 ==================== */
+
+.setup-database-status-action {
+  min-width: 142px;
+  min-height: 43px;
+
+  padding:
+    7px
+    11px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    6px;
+
+  flex:
+    0 0 auto;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    #d6d0c7;
+
+  border-radius:
+    9px;
+
+  color:
+    #777068;
+
+  background:
+    #eeebe6;
+
+  font-family:
+    inherit;
+
+  font-size:
+    9px;
+
+  font-weight:
+    780;
+
+  line-height:
+    1.15;
+
+  white-space:
+    nowrap;
+
+  cursor:
+    pointer;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.setup-database-status-action
+svg {
+  width:
+    15px;
+
+  height:
+    15px;
+
+  flex:
+    0 0 15px;
+}
+
+/*
+ * 初始状态和输入失效状态：
+ * 灰色、禁止点击、不会误导用户。
+ */
+.setup-database-status-action.is-disabled {
+  color:
+    #817b73;
+
+  border-color:
+    #ddd7cf;
+
+  background:
+    #efede9;
+}
+
+.setup-database-status-action.is-testing {
+  color:
+    #806750;
+
+  border-color:
+    #d8c8b8;
+
+  background:
+    #f2ede7;
+}
+
+/* 全新安装：森林绿。 */
+.setup-database-status-action.is-new-install {
+  color:
+    #315d48;
+
+  border-color:
+    #9fbbaa;
+
+  background:
+    #e7f0e9;
+}
+
+/* 已安装：温和铜棕色。 */
+.setup-database-status-action.is-existing {
+  color:
+    #724425;
+
+  border-color:
+    #d6b596;
+
+  background:
+    #f5eadf;
+}
+
+/* 不完整安装：低饱和橙色。 */
+.setup-database-status-action.is-incomplete {
+  color:
+    #86582e;
+
+  border-color:
+    #d9ba94;
+
+  background:
+    #f8eddc;
+}
+
+/* 不兼容或状态不可用：柔和红色。 */
+.setup-database-status-action.is-incompatible,
+.setup-database-status-action.is-error {
+  color:
+    #973e36;
+
+  border-color:
+    #d8aaa4;
+
+  background:
+    #f9e9e6;
+}
+
+.setup-database-status-action.is-ready {
+  color:
+    #3e594b;
+
+  border-color:
+    #b2c1b7;
+
+  background:
+    #eaf0ec;
+}
+
+.setup-database-status-action:hover:not(:disabled) {
+  box-shadow:
+    0 7px 17px
+    rgba(
+      60,
+      48,
+      39,
+      0.09
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+.setup-database-status-action:focus-visible {
+  outline:
+    none;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      155,
+      91,
+      53,
+      0.12
+    );
+}
+
+.setup-database-status-action:disabled {
+  opacity:
+    0.72;
+
+  cursor:
+    not-allowed;
+
+  box-shadow:
+    none;
+
+  transform:
+    none;
+}
+
+/* ==================== 数据库状态弹窗 ==================== */
+
+.setup-dialog-backdrop--database-status {
+  z-index:
+    4000;
+}
+
+.setup-confirm-dialog--database-status {
+  width:
+    min(
+      760px,
+      100%
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh
+      - 42px
+    ) !important;
+
+  padding:
+    27px
+    30px
+    23px !important;
+
+  justify-items:
+    stretch !important;
+
+  gap:
+    15px !important;
+
+  border-radius:
+    19px !important;
+
+  background:
+    #fffdf8 !important;
+
+  box-shadow:
+    0 32px 95px
+      rgba(
+        48,
+        39,
+        31,
+        0.27
+      ),
+    0 8px 24px
+      rgba(
+        110,
+        68,
+        38,
+        0.08
+      )
+      !important;
+}
+
+.setup-confirm-dialog__icon--database-status {
+  justify-self:
+    center;
+}
+
+.setup-confirm-dialog__icon--database-status.is-new-install {
+  color:
+    #315d48;
+
+  background:
+    #e5efe8;
+}
+
+.setup-confirm-dialog__icon--database-status.is-existing {
+  color:
+    #87502d;
+
+  background:
+    #f2e5d9;
+}
+
+.setup-confirm-dialog__icon--database-status.is-incomplete {
+  color:
+    #8b5d2e;
+
+  background:
+    #f6ead8;
+}
+
+.setup-confirm-dialog__icon--database-status.is-incompatible,
+.setup-confirm-dialog__icon--database-status.is-error {
+  color:
+    #a34238;
+
+  background:
+    #fae8e5;
+}
+
+.setup-database-status-dialog__content {
+  width:
+    100%;
+
+  min-height:
+    0;
+
+  display:
+    grid;
+
+  gap:
+    11px;
+
+  overflow-x:
+    hidden;
+
+  overflow-y:
+    auto;
+
+  overscroll-behavior:
+    contain;
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    transparent
+    transparent;
+}
+
+.setup-database-status-dialog__content:hover,
+.setup-database-status-dialog__content:focus-within {
+  scrollbar-color:
+    #aaa296
+    transparent;
+}
+
+.setup-database-status-dialog__content
+> .setup-confirm-dialog__eyebrow {
+  margin:
+    0;
+
+  text-align:
+    center;
+}
+
+.setup-database-status-dialog__content
+> h2 {
+  margin:
+    -4px
+    0
+    0;
+
+  color:
+    #382f29;
+
+  font-size:
+    clamp(
+      21px,
+      2vw,
+      27px
+    );
+
+  line-height:
+    1.25;
+
+  text-align:
+    center;
+}
+
+.setup-database-status-dialog__content
+> p {
+  max-width:
+    590px;
+
+  margin:
+    0
+    auto
+    4px;
+
+  color:
+    #766e65;
+
+  font-size:
+    10px;
+
+  line-height:
+    1.6;
+
+  text-align:
+    center;
+}
+
+/*
+ * 原数据库检测卡片迁入弹窗后，
+ * 去掉最外层重复边框和阴影，
+ * 保留内部状态卡片、恢复选择和重装入口。
+ */
+.setup-confirm-dialog--database-status
+.setup-service-inspection {
+  width:
+    100%;
+
+  max-width:
+    none;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+.setup-confirm-dialog--database-status
+.setup-service-inspection
+> header {
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    #ded5c9;
+
+  border-radius:
+    12px;
+
+  background:
+    #f8f3eb;
+}
+
+.setup-confirm-dialog--database-status
+.setup-service-inspection
+> header
+h3 {
+  font-size:
+    15px !important;
+}
+
+.setup-confirm-dialog--database-status
+.setup-service-inspection
+> header
+p {
+  font-size:
+    9px !important;
+
+  line-height:
+    1.5 !important;
+}
+
+.setup-confirm-dialog--database-status
+.setup-summary--three {
+  margin-top:
+    10px;
+
+  gap:
+    9px;
+}
+
+.setup-confirm-dialog--database-status
+.setup-summary--three
+> div {
+  min-height:
+    72px;
+
+  padding:
+    12px;
+
+  border-radius:
+    11px;
+}
+
+.setup-confirm-dialog--database-status
+.setup-summary--three
+span {
+  font-size:
+    9px;
+}
+
+.setup-confirm-dialog--database-status
+.setup-summary--three
+strong {
+  font-size:
+    14px;
+}
+
+.setup-confirm-dialog--database-status
+.setup-database-choice {
+  margin-top:
+    10px;
+}
+
+.setup-confirm-dialog--database-status
+.setup-switch-row--danger {
+  min-height:
+    62px;
+
+  padding:
+    12px
+    14px;
+
+  border-radius:
+    11px;
+}
+
+/*
+ * 数据库状态弹窗位于第一层危险重装弹窗下面。
+ * 用户选择重装后，危险确认弹窗继续覆盖在最上层。
+ */
+.setup-dialog-backdrop--preparation {
+  z-index:
+    4050;
+}
+
+/* 底部操作区加入一个状态按钮后，保持紧凑排列。 */
+.setup-service-action-cluster {
+  gap:
+    7px !important;
+}
+
+@media
+  (min-width: 761px)
+  and (max-width: 1280px) {
+  .setup-database-status-action {
+    min-width:
+      122px;
+
+    padding-inline:
+      8px;
+
+    font-size:
+      8px;
+  }
+
+  .setup-footer-test-button {
+    min-width:
+      124px !important;
+  }
+
+  .setup-service-action-cluster
+  .setup-primary {
+    min-width:
+      122px;
+  }
+}
+
+@media (max-width: 900px) {
+  .setup-service-action-cluster {
+    flex-wrap:
+      wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .setup-confirm-dialog--database-status {
+    padding:
+      23px
+      16px
+      18px !important;
+
+    border-radius:
+      16px !important;
+  }
+
+  .setup-database-status-action {
+    width:
+      100%;
+
+    min-width:
+      0;
+  }
+
+  .setup-service-action-cluster {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      ) !important;
+  }
+
+  .setup-service-action-cluster
+  .setup-primary {
+    grid-column:
+      1 / -1;
+  }
+
+  .setup-confirm-dialog--database-status
+  .setup-summary--three {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-database-status-action {
+    transition:
+      none !important;
+  }
+}

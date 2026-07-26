@@ -1,0 +1,64 @@
+
+settings:
+  primaryColor:
+    label: 品牌主色
+    description: 用于导航、按钮和重点状态，格式为 #RRGGBB。
+    type: color
+    default: "#3f5039"
+  accentColor:
+    label: 内容强调色
+    description: 用于链接、标签与主要操作。
+    type: color
+    default: "#b95228"
+  pageBackground:
+    label: 页面底色
+    description: 前台全局米纸背景色。
+    type: color
+    default: "#f6f3eb"
+  layout:
+    label: 布局风格
+    description: 紧凑模式会缩小内容宽度和主要区块间距。
+    type: select
+    default: default
+    options:
+      - label: 默认
+        value: default
+      - label: 紧凑
+        value: compact
+  heroTitle:
+    label: 首页主标题
+    type: text
+    default: 发现内容，也发现同好
+  heroSubtitle:
+    label: 首页副标题
+    type: textarea
+    default: CMS + 强论坛 + AI 内容社区
+  showHomeSearch:
+    label: 显示首页搜索
+    type: boolean
+    default: true
+  heroImage:
+    label: 首页主背景
+    description: 可使用主题 images/backgrounds 或站点 uploads 中的图片。
+    type: image
+    default: /theme-assets/images/backgrounds/home/aquafish-portal-hero.jpg
+  storyImage1:
+    label: 首页内容图一
+    type: image
+    default: /theme-assets/images/carousel/home/aquafish-story-01.jpg
+  storyImage2:
+    label: 首页内容图二
+    type: image
+    default: /theme-assets/images/carousel/home/aquafish-story-02.jpg
+  storyImage3:
+    label: 首页内容图三
+    type: image
+    default: /theme-assets/images/carousel/home/aquafish-story-03.jpg
+  storyImage4:
+    label: 首页内容图四
+    type: image
+    default: /theme-assets/images/carousel/home/aquafish-story-04.jpg
+  loginImage:
+    label: 登录页插图
+    type: image
+    default: /theme-assets/images/login/aquafish-keeper-v1.webp

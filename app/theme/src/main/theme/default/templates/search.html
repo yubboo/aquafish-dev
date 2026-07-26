@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'搜索 - ' + (site != null ? site.name : 'Aquafish')}">搜索 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">search</span>
+    <h1>站内搜索</h1>
+    <p th:text="${keyword != null ? '搜索关键词：' + keyword : '这里展示站内搜索结果。'}">这里展示站内搜索结果。</p>
+    <div data-hook="search.after"></div>
+  </section>
+</main>
+</body>
+</html>

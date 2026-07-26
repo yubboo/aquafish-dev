@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>系统错误 - Aquafish</title>
+</head>
+<body>
+  <h1>系统错误</h1>
+  <p th:text="${message != null ? message : '系统遇到了一个错误。'}">系统遇到了一个错误。</p>
+</body>
+</html>

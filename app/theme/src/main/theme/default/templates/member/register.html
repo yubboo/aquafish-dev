@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'用户注册 - ' + (site != null ? site.name : 'Aquafish')}">用户注册 - Aquafish</title>
+</head>
+<body>
+<main class="af-auth-page">
+  <div th:replace="~{partial/member-auth :: auth('register')}"></div>
+</main>
+</body>
+</html>

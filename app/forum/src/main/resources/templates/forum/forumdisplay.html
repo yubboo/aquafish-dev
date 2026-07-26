@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>版块主题列表 - Aquafish</title>
+</head>
+<body>
+  <h1 th:text="${forum != null ? forum.name : '版块主题列表'}">版块主题列表</h1>
+  <p>这是论坛模块内置模板。外部主题缺失时会使用它。</p>
+</body>
+</html>

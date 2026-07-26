@@ -1,0 +1,34 @@
+
+dependencies {
+    /*
+     * common 只提供轻量公共结构，论坛业务不反向塞入 common。
+     */
+    implementation project(':common')
+
+    /*
+     * core 提供全工程唯一的表名解析、数据库类型、
+     * 迁移目录 SPI、DatabaseClient 和响应式事务。
+     * 论坛模块只使用这些底层契约，不向 core 放论坛业务代码。
+     */
+    implementation project(':core')
+
+    /*
+     * user 模块提供已经通过数据库会话校验的 MemberAuthUser。
+     * forum 只把可信主体映射为 ForumMemberActor，不复制账号密码和会话逻辑。
+     */
+    implementation project(':user')
+
+    /*
+     * 论坛公开页面只组装标准 ViewModel，模板查找、主题继承和安全兜底
+     * 统一交给 template 模块，避免论坛模块读取主题物理路径。
+     */
+    implementation project(':template')
+
+    /* 论坛第一版主题查询与发布 WebFlux API。 */
+    implementation 'org.springframework:spring-webflux'
+    implementation 'org.springframework.security:spring-security-core'
+
+    /* 论坛单元测试与响应式链验证。 */
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

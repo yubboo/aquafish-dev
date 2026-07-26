@@ -1,0 +1,83 @@
+/*
+ * 关联组件：admin/src/components/admin/AdminAuthBar.vue。
+ * 侧栏底部账号区与图 2 的低对比苔藓绿外壳一致，不使用渐变、玻璃模糊或发光阴影。
+ */
+.admin-auth-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(248, 244, 232, 0.14);
+  border-radius: 9px;
+  box-sizing: border-box;
+  position: static !important;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.admin-auth-bar__user {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.admin-auth-bar__avatar {
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #34412f;
+  background: #d8d4bb;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-auth-bar__meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.admin-auth-bar__meta strong,
+.admin-auth-bar__meta span {
+  max-width: 105px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-auth-bar__meta strong {
+  color: #fffdf8;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.admin-auth-bar__meta span {
+  margin-top: 4px;
+  color: rgba(248, 244, 232, 0.55);
+  font-size: 10px;
+}
+
+.admin-auth-bar__logout {
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid rgba(248, 244, 232, 0.13);
+  border-radius: 7px;
+  color: rgba(255, 253, 248, 0.8);
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 11px;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.admin-auth-bar__logout:hover {
+  color: #fffdf8;
+  background: rgba(255, 255, 255, 0.07);
+}

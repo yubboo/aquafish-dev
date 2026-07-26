@@ -1,0 +1,58 @@
+dependencies {
+    /*
+     * common 公共模块。
+     *
+     * 当前用于：
+     * 1. ApiResult 统一接口返回结构；
+     * 2. ClientIpResolver 请求 IP 识别工具；
+     * 3. 其他轻量公共工具。
+     */
+    implementation project(':common')
+
+    /*
+     * core 核心模块。
+     *
+     * 当前用于：
+     * 1. TableNameResolver 表名解析；
+     * 2. TableNames 逻辑表名常量；
+     * 3. AquafishProperties 运行配置；
+     * 4. WorkDirResolver 工作目录解析。
+     */
+    implementation project(':core')
+    implementation project(':template')
+    /*
+     * theme 提供活动主题 settings.yaml 的安全解析与实例值读取。
+     * user 中的公共模板上下文只接收经过校验的值，不直接读取主题物理文件。
+     */
+    implementation project(':theme')
+
+    /*
+     * 前台会员统一认证边界。
+     *
+     * 只在服务端读取 HttpOnly 会话 Cookie，并通过 user_sessions 的
+     * SHA-256 摘要校验真实会话；浏览器请求中的 userId、权限和封禁标记
+     * 永远不能直接成为认证结论。
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-crypto'
+
+    /*
+     * Spring Boot WebFlux。
+     *
+     * 当前用于：
+     * 1. @RestController；
+     * 2. @GetMapping；
+     * 3. 后台用户接口；
+     * 4. 开发阶段诊断接口。
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    /*
+     * 前台导航配置以 JSON 保存到 options.site.navigation。
+     * 版本由 Spring Boot BOM 统一管理，user 模块只显式声明编译期依赖。
+     */
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

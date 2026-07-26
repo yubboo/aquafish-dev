@@ -1,0 +1,11 @@
+/*
+ * 关联入口：admin/src/main.ts。
+ * 后台全局 CSS 唯一聚合入口，按 Tailwind → 变量 → 重置 → 基础 → Element Plus 覆盖的
+ * 顺序加载；页面 CSS 由各 Vue 组件自行 import，不在这里重复引入。
+ */
+@import "./tailwind.css";
+@import "./variables.css";
+@import "./reset.css";
+@import "./base.css";
+@import "./element-plus.css";
+@import "./theme-option-two.css";

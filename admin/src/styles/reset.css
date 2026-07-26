@@ -1,0 +1,17 @@
+/*
+ * 关联入口：admin/src/styles/index.css，作用于 #app 和全部后台页面。
+ * 只做盒模型、根节点高度与 body 外边距重置；不要在这里编写颜色、布局或页面组件规则。
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}

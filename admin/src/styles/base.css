@@ -1,0 +1,53 @@
+/*
+ * 关联入口：admin/src/styles/index.css，作用于后台所有页面的原生元素。
+ * 提供 body 字体/颜色以及表单控件、链接的基础行为，不负责具体页面布局和视觉卡片。
+ */
+body {
+  background: var(--aq-color-bg);
+  color: var(--aq-color-text);
+  font-family:
+    "Noto Sans SC",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(185, 82, 40, 0.55);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #fffdfa;
+  background: #5a6c51;
+}

@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot' version '4.1.0' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+}
+
+allprojects {
+    group = 'com.aquafish'
+    version = '0.0.1-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.boot:spring-boot-dependencies:4.1.0'
+        }
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        /*
+         * Spring WebFlux 运行时需要方法参数名来解析未显式命名的绑定注解。
+         * 生产控制器仍要求写明 name/value；该编译选项作为未来新增接口的第二道保护，
+         * 避免只在真实启动后才出现整页 HTTP 500。
+         */
+        options.compilerArgs += ['-parameters']
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
+    // Gradle 9 does not provide the JUnit Platform launcher implicitly.
+    // Keep it available to every module that declares tests.
+    dependencies {
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+}

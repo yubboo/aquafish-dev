@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>Aquafish 开发者授权中心</title>
+  <link rel="stylesheet" href="./license-center.css">
+</head>
+<body>
+  <!--
+    Aquafish 开发者本地授权签发中心页面。
+    页面只与 127.0.0.1 上的 aquafish_license_center.cjs 通信，不属于客户后台，
+    不会进入生产发行包。私钥仓库主密码永远只在启动终端输入，本页面仅接收本次进程访问码。
+  -->
+  <main class="studio-shell">
+    <header class="studio-header">
+      <div class="brand-mark" aria-hidden="true">A</div>
+      <div class="brand-copy">
+        <p class="eyebrow">AQUAFISH LICENSE STUDIO</p>
+        <h1>开发者授权签发中心</h1>
+        <p>本地离线签发 · 设备绑定 · 解绑次数 · 远程吊销</p>
+      </div>
+      <div class="local-badge"><span></span>仅限本机</div>
+      <button id="lockButton" class="ghost-button" type="button" hidden>锁定并退出</button>
+    </header>
+
+    <section id="loginView" class="login-view">
+      <div class="login-card">
+        <div class="shield-icon" aria-hidden="true">⌁</div>
+        <p class="eyebrow">LOCAL ACCESS CONTROL</p>
+        <h2>输入本次访问码</h2>
+        <p class="muted">访问码显示在启动签发中心的终端中。它只对本次进程有效，不是私钥仓库主密码。</p>
+        <form id="loginForm" autocomplete="off">
+          <label for="accessCode">本地访问码</label>
+          <input id="accessCode" name="accessCode" type="password" maxlength="128"
+                 placeholder="粘贴终端显示的访问码" required autofocus>
+          <button class="primary-button" type="submit">进入签发中心</button>
+        </form>
+        <p id="loginError" class="message error-message" role="alert" hidden></p>
+        <div class="security-note">
+          <strong>主密码不会进入浏览器</strong>
+          <span>Ed25519 私钥只在当前本地 Node 进程内解锁，空闲后自动关闭。</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="workspaceView" class="workspace" hidden>
+      <section class="overview-grid" aria-label="密钥安全状态">
+        <article class="overview-card key-card">
+          <span class="card-label">当前签发密钥</span>
+          <strong id="keyId">—</strong>
+          <code id="fingerprint">—</code>
+        </article>
+        <article id="plaintextCard" class="overview-card">
+          <span class="card-label">明文私钥</span>
+          <strong id="plaintextStatus">检查中</strong>
+          <span id="plaintextDetail">—</span>
+        </article>
+        <article id="backupCard" class="overview-card">
+          <span class="card-label">加密仓库备份</span>
+          <strong id="backupStatus">检查中</strong>
+          <span id="backupDetail">—</span>
+        </article>
+        <article class="overview-card">
+          <span class="card-label">自动锁定</span>
+          <strong id="idleStatus">15 分钟</strong>
+          <span>每次有效操作后重新计时</span>
+        </article>
+        <article id="authorityCard" class="overview-card">
+          <span class="card-label">在线授权中心</span>
+          <strong id="authorityStatus">未配置</strong>
+          <span id="authorityDetail">当前只保存本地登记</span>
+        </article>
+      </section>
+
+      <div id="globalMessage" class="message" role="status" hidden></div>
+
+      <div class="workspace-grid">
+        <section class="panel issue-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">NEW LICENSE</p>
+              <h2>签发新授权</h2>
+            </div>
+            <span class="step-chip">AQF1 · Ed25519</span>
+          </div>
+
+          <form id="issueForm" autocomplete="off">
+            <div class="field-grid two-columns">
+              <label class="field">
+                <span>客户名称</span>
+                <input id="customer" name="customer" maxlength="120"
+                       placeholder="例如：海洋科技有限公司" required>
+              </label>
+              <label class="field">
+                <span>客户设备码</span>
+                <input id="instanceId" name="instanceId" maxlength="36"
+                       placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" required>
+              </label>
+            </div>
+
+            <fieldset class="choice-section">
+              <legend>授权版本</legend>
+              <div id="editionOptions" class="edition-options"></div>
+            </fieldset>
+
+            <fieldset class="choice-section">
+              <legend>授权期限</legend>
+              <div class="duration-options">
+                <label><input type="radio" name="durationPreset" value="0"><span>永久</span></label>
+                <label><input type="radio" name="durationPreset" value="30"><span>30 天</span></label>
+                <label><input type="radio" name="durationPreset" value="365" checked><span>1 年</span></label>
+                <label><input type="radio" name="durationPreset" value="custom"><span>自定义</span></label>
+              </div>
+              <div class="field-grid two-columns compact-fields">
+                <label id="customDaysField" class="field" hidden>
+                  <span>有效天数</span>
+                  <input id="days" name="days" type="number" min="1" max="36500" value="365">
+                </label>
+                <label class="field">
+                  <span>预约生效时间（可选）</span>
+                  <input id="notBefore" name="notBefore" type="datetime-local">
+                </label>
+                <label class="field">
+                  <span>最大解绑次数</span>
+                  <input id="maxUnbinds" name="maxUnbinds" type="number" min="0" max="100" value="3" required>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="choice-section">
+              <legend>模块权益</legend>
+              <p class="field-help">平台基础权益固定包含，其他模块将写入签名载荷；后续服务端按模块执行限制。</p>
+              <div id="featureOptions" class="feature-options"></div>
+            </fieldset>
+
+            <div class="issue-summary">
+              <span>签发后自动保存授权文件并写入脱敏审计日志</span>
+              <button id="issueButton" class="primary-button" type="submit">验证并签发授权码</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="side-column">
+          <section id="resultPanel" class="panel result-panel" hidden>
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">ISSUED</p>
+                <h2>授权签发成功</h2>
+              </div>
+              <span class="success-dot">✓</span>
+            </div>
+            <dl class="result-meta">
+              <div><dt>授权编号</dt><dd id="resultLicenseId">—</dd></div>
+              <div><dt>到期时间</dt><dd id="resultExpiresAt">—</dd></div>
+              <div><dt>保存文件</dt><dd id="resultFile">—</dd></div>
+            </dl>
+            <label class="field">
+              <span>客户授权码</span>
+              <textarea id="resultCode" rows="7" readonly></textarea>
+            </label>
+            <div class="result-actions">
+              <button id="copyCodeButton" class="primary-button" type="button">复制授权码</button>
+              <button id="downloadCodeButton" class="secondary-button" type="button">下载副本</button>
+            </div>
+          </section>
+
+          <section class="panel audit-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">LOCAL AUDIT</p>
+                <h2>最近签发记录</h2>
+              </div>
+              <button id="refreshButton" class="icon-button" type="button" aria-label="刷新状态">↻</button>
+            </div>
+            <div id="auditList" class="audit-list">
+              <p class="empty-state">暂无签发记录</p>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="panel registry-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">LICENSE REGISTRY</p>
+            <h2>授权记录与设备管理</h2>
+            <p class="panel-description">记录不保存完整授权码；解绑会停用旧设备，吊销操作不可逆。</p>
+          </div>
+          <button id="registryRefreshButton" class="icon-button" type="button" aria-label="刷新授权记录">↻</button>
+        </div>
+        <div id="registryList" class="registry-list">
+          <p class="empty-state">暂无授权登记</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./license-center.js" defer></script>
+</body>
+</html>

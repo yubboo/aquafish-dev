@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'论坛 - ' + (site != null ? site.name : 'Aquafish')}">论坛 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-page-head af-forum-head">
+    <span class="af-kicker">Aquafish Community</span>
+    <h1>社区论坛</h1>
+    <p>选择一个公开板块，浏览主题和楼层讨论。</p>
+  </section>
+
+  <section class="af-section">
+    <div class="af-forum-grid" th:if="${forums != null && !forums.isEmpty()}">
+      <a class="af-forum-card" th:each="forum : ${forums}" th:attr="href=${forum.url}">
+        <div>
+          <h2 th:text="${forum.name}">板块名称</h2>
+          <p th:text="${forum.description != null && !forum.description.isEmpty() ? forum.description : '进入板块参与讨论。'}">板块说明</p>
+          <small>
+            <span th:text="${forum.threadCount + ' 个主题'}">0 个主题</span>
+            <span th:text="${forum.postCount + ' 个帖子'}">0 个帖子</span>
+          </small>
+        </div>
+        <strong aria-hidden="true">进入</strong>
+      </a>
+    </div>
+    <div class="af-empty" th:if="${forums == null || forums.isEmpty()}">
+      <strong>论坛已经准备好</strong>
+      <p>管理员创建并启用第一个公开板块后，会立即出现在这里。</p>
+      <!-- 未登录用户和普通会员不能看到后台板块管理入口。 -->
+      <a class="af-button"
+         href="/admin/forum/sections"
+         th:if="${viewer != null && viewer.admin}">创建板块</a>
+    </div>
+    <div data-hook="forum.index.after"></div>
+  </section>
+</main>
+</body>
+</html>

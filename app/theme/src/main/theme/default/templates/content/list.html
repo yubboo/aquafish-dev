@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'分类文章 - ' + (site != null ? site.name : 'Aquafish')}">分类文章 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-page-head">
+    <span class="af-kicker">Content Center</span>
+    <h1 th:text="${category != null ? category.name : '分类文章'}">分类文章</h1>
+    <p th:text="${category != null ? category.description : '这里展示 CMS 分类下的文章列表。'}">
+      这里展示 CMS 分类下的文章列表。
+    </p>
+  </section>
+
+  <section class="af-section">
+    <div class="af-list" th:if="${articles != null}">
+      <article class="af-list-item" th:each="article, stat : ${articles}">
+        <span class="af-list-index" th:text="${#numbers.formatInteger(stat.index + 1, 2)}">01</span>
+        <div>
+        <h2>
+          <a th:attr="href=${article.url}" th:text="${article.title}">文章标题</a>
+        </h2>
+
+        <p th:text="${article.summary}">文章摘要</p>
+
+        <small>
+          <span th:text="${article.authorName}">作者</span>
+          <span> · </span>
+          <span th:text="${article.publishedAt}">发布时间</span>
+        </small>
+        </div>
+      </article>
+    </div>
+
+    <div class="af-empty" th:if="${articles == null || articles.isEmpty()}">
+      暂无文章。
+    </div>
+
+    <div data-hook="content.list.after"></div>
+  </section>
+</main>
+</body>
+</html>

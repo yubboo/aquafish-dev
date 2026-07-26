@@ -1,0 +1,731 @@
+/*
+ * 关联页面：AdminDataWorkspacePage.vue、PluginManagementPage.vue 及后台主题/用户工作台。
+ * 后台核心域页面共享样式。
+ * 采用图 2 的米纸、苔藓绿、陶土色系统；页面间距固定为 20px，
+ * 仅 AdminLayout 的右侧内容区纵向滚动，表格只在窄屏横向滚动。
+ */
+.admin-workspace-page {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  min-height: 100%;
+  color: var(--aq-color-text);
+}
+
+.admin-workspace-hero {
+  min-height: 174px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 30px 34px;
+  border: 1px solid var(--aq-color-border);
+  border-radius: var(--aq-radius-card);
+  background-color: var(--aq-color-paper);
+  background-image: url("../../assets/admin-aquascape-v1.webp");
+  background-position: center right;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-sizing: border-box;
+}
+
+.admin-workspace-hero > div {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.admin-workspace-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.admin-workspace-hero-actions button,
+.admin-workspace-row-actions button {
+  gap: 7px;
+}
+
+.admin-workspace-hero-actions svg,
+.admin-workspace-row-actions svg {
+  width: 15px;
+  height: 15px;
+}
+
+.admin-workspace-file-input {
+  display: none;
+}
+
+.admin-workspace-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid #d9d6c5;
+  border-radius: 999px;
+  color: var(--aq-color-primary);
+  background: rgba(251, 249, 244, 0.86);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-workspace-hero h2 {
+  margin: 18px 0 8px;
+  color: var(--aq-color-text);
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.admin-workspace-hero p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--aq-color-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.admin-workspace-hero button,
+.admin-workspace-pagination button,
+.admin-workspace-action {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  border: 1px solid var(--aq-color-accent);
+  border-radius: 7px;
+  color: #fffaf4;
+  background: var(--aq-color-accent);
+  box-shadow: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-workspace-hero button:hover,
+.admin-workspace-pagination button:hover,
+.admin-workspace-action:hover {
+  border-color: var(--aq-color-accent-dark);
+  background: var(--aq-color-accent-dark);
+  transform: translateY(-1px);
+}
+
+.admin-workspace-hero button:disabled,
+.admin-workspace-pagination button:disabled,
+.admin-workspace-action:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-workspace-card,
+.admin-workspace-form,
+.admin-workspace-state {
+  overflow: hidden;
+  border: 1px solid var(--aq-color-border);
+  border-radius: var(--aq-radius-card);
+  background: var(--aq-color-card);
+  box-shadow: var(--aq-shadow-card);
+}
+
+.admin-workspace-state {
+  padding: 13px 16px;
+  color: var(--aq-color-muted);
+  font-size: 12px;
+}
+
+.admin-workspace-state p {
+  margin: 5px 0 0;
+}
+
+.admin-workspace-state.is-error {
+  border-color: #e5c5bb;
+  color: #8e352b;
+  background: #fbefe9;
+}
+
+.admin-workspace-state.is-success {
+  border-color: #cbd8bf;
+  color: #355638;
+  background: #f0f5e9;
+}
+
+.admin-workspace-state.is-warning {
+  border-color: #ddcfaa;
+  color: #6f5925;
+  background: #faf4df;
+}
+
+.admin-workspace-state.is-warning strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.admin-workspace-state.is-warning svg {
+  width: 15px;
+  height: 15px;
+}
+
+.admin-workspace-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--aq-color-border);
+}
+
+.admin-workspace-summary > div {
+  padding: 18px 20px;
+  background: var(--aq-color-card);
+}
+
+.admin-workspace-summary span {
+  display: block;
+  color: #8c877d;
+  font-size: 11px;
+}
+
+.admin-workspace-summary strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--aq-color-text);
+  word-break: break-all;
+}
+
+.admin-workspace-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--aq-color-border);
+}
+
+.admin-workspace-fact-grid article {
+  min-height: 92px;
+  padding: 20px;
+  background: var(--aq-color-card);
+}
+
+.admin-workspace-fact-grid span {
+  display: block;
+  color: #8c877d;
+  font-size: 11px;
+}
+
+.admin-workspace-fact-grid strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--aq-color-text);
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.admin-workspace-toolbar {
+  min-height: 64px;
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--aq-color-border);
+  border-radius: var(--aq-radius-card);
+  background: var(--aq-color-card);
+  box-shadow: var(--aq-shadow-card);
+}
+
+.admin-workspace-toolbar label {
+  min-width: 170px;
+  display: grid;
+  gap: 5px;
+  color: #777268;
+  font-size: 10px;
+}
+
+.admin-workspace-toolbar label.is-search {
+  min-width: 240px;
+  flex: 1;
+}
+
+.admin-workspace-toolbar input,
+.admin-workspace-toolbar select {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid #d9d4ca;
+  border-radius: 7px;
+  color: var(--aq-color-text);
+  background: #fffefa;
+  outline: none;
+}
+
+.admin-workspace-toolbar input:focus,
+.admin-workspace-toolbar select:focus {
+  border-color: #7a8872;
+  box-shadow: 0 0 0 3px rgba(63, 80, 57, 0.09);
+}
+
+.admin-workspace-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-workspace-table {
+  width: 100%;
+  min-width: 940px;
+  border-collapse: collapse;
+  background: var(--aq-color-card);
+}
+
+.admin-workspace-table th,
+.admin-workspace-table td {
+  max-width: 320px;
+  padding: 12px 14px;
+  overflow: hidden;
+  border-bottom: 1px solid #e9e4da;
+  color: #4d4d47;
+  font-size: 12px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-workspace-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 21px;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: #5d552e;
+  background: #efe9cb;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-workspace-row-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-workspace-row-actions .admin-workspace-action {
+  min-height: 31px;
+  padding: 0 10px;
+}
+
+.admin-workspace-action.is-danger {
+  color: #8e352b;
+  border-color: #d9b9af;
+  background: #fbefe9;
+}
+
+.admin-workspace-action.is-danger:hover {
+  color: #fffaf4;
+  border-color: #9e4134;
+  background: #9e4134;
+}
+
+.admin-workspace-operation-note {
+  color: #8c877d;
+  font-size: 10px;
+}
+
+.admin-workspace-table th {
+  color: #706d65;
+  background: #f3f0e9;
+  font-weight: 700;
+}
+
+.admin-workspace-table tbody tr {
+  transition: background-color 140ms ease;
+}
+
+.admin-workspace-table tbody tr:hover {
+  background: #faf7f0;
+}
+
+.admin-workspace-empty {
+  padding: 50px 24px;
+  color: var(--aq-color-muted);
+  text-align: center;
+}
+
+.admin-workspace-empty strong {
+  color: var(--aq-color-text);
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 18px;
+}
+
+.admin-workspace-empty p {
+  margin: 8px 0 18px;
+}
+
+.admin-workspace-pagination {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  color: #79766f;
+  border-top: 1px solid #e9e4da;
+  font-size: 12px;
+}
+
+.admin-workspace-pagination > div {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-workspace-pagination button {
+  min-height: 32px;
+  color: var(--aq-color-primary);
+  border-color: #d4d0c5;
+  background: transparent;
+}
+
+.admin-workspace-pagination button:hover {
+  color: #fffaf4;
+}
+
+.admin-workspace-form {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.admin-workspace-form h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/*
+ * BEGIN：动态设置表单补充
+ * 主题、系统和插件设置都可以复用同一排版，不在 Vue 模板写内联样式。
+ */
+.admin-workspace-form-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin-workspace-form-heading p,
+.admin-workspace-field small {
+  margin: 6px 0 0;
+  color: var(--aq-color-muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.admin-workspace-field input[type="color"] {
+  min-height: 44px;
+  padding: 5px 7px;
+  cursor: pointer;
+}
+
+.admin-workspace-switch {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 1px solid #d9d4ca;
+  border-radius: 7px;
+  background: #fffefa;
+}
+
+.admin-workspace-field .admin-workspace-switch input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--aq-color-primary);
+}
+/* END：动态设置表单补充 */
+
+.admin-workspace-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.admin-workspace-field {
+  display: grid;
+  gap: 7px;
+  color: #66635c;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.admin-workspace-field.is-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-workspace-field input,
+.admin-workspace-field select,
+.admin-workspace-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d9d4ca;
+  border-radius: 7px;
+  color: var(--aq-color-text);
+  background: #fffefa;
+  outline: none;
+}
+
+.admin-workspace-field input:focus,
+.admin-workspace-field select:focus,
+.admin-workspace-field textarea:focus {
+  border-color: #7a8872;
+  box-shadow: 0 0 0 3px rgba(63, 80, 57, 0.09);
+}
+
+.admin-workspace-field textarea {
+  min-height: 108px;
+  resize: vertical;
+}
+
+.admin-workspace-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ==========================================================================
+ * BEGIN：IP 封禁编辑弹窗
+ * ========================================================================== */
+
+.admin-workspace-modal-mask {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 35, 28, 0.42);
+  backdrop-filter: blur(5px);
+}
+
+.admin-workspace-modal {
+  width: min(720px, 100%);
+  max-height: 88vh;
+  display: grid;
+  gap: 20px;
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid var(--aq-color-border);
+  border-radius: var(--aq-radius-card);
+  background: var(--aq-color-card);
+  box-shadow: 0 28px 80px rgba(39, 45, 34, 0.24);
+}
+
+.admin-workspace-modal h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* END：IP 封禁编辑弹窗。 */
+
+.admin-workspace-action.is-secondary {
+  color: var(--aq-color-primary);
+  border-color: #cbc7bd;
+  background: transparent;
+}
+
+.admin-workspace-action.is-secondary:hover {
+  color: #fffaf4;
+  border-color: var(--aq-color-primary);
+  background: var(--aq-color-primary);
+}
+
+/* ==========================================================================
+ * BEGIN：PF4J 插件卡片
+ * 每张卡片对应一个真实 PluginWrapper；依赖、ClassLoader 和状态均来自后端快照。
+ * ========================================================================== */
+
+.admin-plugin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.admin-plugin-card {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e2ded4;
+  border-radius: 10px;
+  background: #fffefa;
+  box-shadow: 0 12px 28px rgba(48, 54, 43, 0.055);
+}
+
+.admin-plugin-card.has-error {
+  border-color: #d9a992;
+  background: #fffaf6;
+}
+
+.admin-plugin-card__heading,
+.admin-plugin-card__actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-plugin-card__heading h3 {
+  margin: 5px 0 0;
+  color: var(--aq-color-text);
+  font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.admin-plugin-card__id {
+  color: #77746d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-plugin-state {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #6c6a64;
+  background: #efede7;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-plugin-state.is-started {
+  color: #315b3b;
+  background: #dfeadd;
+}
+
+.admin-plugin-card__description,
+.admin-plugin-card__error {
+  min-height: 42px;
+  margin: 0;
+  color: var(--aq-color-muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.admin-plugin-card__error {
+  min-height: 0;
+  padding: 10px 12px;
+  border-radius: 7px;
+  color: #9d442c;
+  background: #f8e9e2;
+}
+
+.admin-plugin-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-plugin-meta div {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 7px;
+  background: #f5f3ed;
+}
+
+.admin-plugin-meta dt {
+  color: #858078;
+  font-size: 10px;
+}
+
+.admin-plugin-meta dd {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: #33362f;
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-plugin-dependencies {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.admin-plugin-dependencies strong,
+.admin-plugin-dependencies span {
+  font-size: 10px;
+}
+
+.admin-plugin-dependencies span {
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #52604d;
+  background: #e9eee5;
+}
+
+.admin-plugin-dependencies span.is-missing {
+  color: #9d442c;
+  background: #f8e3da;
+}
+
+.admin-plugin-card__actions {
+  justify-content: flex-end;
+  padding-top: 2px;
+}
+
+/* END：PF4J 插件卡片。 */
+
+@media (max-width: 760px) {
+  .admin-workspace-hero {
+    min-height: 0;
+    flex-direction: column;
+    padding: 24px;
+    background-position: 70% center;
+  }
+
+  .admin-workspace-hero-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .admin-workspace-summary,
+  .admin-workspace-fact-grid,
+  .admin-workspace-fields,
+  .admin-plugin-grid,
+  .admin-plugin-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-workspace-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-workspace-toolbar label,
+  .admin-workspace-toolbar label.is-search {
+    min-width: 0;
+  }
+
+  .admin-workspace-field.is-wide {
+    grid-column: auto;
+  }
+}

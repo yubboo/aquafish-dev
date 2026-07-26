@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'板块列表 - ' + (site != null ? site.name : 'Aquafish')}">板块列表 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">forum/list</span>
+    <h1>板块列表</h1>
+    <p>这里展示论坛所有板块、分区和统计信息。</p>
+    <div data-hook="forum.list.after"></div>
+  </section>
+</main>
+</body>
+</html>

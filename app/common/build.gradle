@@ -1,0 +1,8 @@
+
+dependencies {
+    /*
+     * common 模块纯 Java 安全工具的 JUnit 5 测试依赖。
+     */
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+}

@@ -1,0 +1,179 @@
+/*
+ * 关联页面：LicenseFeatureRequiredPage.vue，属于该页面的专属样式。
+ * 只负责“平台已授权但缺少某个商业模块”的提示卡片，不影响系统授权页、登录页和
+ * AdminLayout 全局布局；响应式规则也限定在 .license-feature-required-page 内。
+ */
+.license-feature-required-page {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  place-items: center;
+  padding: 44px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(112, 93, 255, 0.14), transparent 30%),
+    radial-gradient(circle at 90% 84%, rgba(238, 91, 178, 0.12), transparent 32%),
+    #f5f7ff;
+}
+
+.license-feature-required-card {
+  width: min(880px, 100%);
+  padding: 54px;
+  border: 1px solid rgba(121, 111, 181, 0.18);
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 28px 80px rgba(67, 55, 133, 0.14);
+  text-align: center;
+}
+
+.license-feature-required-icon {
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 22px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #6d5dfc, #e95bb6);
+  box-shadow: 0 18px 42px rgba(119, 88, 229, 0.26);
+  font-size: 34px;
+}
+
+.license-feature-required-kicker {
+  color: #756e9a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.license-feature-required-card h1 {
+  margin: 12px 0 14px;
+  color: #292441;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.2;
+}
+
+.license-feature-required-summary {
+  max-width: 660px;
+  margin: 0 auto;
+  color: #746e91;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.license-feature-required-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 34px 0 20px;
+}
+
+.license-feature-required-facts article {
+  padding: 20px;
+  border: 1px solid #e8e5f4;
+  border-radius: 22px;
+  background: #fbfaff;
+  text-align: left;
+}
+
+.license-feature-required-facts span,
+.license-feature-required-facts strong,
+.license-feature-required-facts code {
+  display: block;
+}
+
+.license-feature-required-facts span {
+  color: #8b85a6;
+  font-size: 12px;
+}
+
+.license-feature-required-facts strong {
+  margin: 8px 0;
+  color: #332d50;
+  font-size: 17px;
+}
+
+.license-feature-required-facts code {
+  overflow: hidden;
+  color: #766eb0;
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+
+.license-feature-required-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.license-feature-required-tags span {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #eeebff;
+  color: #655db2;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.license-feature-required-feedback {
+  margin: 18px 0 0;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #fff4e9;
+  color: #a75e14;
+}
+
+.license-feature-required-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.license-feature-required-actions button {
+  min-width: 150px;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.license-feature-required-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.license-feature-required-actions .is-primary {
+  background: linear-gradient(135deg, #6d5dfc, #e95bb6);
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(113, 87, 219, 0.22);
+}
+
+.license-feature-required-actions .is-secondary {
+  background: #eeecf7;
+  color: #4f496b;
+}
+
+@media (max-width: 760px) {
+  .license-feature-required-page {
+    padding: 18px;
+  }
+
+  .license-feature-required-card {
+    padding: 34px 22px;
+    border-radius: 26px;
+  }
+
+  .license-feature-required-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .license-feature-required-actions {
+    flex-direction: column;
+  }
+
+  .license-feature-required-actions button {
+    width: 100%;
+  }
+}

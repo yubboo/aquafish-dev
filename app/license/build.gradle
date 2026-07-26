@@ -1,0 +1,25 @@
+
+dependencies {
+    implementation project(':common')
+    implementation project(':core')
+
+    /*
+     * 授权模块需要向后台提供状态、激活和取消激活接口，并通过全局 WebFilter
+     * 阻止未授权实例访问业务 API。这里只引入 WebFlux，不把后台页面或业务模块
+     * 反向依赖进来，避免 license 模块与 admin 模块形成循环依赖。
+     */
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-webflux'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    /* 授权载荷使用 Instant 表示签发、生效和到期时间，必须显式支持 ISO-8601。 */
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    /*
+     * BouncyCastle 用于对标 Halo 的 X.509 证书信封：客户端用 PKIX 验证
+     * root→leaf（Ed25519，RFC 8410）信任链，再用叶子证书公钥验签。CA 根证书预埋于发行包。
+     */
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::main})}">
+<head>
+  <title th:text="${'标签 - ' + (site != null ? site.name : 'Aquafish')}">标签 - Aquafish</title>
+</head>
+<body>
+<main>
+  <section class="af-card">
+    <span class="af-badge">content/tag</span>
+    <h1 th:text="${tag != null ? tag.name : '标签页'}">标签页</h1>
+    <p>这里展示当前标签下的文章列表。</p>
+    <div data-hook="content.tag.after"></div>
+  </section>
+</main>
+</body>
+</html>

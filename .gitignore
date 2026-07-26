@@ -1,0 +1,71 @@
+# Node
+node_modules/
+dist/
+admin/dist/
+admin/.vite/
+admin/.cache/
+admin/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Gradle
+.gradle/
+build/
+*/build/
+app/.gradle/
+app/**/build/
+
+# Logs
+*.log
+logs/
+storage/logs/
+
+# Runtime
+workdir/
+storage/config/
+storage/cache/
+storage/tmp/
+storage/uploads/
+.env
+.env.*
+!.env.example
+
+# Export / temp / backup
+docs/export/
+docs/temp/
+backups/
+deploy/
+*.zip
+*.7z
+*.rar
+*.aqvault
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Local development assistants and machine-specific tools
+.claude/
+AGENTS.md
+CLAUDE.md
+aquafish_tool.bat
+p.bat
+pack-source.ps1
+pack-source打包命令.txt
+
+# Historical implementation artifacts
+docs/archive/
+docs/cjs/
+docs/design-audits/
+docs/img/
+docs/source-package-manifest.txt
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

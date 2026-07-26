@@ -1,0 +1,451 @@
+/*
+ * Aquafish 启动模块构建配置
+ *
+ * 当前文件位置：
+ * app/boot/build.gradle
+ *
+ * boot 模块的作用：
+ * 1. 作为整个 Aquafish 后端项目的启动入口；
+ * 2. 负责把 core、common、setup、auth、user、forum、content 等业务模块加载进来；
+ * 3. 最终通过 Spring Boot 启动一个完整的后端服务。
+ *
+ * 注意：
+ * 仓库根目录 admin 是 Vue 管理端；
+ * app/admin 是已经注册到 Gradle 的 Java 管理端 API 模块。
+ */
+
+plugins {
+    /*
+     * Spring Boot 插件。
+     *
+     * 作用：
+     * 1. 让 boot 模块可以作为 Spring Boot 应用启动；
+     * 2. 支持 bootRun、bootJar 等 Spring Boot 相关任务；
+     * 3. 最终可以打包成可运行的后端服务。
+     */
+    id 'org.springframework.boot'
+
+    /*
+     * Spring 依赖管理插件。
+     *
+     * 作用：
+     * 1. 统一管理 Spring Boot 相关依赖版本；
+     * 2. 避免每个依赖都手动写版本号；
+     * 3. 保证 Spring Boot、WebFlux、测试依赖等版本兼容。
+     */
+    id 'io.spring.dependency-management'
+}
+
+dependencies {
+    /*
+     * core 核心模块。
+     *
+     * 作用：
+     * 1. 放 Aquafish 框架级核心能力；
+     * 2. 承载外置配置、运行路径、表名解析、固定链接等底层能力；
+     * 3. 属于项目底层能力，不直接写具体业务页面。
+     */
+    implementation project(':core')
+
+    /*
+     * common 公共模块。
+     *
+     * 作用：
+     * 1. 放统一返回结构；
+     * 2. 放公共常量；
+     * 3. 放通用异常、基础 DTO、基础工具方法等。
+     *
+     * 说明：
+     * common 应该尽量保持轻量，不要放具体业务逻辑。
+     */
+    implementation project(':common')
+
+    /*
+     * setup 安装与开发诊断模块。
+     *
+     * 作用：
+     * 1. 负责安装流程；
+     * 2. 负责 /api/setup/status；
+     * 3. 负责数据库检测、配置写入、建表、管理员创建和安装锁；
+     * 4. dev Profile 下承载开发诊断接口。
+     */
+    implementation project(':setup')
+
+    /*
+     * auth 认证模块。
+     *
+     * 作用：
+     * 1. 负责登录接口；
+     * 2. 负责退出登录；
+     * 3. 负责当前登录用户信息；
+     * 4. 后续会从临时 admin-user.json 登录升级为数据库用户登录。
+     */
+    /*
+     * 后台认证统一由 core + admin 的 /api/admin/auth/** 提供。
+     */
+
+    /*
+     * theme 主题模块。
+     *
+     * 作用：
+     * 1. 负责主题扫描；
+     * 2. 负责主题启用 / 禁用；
+     * 3. 负责主题配置读取；
+     * 4. 负责主题信息管理。
+     */
+    implementation project(':theme')
+
+    /*
+     * template 模板模块。
+     *
+     * 作用：
+     * 1. 负责 Thymeleaf 模板渲染；
+     * 2. 负责模板路径解析；
+     * 3. 负责前台页面渲染规则。
+     *
+     * 注意：
+     * Step 15 已经确认前台模板路线统一为 Thymeleaf + .html。
+     * 不再使用 Pebble / .peb。
+     */
+    implementation project(':template')
+
+    /*
+     * plugin 插件模块。
+     *
+     * 作用：
+     * 1. 后续负责插件扫描；
+     * 2. 负责插件启用 / 禁用；
+     * 3. 负责插件扩展点；
+     * 4. 负责插件生命周期管理。
+     */
+    implementation project(':plugin')
+
+    /*
+     * license 授权模块。
+     *
+     * 作用：
+     * 1. 后续负责核心授权；
+     * 2. 负责主题授权；
+     * 3. 负责插件授权；
+     * 4. 负责版本校验和授权状态检查。
+     */
+    implementation project(':license')
+
+    /*
+     * market 应用市场模块。
+     *
+     * 作用：
+     * 1. 后续负责主题市场；
+     * 2. 负责插件市场；
+     * 3. 负责远程扩展下载；
+     * 4. 负责版本更新入口。
+     */
+    implementation project(':market')
+
+    /*
+     * user 用户模块。
+     *
+     * 作用：
+     * 1. 负责用户系统；
+     * 2. 负责管理员账号；
+     * 3. 负责角色；
+     * 4. 负责权限；
+     * 5. 负责用户组。
+     *
+     * 如果这里不引入 user 模块，user 模块里的 Controller 不会被 boot 启动模块加载，
+     * 访问 /api/admin/users 这类接口就可能出现 404。
+     */
+    implementation project(':user')
+
+    /*
+     * forum 论坛模块。
+     *
+     * 作用：
+     * 1. 后续负责论坛板块；
+     * 2. 负责主题；
+     * 3. 负责帖子；
+     * 4. 负责回复；
+     * 5. 负责审核、置顶、精华等 BBS 功能。
+     */
+    implementation project(':forum')
+
+    /*
+     * content 内容模块。
+     *
+     * 作用：
+     * 1. 后续负责文章；
+     * 2. 负责页面；
+     * 3. 负责分类；
+     * 4. 负责标签；
+     * 5. 负责编辑器相关内容能力。
+     */
+    implementation project(':content')
+
+    /*
+     * search 搜索模块。
+     *
+     * 作用：
+     * 1. 后续负责站内搜索；
+     * 2. 负责文章索引；
+     * 3. 负责帖子索引；
+     * 4. 负责用户、标签、分类等可搜索内容。
+     */
+    implementation project(':search')
+
+    /*
+     * ai AI 模块。
+     *
+     * 作用：
+     * 1. 后续负责 AI 写作；
+     * 2. 负责 AI 审核；
+     * 3. 负责 Prompt 管理；
+     * 4. 负责模型配置；
+     * 5. 负责 AI 接口密钥配置。
+     */
+    implementation project(':ai')
+
+    /*
+     * Spring Boot WebFlux 依赖。
+     *
+     * 作用：
+     * 1. 提供 REST API 能力；
+     * 2. 支持 @RestController；
+     * 3. 支持 @GetMapping、@PostMapping、@PutMapping 等接口注解；
+     * 4. 当前项目使用 Spring Boot + WebFlux + Netty 路线。
+     */
+    /*
+     * admin 后台管理模块。
+     *
+     * 作用：
+     * 1. 负责后台系统设置接口；
+     * 2. 负责固定链接设置接口；
+     * 3. 后续负责后台主题、插件、系统配置、诊断等接口；
+     * 4. 如果这里不引入 admin 模块，admin 模块里的 Controller 不会被 boot 启动模块加载。
+     */
+    implementation project(':admin')
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    /*
+     * Step 17-28：响应式数据库运行时驱动。
+     *
+     * 安装时选择一种数据库，运行时只会使用对应驱动：
+     *
+     * MySQL      -> io.asyncer:r2dbc-mysql
+     * MariaDB    -> org.mariadb:r2dbc-mariadb
+     * PostgreSQL -> org.postgresql:r2dbc-postgresql
+     *
+     * 三种驱动同时打进最终应用，
+     * 不代表同时连接三种数据库。
+     */
+    runtimeOnly 'io.r2dbc:r2dbc-pool'
+    runtimeOnly 'io.asyncer:r2dbc-mysql'
+    runtimeOnly 'org.mariadb:r2dbc-mariadb'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+    /*
+     * Spring Boot 测试依赖。
+     *
+     * 作用：
+     * 1. 只在测试代码里使用；
+     * 2. 用于后续写单元测试、接口测试、Spring Boot 测试。
+     */
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-crypto'
+
+    /*
+     * Reactor 测试依赖。
+     *
+     * 作用：
+     * 1. 用于测试 WebFlux / Reactor 响应式代码；
+     * 2. 后续如果接口返回 Mono、Flux，可以用它做响应式测试。
+     */
+    testImplementation 'io.projectreactor:reactor-test'
+
+}
+
+/*
+ * 正式发行包前端资源集成。
+ *
+ * 默认 Java 编译和测试不依赖 admin/dist，保持后端开发流程独立。
+ * 只有发行脚本传入 -PincludeAdminDist=true 时，才把已经通过 pnpm build
+ * 生成的 Vue 文件复制到 bootJar 的 classpath:/static，最终由同一个 8080
+ * 端口提供页面和 API，避免要求普通用户额外安装 Node.js 或静态服务器。
+ */
+def includeAdminDist = providers.gradleProperty('includeAdminDist')
+    .map { value -> value.toBoolean() }
+    .orElse(false)
+
+/*
+ * 正式发行标记不能由客户环境变量生成或移除。
+ *
+ * 发行脚本和 Docker 构建会显式传入 -PaquafishReleaseBuild=true；同时，
+ * 任何包含生产后台资源的 bootJar 默认也视为正式构建。开发 bootRun 和普通
+ * 后端测试不会包含该标记，因此 dev Profile 仍可关闭授权拦截。
+ */
+def aquafishReleaseBuild = providers
+    .gradleProperty('aquafishReleaseBuild')
+    .map { value -> value.toBoolean() }
+    .orElse(includeAdminDist)
+
+if (includeAdminDist.get()) {
+    def adminDistDirectory = rootProject.file('../admin/dist')
+
+    tasks.named('processResources') {
+        doFirst {
+            if (!new File(adminDistDirectory, 'index.html').isFile()) {
+                throw new GradleException(
+                    '找不到 admin/dist/index.html，请先执行后台前端生产构建。'
+                )
+            }
+        }
+
+        from(adminDistDirectory) {
+            into 'static'
+        }
+    }
+}
+
+/*
+ * 正式部署入口的授权开关契约检查。
+ *
+ * 该任务只检查与 S1-1 直接相关的语义标记：正式 Profile、发行构建参数以及
+ * 不向 Compose 用户暴露 enforcement 关闭变量。它同时挂到 check 和 bootJar，
+ * 防止 CI 或手工发行时漏掉任一部署入口。
+ */
+def verifyReleaseLicenseEnforcement =
+    tasks.register('verifyReleaseLicenseEnforcement') {
+        def projectDirectory = rootProject.projectDir.parentFile
+        def dockerfile = new File(projectDirectory, 'Dockerfile')
+        def dockerCompose = new File(
+            projectDirectory,
+            'deploy/docker-compose.yml'
+        )
+        def onePanelCompose = new File(
+            projectDirectory,
+            'deploy/1panel/0.0.1/docker-compose.yml'
+        )
+        def releaseScript = new File(
+            projectDirectory,
+            'docs/cjs/step45-build-release-package.cjs'
+        )
+        def prodConfig = file('src/main/resources/application-prod.yml')
+
+        inputs.files(
+            dockerfile,
+            dockerCompose,
+            onePanelCompose,
+            releaseScript,
+            prodConfig
+        )
+
+        doLast {
+            def dockerfileText = dockerfile.getText('UTF-8')
+            def dockerComposeText = dockerCompose.getText('UTF-8')
+            def onePanelComposeText = onePanelCompose.getText('UTF-8')
+            def releaseScriptText = releaseScript.getText('UTF-8')
+            def prodConfigText = prodConfig.getText('UTF-8')
+
+            if (!dockerfileText.contains('-PaquafishReleaseBuild=true')) {
+                throw new GradleException(
+                    'Dockerfile 未启用 Aquafish 正式发行标记。'
+                )
+            }
+            for (def source : [dockerComposeText, onePanelComposeText]) {
+                if (!(source =~ /SPRING_PROFILES_ACTIVE:\s*prod/).find()) {
+                    throw new GradleException(
+                        'Docker 或 1Panel 编排没有锁定 prod Profile。'
+                    )
+                }
+                if (source.contains(
+                    'AQUAFISH_LICENSE_ENFORCEMENT_ENABLED'
+                )) {
+                    throw new GradleException(
+                        '正式 Compose 不得暴露授权 enforcement 关闭变量。'
+                    )
+                }
+            }
+            if (!releaseScriptText.contains(
+                "'-PaquafishReleaseBuild=true'"
+            )) {
+                throw new GradleException(
+                    '正式 ZIP 脚本未启用 Aquafish 正式发行标记。'
+                )
+            }
+            def prodEntrypoints = (
+                releaseScriptText =~ /--spring\.profiles\.active=prod/
+            ).count
+            if (prodEntrypoints < 2) {
+                throw new GradleException(
+                    '正式 ZIP 的 Windows/Linux 启动脚本没有全部锁定 prod。'
+                )
+            }
+            if (!(prodConfigText =~ /enforcement-enabled:\s*true/).find()) {
+                throw new GradleException(
+                    'application-prod.yml 没有保持授权强制校验开启。'
+                )
+            }
+        }
+    }
+
+/*
+ * 固定可执行 JAR 名称，发行脚本不依赖版本号或 Gradle 默认文件命名。
+ */
+tasks.named('bootJar') {
+    dependsOn verifyReleaseLicenseEnforcement
+    archiveFileName = 'aquafish.jar'
+
+    if (aquafishReleaseBuild.get()) {
+        from('src/release/resources')
+    }
+
+    /*
+     * 在产物生成后验证标记与构建类型一致，防止正式脚本参数写了 release，
+     * 实际 JAR 却因为资源路径错误漏打安全标记。
+     */
+    doLast {
+        def markerFiles = zipTree(archiveFile.get().asFile).matching {
+            include 'META-INF/aquafish-release.marker'
+        }.files
+        def markerPresent = markerFiles.size() == 1
+        if (markerPresent != aquafishReleaseBuild.get()) {
+            throw new GradleException(
+                'Aquafish 发行标记与 aquafishReleaseBuild 构建类型不一致。'
+            )
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn verifyReleaseLicenseEnforcement
+}
+
+/*
+ * 开发实例数据不得写进源码仓库。
+ *
+ * 默认使用“用户目录/.aquafish/dev”，需要并行调试多个实例时可通过
+ * AQUAFISH_DEV_WORK_DIR 覆盖。工作目录仍由环境变量注入生产代码，
+ * Docker、1Panel 和发行脚本继续使用自己的实例目录。
+ */
+def developerWorkDir = System.getenv('AQUAFISH_DEV_WORK_DIR')
+if (developerWorkDir == null || developerWorkDir.isBlank()) {
+    developerWorkDir = new File(
+        System.getProperty('user.home'),
+        '.aquafish/dev'
+    ).absolutePath
+}
+developerWorkDir = developerWorkDir.replace('\\', '/')
+
+tasks.named('bootRun') {
+    workingDir rootProject.projectDir.parentFile
+    environment 'AQUAFISH_WORK_DIR', developerWorkDir
+    environment 'AQUAFISH_STORAGE_PATH', "${developerWorkDir}/storage"
+    /*
+     * bootRun 明确属于本地实时开发入口。默认启用 dev Profile，使模板关闭缓存，
+     * 且只在本地不拦截商业模块 API；显式设置 SPRING_PROFILES_ACTIVE 时仍尊重调用者。
+     * bootJar、Docker 和 1Panel 不经过本任务，因此生产授权边界不受影响。
+     */
+    if (System.getenv('SPRING_PROFILES_ACTIVE') == null
+        || System.getenv('SPRING_PROFILES_ACTIVE').isBlank()) {
+        environment 'SPRING_PROFILES_ACTIVE', 'dev'
+    }
+}
