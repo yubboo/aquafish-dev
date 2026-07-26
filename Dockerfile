@@ -16,7 +16,7 @@ FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jdk AS app-builder
 WORKDIR /workspace
 COPY app/ ./app/
 COPY Dockerfile ./Dockerfile
-COPY packaging/1panel/aquafish/0.0.1/docker-compose.yml ./packaging/1panel/aquafish/0.0.1/docker-compose.yml
+COPY packaging/1panel/aquafish/0.0.2/docker-compose.yml ./packaging/1panel/aquafish/0.0.2/docker-compose.yml
 COPY --from=admin-builder /workspace/admin/dist ./admin/dist/
 RUN chmod +x ./app/gradlew \
     && cd app \

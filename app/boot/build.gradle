@@ -318,7 +318,7 @@ def verifyReleaseLicenseEnforcement =
         def dockerfile = new File(projectDirectory, 'Dockerfile')
         def onePanelCompose = new File(
             projectDirectory,
-            'packaging/1panel/aquafish/0.0.1/docker-compose.yml'
+            'packaging/1panel/aquafish/0.0.2/docker-compose.yml'
         )
         def prodConfig = file('src/main/resources/application-prod.yml')
 

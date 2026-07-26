@@ -18,6 +18,67 @@ import reactor.test.StepVerifier;
 class SetupAccessWebFilterTest {
 
     @Test
+    void uninstalledPublicEntriesRedirectToSetupBeforeContentQueries() {
+        AuthoritativeInstallStatusService statusService = statusService(
+            status(false, false, true, true, "TABLE_MISSING")
+        );
+        SetupAccessWebFilter filter = new SetupAccessWebFilter(statusService);
+
+        for (String path : new String[]{"/", "/site"}) {
+            AtomicInteger calls = new AtomicInteger();
+            MockServerWebExchange exchange = getExchange(path);
+
+            StepVerifier.create(filter.filter(exchange, chain(calls)))
+                .verifyComplete();
+
+            assertEquals(HttpStatus.FOUND, exchange.getResponse().getStatusCode());
+            assertEquals(
+                "/setup",
+                exchange.getResponse().getHeaders().getLocation().toString()
+            );
+            assertEquals(0, calls.get());
+        }
+    }
+
+    @Test
+    void installedPublicEntryContinuesToContentController() {
+        AuthoritativeInstallStatusService statusService = statusService(
+            status(true, true, false, true, "INSTALLED")
+        );
+        SetupAccessWebFilter filter = new SetupAccessWebFilter(statusService);
+        AtomicInteger calls = new AtomicInteger();
+
+        StepVerifier.create(
+            filter.filter(getExchange("/"), chain(calls))
+        ).verifyComplete();
+
+        assertEquals(1, calls.get());
+    }
+
+    @Test
+    void publicEntryFallsBackToSetupWhenStatusReadFails() {
+        AuthoritativeInstallStatusService statusService = mock(
+            AuthoritativeInstallStatusService.class
+        );
+        when(statusService.current()).thenReturn(
+            Mono.error(new IllegalStateException("status unavailable"))
+        );
+        SetupAccessWebFilter filter = new SetupAccessWebFilter(statusService);
+        AtomicInteger calls = new AtomicInteger();
+        MockServerWebExchange exchange = getExchange("/");
+
+        StepVerifier.create(filter.filter(exchange, chain(calls)))
+            .verifyComplete();
+
+        assertEquals(HttpStatus.FOUND, exchange.getResponse().getStatusCode());
+        assertEquals(
+            "/setup",
+            exchange.getResponse().getHeaders().getLocation().toString()
+        );
+        assertEquals(0, calls.get());
+    }
+
+    @Test
     void staleCompatibilityLockDoesNotBlockInstallation() {
         AuthoritativeInstallStatusService statusService = statusService(
             status(false, true, true, true, "RECORD_ABSENT")
@@ -149,6 +210,10 @@ class SetupAccessWebFilterTest {
 
     private MockServerWebExchange exchange(String path) {
         return MockServerWebExchange.from(MockServerHttpRequest.post(path).build());
+    }
+
+    private MockServerWebExchange getExchange(String path) {
+        return MockServerWebExchange.from(MockServerHttpRequest.get(path).build());
     }
 
     private WebFilterChain chain(AtomicInteger calls) {

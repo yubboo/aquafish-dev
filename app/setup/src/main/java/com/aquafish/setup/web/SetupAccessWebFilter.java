@@ -3,6 +3,7 @@ package com.aquafish.setup.web;
 import com.aquafish.core.install.AuthoritativeInstallStatus;
 import com.aquafish.core.install.AuthoritativeInstallStatusService;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Set;
@@ -29,6 +30,9 @@ public class SetupAccessWebFilter implements WebFilter {
 
     private static final String SETUP_PREFIX = "/api/setup/";
     private static final String STATUS_PATH = "/api/setup/status";
+    private static final String SETUP_PAGE_PATH = "/setup";
+    private static final Set<String> PUBLIC_ENTRY_PATHS =
+        Set.of("/", "/site");
 
     /*
      * 这两个维护入口不能先经过通用安装状态总闸门：
@@ -108,6 +112,14 @@ public class SetupAccessWebFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
 
+        /*
+         * 首次安装前内容表尚未创建，根路径不能继续进入 CMS/主题渲染链。
+         * 浏览器访问站点入口时先读取权威安装状态，未安装则统一跳转安装向导。
+         */
+        if (isPublicEntryRequest(exchange, path)) {
+            return routePublicEntry(exchange, chain);
+        }
+
         if (!path.startsWith(SETUP_PREFIX)
             || STATUS_PATH.equals(path)
             || HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())
@@ -127,6 +139,44 @@ public class SetupAccessWebFilter implements WebFilter {
             .onErrorResume(error ->
                 stateUnavailable(exchange)
             );
+    }
+
+    /**
+     * 只处理浏览器可直接进入的两个公开首页地址，不影响 API、静态资源和非 GET 请求。
+     */
+    private boolean isPublicEntryRequest(
+        ServerWebExchange exchange,
+        String path
+    ) {
+        return HttpMethod.GET.equals(exchange.getRequest().getMethod())
+            && PUBLIC_ENTRY_PATHS.contains(path);
+    }
+
+    /**
+     * 未安装时把公开首页交给安装向导；完成安装后保持原有前台渲染流程。
+     */
+    private Mono<Void> routePublicEntry(
+        ServerWebExchange exchange,
+        WebFilterChain chain
+    ) {
+        return statusService.current()
+            .flatMap(status ->
+                status.installed()
+                    ? chain.filter(exchange)
+                    : redirectToSetup(exchange)
+            )
+            /*
+             * 安装状态服务已经负责把数据库不可用转换为安全状态。
+             * 这里保留最后一道失败保护，避免首次访问再次落入内容表查询并显示 500。
+             */
+            .onErrorResume(error -> redirectToSetup(exchange));
+    }
+
+    private Mono<Void> redirectToSetup(ServerWebExchange exchange) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.FOUND);
+        response.getHeaders().setLocation(URI.create(SETUP_PAGE_PATH));
+        return response.setComplete();
     }
 
     /**
