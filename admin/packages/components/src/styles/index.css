@@ -1,0 +1,21 @@
+/*
+ * Aq 组件默认设计令牌。
+ *
+ * 宿主应用和主题可以覆盖同名变量；插件只消费稳定令牌，不绑定 aqadmin 的页面 CSS。
+ */
+:root {
+  --aq-color-primary: #3f5039;
+  --aq-color-primary-hover: #33432e;
+  --aq-color-on-primary: #ffffff;
+  --aq-color-paper: #fbf9f4;
+  --aq-color-text: #292d28;
+  --aq-color-muted: #777268;
+  --aq-color-border: #ded8cc;
+  --aq-color-danger: #a33f32;
+  --aq-color-danger-hover: #873127;
+  --aq-color-success: #39714a;
+  --aq-color-warning: #9a641f;
+  --aq-color-info: #35647d;
+  --aq-control-height: 36px;
+  --aq-radius-control: 8px;
+}

@@ -4,14 +4,13 @@
  * 关联功能：安装状态、真实环境检测、数据库/Redis 连接测试、数据库迁移和最终提交。
  * 数据库与 Redis 密码只允许出现在请求体中，任何响应类型都不声明密码字段。
  */
-import { setupMaintenanceRequestHeaders } from '../router/setup-maintenance-mode'
+import { requestAqData } from '@aquafish/api-client'
 
-export interface ApiResult<T> {
-  success: boolean
-  code: string
-  message: string
-  data: T | null
-}
+import { setupMaintenanceRequestHeaders } from '../router/setup-maintenance-mode'
+import {
+  aqAdminApiClient,
+  toAqRequestConfig,
+} from './aqadmin-api-client'
 
 export interface InstallStatus {
   installed: boolean
@@ -145,7 +144,7 @@ export interface DatabaseMigrationResult {
  * 因而错误的数据库或 Redis 参数无法被前端当成“测试通过”。
  */
 export async function setupApi<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
+  const requestInit: RequestInit = {
     ...init,
     headers: {
       Accept: 'application/json',
@@ -153,14 +152,11 @@ export async function setupApi<T>(url: string, init?: RequestInit): Promise<T> {
       ...setupMaintenanceRequestHeaders(),
       ...(init?.headers || {}),
     },
-  })
-  const body = await response.json().catch(() => null) as ApiResult<T> | null
-
-  if (!response.ok || !body?.success || body.data === null) {
-    throw new Error(body?.message || `请求失败：HTTP ${response.status}`)
   }
-
-  return body.data
+  return requestAqData<T, BodyInit | null>(
+    aqAdminApiClient,
+    toAqRequestConfig(url, requestInit),
+  )
 }
 
 /** 以 JSON POST 调用安装写接口，未传 data 时不发送空请求体。 */

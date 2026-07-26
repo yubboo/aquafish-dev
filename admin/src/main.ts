@@ -1,13 +1,13 @@
 /**
  * Aquafish 后台前端启动入口。
  *
- * 先安装全局 API 防护，再按“安装状态 → 授权状态 → 管理员登录”顺序注册路由守卫，
- * 最后挂载 Vue。这个顺序保证空白系统先安装、已安装系统先授权、之后才判断登录。
+ * 统一 Axios 客户端在领域 API 导入时完成安全配置；应用继续按
+ * “安装状态 → 管理员登录 → 授权状态”顺序注册路由守卫，最后挂载 Vue。
  */
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-import { installAdminFetchGuard } from './api/admin-fetch-guard'
+import '@aquafish/components/style.css'
 import App from './App.vue'
 import router from './router'
 import { installAdminAuthGuard } from './router/admin-auth-guard'
@@ -19,7 +19,6 @@ import './styles.css'
 const app = createApp(App)
 
 app.use(createPinia())
-installAdminFetchGuard()
 /*
  * 首次安装守卫必须先注册，保证空白系统先进入 /setup，
  * 确认已安装后才继续执行后台登录态检查。

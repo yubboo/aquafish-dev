@@ -11,10 +11,18 @@
   --aq-color-muted: #777268;
   --aq-color-border: #ded8cc;
   --aq-color-primary: #3f5039;
+  --aq-color-primary-hover: #33432e;
+  --aq-color-on-primary: #ffffff;
   --aq-color-primary-soft: #e5e6d8;
   --aq-color-accent: #b95228;
   --aq-color-accent-dark: #963f20;
   --aq-color-danger: #a33f32;
+  --aq-color-danger-hover: #873127;
+  --aq-color-success: #39714a;
+  --aq-color-warning: #9a641f;
+  --aq-color-info: #35647d;
+  --aq-control-height: 36px;
   --aq-radius-card: 10px;
+  --aq-radius-control: 8px;
   --aq-shadow-card: 0 8px 24px rgba(67, 56, 41, 0.055);
 }

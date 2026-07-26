@@ -2,7 +2,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { Delete, Download, Refresh, SwitchButton, Upload } from '@element-plus/icons-vue'
+import { AqButton } from '@aquafish/components'
 import { adminRequest } from '../../api/admin-workspace'
+import { downloadThemeArchive } from '../../api/themes'
 import '../workspace/admin-workspace.css'
 
 interface ThemeItem {
@@ -251,14 +253,7 @@ async function exportTheme(theme: ThemeItem) {
   errorMessage.value = ''
   successMessage.value = ''
   try {
-    const response = await fetch(
-      `/api/admin/themes/${encodeURIComponent(theme.name)}/export`,
-    )
-    if (!response.ok) {
-      const body = await response.json().catch(() => null) as { message?: string } | null
-      throw new Error(body?.message || `主题导出失败：HTTP ${response.status}`)
-    }
-    const archive = await response.blob()
+    const archive = await downloadThemeArchive(theme.name)
     const url = URL.createObjectURL(archive)
     const link = document.createElement('a')
     link.href = url
@@ -309,7 +304,7 @@ onMounted(() => void load())
         <p>{{ description }}</p>
       </div>
       <div class="admin-workspace-hero-actions">
-        <button
+        <AqButton
           v-if="mode === 'list'"
           type="button"
           :disabled="Boolean(busyAction)"
@@ -317,11 +312,11 @@ onMounted(() => void load())
         >
           <Upload aria-hidden="true" />
           安装主题
-        </button>
-        <button type="button" :disabled="loading" @click="load">
+        </AqButton>
+        <AqButton type="button" :disabled="loading" @click="load">
           <Refresh aria-hidden="true" />
           {{ loading ? '扫描中…' : '重新扫描' }}
-        </button>
+        </AqButton>
       </div>
       <input
         ref="installInput"
@@ -437,21 +432,22 @@ onMounted(() => void load())
         </div>
 
         <div class="admin-workspace-form-actions">
-          <button
+          <AqButton
             class="admin-workspace-action"
             type="submit"
             :disabled="Boolean(busyAction)"
           >
             {{ busyAction === 'settings:save' ? '保存中…' : '保存设置' }}
-          </button>
-          <button
+          </AqButton>
+          <AqButton
             class="admin-workspace-action is-secondary"
+            variant="secondary"
             type="button"
             :disabled="Boolean(busyAction)"
             @click="resetThemeSettings"
           >
             {{ busyAction === 'settings:reset' ? '恢复中…' : '恢复默认值' }}
-          </button>
+          </AqButton>
         </div>
       </form>
       <!-- ===== END：settings.yaml 驱动的主题设置表单 ===== -->
@@ -498,7 +494,7 @@ onMounted(() => void load())
                 <td>{{ theme.active ? '当前启用' : '已安装' }}</td>
                 <td>
                   <div class="admin-workspace-row-actions">
-                    <button
+                    <AqButton
                       v-if="!theme.active"
                       class="admin-workspace-action"
                       type="button"
@@ -507,37 +503,40 @@ onMounted(() => void load())
                     >
                       <SwitchButton aria-hidden="true" />
                       {{ busyAction === `activate:${theme.name}` ? '启用中…' : '启用' }}
-                    </button>
+                    </AqButton>
                     <span v-if="theme.active" class="admin-workspace-status-badge">当前启用</span>
-                    <button
+                    <AqButton
                       v-if="!theme.builtin"
                       class="admin-workspace-action is-secondary"
+                      variant="secondary"
                       type="button"
                       :disabled="Boolean(busyAction)"
                       @click="chooseUpgradePackage(theme.name)"
                     >
                       <Upload aria-hidden="true" />
                       {{ busyAction === `upgrade:${theme.name}` ? '升级中…' : '升级' }}
-                    </button>
-                    <button
+                    </AqButton>
+                    <AqButton
                       class="admin-workspace-action is-secondary"
+                      variant="secondary"
                       type="button"
                       :disabled="Boolean(busyAction)"
                       @click="exportTheme(theme)"
                     >
                       <Download aria-hidden="true" />
                       {{ busyAction === `export:${theme.name}` ? '导出中…' : '导出' }}
-                    </button>
-                    <button
+                    </AqButton>
+                    <AqButton
                       v-if="theme.canUninstall"
                       class="admin-workspace-action is-danger"
+                      variant="danger"
                       type="button"
                       :disabled="Boolean(busyAction)"
                       @click="uninstallTheme(theme)"
                     >
                       <Delete aria-hidden="true" />
                       {{ busyAction === `uninstall:${theme.name}` ? '卸载中…' : '卸载（保留备份）' }}
-                    </button>
+                    </AqButton>
                     <span v-if="theme.active && !theme.builtin && !theme.canUninstall" class="admin-workspace-operation-note">
                       先启用其他主题后可卸载
                     </span>

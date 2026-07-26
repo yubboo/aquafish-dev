@@ -1,15 +1,18 @@
 /**
  * 后台初版工作台 API。
  *
- * 页面只消费统一 ApiResult，不直接处理 Cookie、CSRF 或授权跳转；这些安全行为由
- * admin-fetch-guard.ts 全局完成。
+ * 页面不直接处理 Axios、Cookie、CSRF 或授权跳转；这些安全行为由
+ * @aquafish/api-client 和 aqadmin-api-client.ts 统一完成。
  */
-export interface ApiResult<T> {
-  success: boolean
-  code: string
-  message: string
-  data: T
-}
+import {
+  requestAqData,
+  requestAqEnvelope,
+} from '@aquafish/api-client'
+
+import {
+  aqAdminApiClient,
+  toAqRequestConfig,
+} from './aqadmin-api-client'
 
 export type WorkspaceRow = Record<string, unknown>
 
@@ -36,12 +39,10 @@ export async function adminRequest<T>(
   url: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(url, init)
-  const body = await response.json().catch(() => null) as ApiResult<T> | null
-  if (!response.ok || !body || body.success !== true) {
-    throw new Error(body?.message || `请求失败：HTTP ${response.status}`)
-  }
-  return body.data
+  return requestAqData<T, BodyInit | null>(
+    aqAdminApiClient,
+    toAqRequestConfig(url, init),
+  )
 }
 
 /** 执行后台写操作并同时保留服务端成功提示。 */
@@ -49,10 +50,12 @@ export async function adminCommand<T>(
   url: string,
   init: RequestInit,
 ): Promise<AdminCommandResult<T>> {
-  const response = await fetch(url, init)
-  const body = await response.json().catch(() => null) as ApiResult<T> | null
-  if (!response.ok || !body || body.success !== true) {
-    throw new Error(body?.message || `请求失败：HTTP ${response.status}`)
+  const body = await requestAqEnvelope<T, BodyInit | null>(
+    aqAdminApiClient,
+    toAqRequestConfig(url, init),
+  )
+  if (body.data === null) {
+    throw new Error(body.message || '接口没有返回数据。')
   }
   return {
     data: body.data,

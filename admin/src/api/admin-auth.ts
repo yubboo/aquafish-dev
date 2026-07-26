@@ -4,12 +4,18 @@
  * 关联 AdminLoginPage.vue、admin-auth store 和后端 AdminAuthController；使用
  * credentials=include 接收/携带 HttpOnly Cookie，前端不读取也不持久化会话 Token。
  */
-export interface ApiResult<T> {
-  success: boolean
-  code: string
-  message: string
-  data: T | null
-}
+import {
+  AqApiError,
+  requestAqEnvelope,
+  type AqApiEnvelope,
+} from '@aquafish/api-client'
+
+import {
+  aqAdminApiClient,
+  toAqRequestConfig,
+} from './aqadmin-api-client'
+
+export type ApiResult<T> = AqApiEnvelope<T>
 
 export interface AdminLoginRequest {
   username: string
@@ -39,67 +45,25 @@ export interface AdminLogoutResult {
   note: string
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-
-/** 合并可选 API 基地址，开发环境为空时继续使用 Vite 同源代理。 */
-function apiUrl(path: string): string {
-  return `${API_BASE_URL}${path}`
-}
-
 /**
- * 安全解析 ApiResult；空响应和非 JSON 响应也转换为统一失败结构，避免页面解析异常。
- */
-async function readJson<T>(response: Response): Promise<ApiResult<T>> {
-  const text = await response.text()
-
-  if (!text) {
-    return {
-      success: false,
-      code: 'EMPTY_RESPONSE',
-      message: '接口没有返回内容',
-      data: null,
-    }
-  }
-
-  try {
-    return JSON.parse(text) as ApiResult<T>
-  } catch {
-    return {
-      success: false,
-      code: 'INVALID_JSON',
-      message: text,
-      data: null,
-    }
-  }
-}
-
-/**
- * 认证请求统一入口：始终携带 Cookie，并把 HTTP、网络和业务错误规范化为 ApiResult。
+ * 认证 Store 依赖“失败也返回 ApiResult”的旧契约，这里只做兼容转换；底层请求安全、
+ * Cookie、CSRF 和错误分类仍全部由统一 Axios 客户端负责。
  */
 async function requestJson<T>(path: string, init: RequestInit): Promise<ApiResult<T>> {
   try {
-    const response = await fetch(apiUrl(path), {
-      ...init,
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        ...(init.headers || {}),
-      },
-    })
-
-    const result = await readJson<T>(response)
-
-    if (!response.ok && result.success) {
+    return await requestAqEnvelope<T, BodyInit | null>(
+      aqAdminApiClient,
+      toAqRequestConfig(path, init),
+    )
+  } catch (error) {
+    if (error instanceof AqApiError) {
       return {
         success: false,
-        code: `HTTP_${response.status}`,
-        message: response.statusText || '接口请求失败',
-        data: result.data,
+        code: error.code,
+        message: error.message,
+        data: (error.data ?? null) as T | null,
       }
     }
-
-    return result
-  } catch (error) {
     return {
       success: false,
       code: 'NETWORK_ERROR',

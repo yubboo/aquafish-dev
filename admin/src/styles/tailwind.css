@@ -4,3 +4,9 @@
  * pages/components 目录，避免工具类入口变成业务样式集合。
  */
 @import "tailwindcss";
+
+/*
+ * Tailwind 4 默认不会扫描工作区链接包；显式声明 Aq 组件源码，确保组件库使用的
+ * 工具类进入 aqadmin 最终样式，同时避免插件和页面重复维护 safelist。
+ */
+@source "../../packages/components/src";

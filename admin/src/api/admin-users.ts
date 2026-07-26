@@ -4,12 +4,15 @@
  * 关联 UserManagePage.vue 与 UserSimpleListPage.vue；本文件统一解析 ApiResult、兼容后端
  * 分页字段并规范化用户对象，页面不直接依赖数据库字段或拼接后台接口地址。
  */
-export interface ApiResponse<T> {
-  success: boolean
-  code: string
-  message: string
-  data: T
-}
+import {
+  requestAqData,
+  requestAqEnvelope,
+} from '@aquafish/api-client'
+
+import {
+  aqAdminApiClient,
+  toAqRequestConfig,
+} from './aqadmin-api-client'
 
 export type AnyRecord = Record<string, any>
 
@@ -72,14 +75,10 @@ export interface PageResult<T> {
 
 /** 请求只返回 data 的后台接口，并把 HTTP/业务失败转换为 Error。 */
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, init)
-  const body = await response.json().catch(() => null) as ApiResponse<T> | null
-
-  if (!response.ok || !body || body.success !== true) {
-    throw new Error(body?.message || '请求失败：' + response.status)
-  }
-
-  return body.data
+  return requestAqData<T, BodyInit | null>(
+    aqAdminApiClient,
+    toAqRequestConfig(url, init),
+  )
 }
 
 /** 与 requestJson 相同，但保留后端 message，供列表页显示真实操作结果。 */
@@ -87,12 +86,10 @@ async function requestJsonWithMessage<T extends AnyRecord>(
   url: string,
   init?: RequestInit,
 ): Promise<T & { message: string }> {
-  const response = await fetch(url, init)
-  const body = await response.json().catch(() => null) as ApiResponse<T> | null
-
-  if (!response.ok || !body || body.success !== true) {
-    throw new Error(body?.message || '请求失败：' + response.status)
-  }
+  const body = await requestAqEnvelope<T, BodyInit | null>(
+    aqAdminApiClient,
+    toAqRequestConfig(url, init),
+  )
 
   return {
     ...((body.data || {}) as T),

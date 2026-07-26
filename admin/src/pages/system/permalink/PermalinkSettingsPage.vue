@@ -5,48 +5,15 @@
 -->
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import {
+  fetchPermalinkSettings,
+  previewPermalinkSettings,
+  savePermalinkSettings,
+  type PermalinkMode,
+  type PermalinkPreview,
+  type PermalinkSettings,
+} from '../../../api/permalink'
 import './permalink-settings-page.css'
-
-type PermalinkMode = 'short' | 'halo' | 'discuz' | 'custom'
-
-interface ApiResult<T> {
-  success: boolean
-  code: string
-  message: string
-  data: T
-}
-
-interface PermalinkSettings {
-  mode: PermalinkMode
-  articlePattern: string
-  pagePattern: string
-  categoryPattern: string
-  tagPattern: string
-  forumPattern: string
-  threadPattern: string
-  userPattern: string
-  enableDiscuzCompat: boolean
-  enableHaloCompat: boolean
-  enableOldLinkRedirect: boolean
-}
-
-interface PermalinkPreview {
-  mode: PermalinkMode
-  article: string
-  page: string
-  category: string
-  tag: string
-  forum: string
-  thread: string
-  user: string
-  examples: string[]
-}
-
-interface PermalinkSettingsResponse {
-  settings: PermalinkSettings
-  preview: PermalinkPreview
-  storagePath: string
-}
 
 interface PermalinkPreset {
   mode: PermalinkMode
@@ -124,48 +91,6 @@ const selectedPreset = computed(() => {
   return presets.find((preset) => preset.mode === form.value.mode) || presets[0]
 })
 
-/** 解析后台 ApiResult，并把 HTTP/业务失败统一转换为页面 Error。 */
-async function parseApiResult<T>(response: Response): Promise<T> {
-  const text = await response.text()
-  const body = text ? JSON.parse(text) as ApiResult<T> : null
-
-  if (!response.ok) {
-    throw new Error(body?.message || `请求失败：HTTP ${response.status}`)
-  }
-
-  if (!body || body.success !== true) {
-    throw new Error(body?.message || '接口返回失败')
-  }
-
-  return body.data
-}
-
-/** 固定链接设置只读请求封装。 */
-async function apiGet<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    method: 'GET'
-  })
-
-  return parseApiResult<T>(response)
-}
-
-/** 固定链接预览/保存 JSON 请求封装，写请求的 CSRF 由全局 fetch guard 补充。 */
-async function apiJson<T>(
-  url: string,
-  method: 'POST' | 'PUT',
-  data: unknown
-): Promise<T> {
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-
-  return parseApiResult<T>(response)
-}
-
 /** 首次读取后端持久化设置、真实预览和配置存储位置。 */
 async function loadSettings(): Promise<void> {
   loading.value = true
@@ -173,7 +98,7 @@ async function loadSettings(): Promise<void> {
   successMessage.value = ''
 
   try {
-    const data = await apiGet<PermalinkSettingsResponse>('/api/admin/settings/permalink')
+    const data = await fetchPermalinkSettings()
 
     form.value = data.settings
     preview.value = data.preview
@@ -196,11 +121,7 @@ async function refreshPreview(): Promise<void> {
   errorMessage.value = ''
 
   try {
-    preview.value = await apiJson<PermalinkPreview>(
-      '/api/admin/settings/permalink/preview',
-      'POST',
-      form.value
-    )
+    preview.value = await previewPermalinkSettings(form.value)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '固定链接预览生成失败'
   } finally {
@@ -292,11 +213,7 @@ async function saveSettings(): Promise<void> {
   successMessage.value = ''
 
   try {
-    const data = await apiJson<PermalinkSettingsResponse>(
-      '/api/admin/settings/permalink',
-      'PUT',
-      form.value
-    )
+    const data = await savePermalinkSettings(form.value)
 
     form.value = data.settings
     preview.value = data.preview

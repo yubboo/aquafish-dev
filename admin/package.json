@@ -1,5 +1,5 @@
 {
-  "name": "aquafish-admin",
+  "name": "@aquafish/aqadmin",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.9.0",
@@ -13,8 +13,11 @@
     "clean:cache": "node -e \"const fs=require('node:fs'); for (const path of ['node_modules/.vite','.vite','.cache']) fs.rmSync(path,{recursive:true,force:true})\""
   },
   "dependencies": {
+    "@aquafish/api-client": "workspace:*",
+    "@aquafish/components": "workspace:*",
+    "@aquafish/ui-shared": "workspace:*",
     "@element-plus/icons-vue": "^2.3.2",
-    "element-plus": "^2.14.2",
+    "axios": "^1.18.1",
     "pinia": "^3.0.0",
     "vue": "^3.5.0",
     "vue-router": "^4.5.0"
