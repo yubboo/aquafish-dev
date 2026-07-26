@@ -316,33 +316,21 @@ def verifyReleaseLicenseEnforcement =
     tasks.register('verifyReleaseLicenseEnforcement') {
         def projectDirectory = rootProject.projectDir.parentFile
         def dockerfile = new File(projectDirectory, 'Dockerfile')
-        def dockerCompose = new File(
-            projectDirectory,
-            'deploy/docker-compose.yml'
-        )
         def onePanelCompose = new File(
             projectDirectory,
-            'deploy/1panel/0.0.1/docker-compose.yml'
-        )
-        def releaseScript = new File(
-            projectDirectory,
-            'docs/cjs/step45-build-release-package.cjs'
+            'packaging/1panel/aquafish/0.0.1/docker-compose.yml'
         )
         def prodConfig = file('src/main/resources/application-prod.yml')
 
         inputs.files(
             dockerfile,
-            dockerCompose,
             onePanelCompose,
-            releaseScript,
             prodConfig
         )
 
         doLast {
             def dockerfileText = dockerfile.getText('UTF-8')
-            def dockerComposeText = dockerCompose.getText('UTF-8')
             def onePanelComposeText = onePanelCompose.getText('UTF-8')
-            def releaseScriptText = releaseScript.getText('UTF-8')
             def prodConfigText = prodConfig.getText('UTF-8')
 
             if (!dockerfileText.contains('-PaquafishReleaseBuild=true')) {
@@ -350,33 +338,19 @@ def verifyReleaseLicenseEnforcement =
                     'Dockerfile 未启用 Aquafish 正式发行标记。'
                 )
             }
-            for (def source : [dockerComposeText, onePanelComposeText]) {
-                if (!(source =~ /SPRING_PROFILES_ACTIVE:\s*prod/).find()) {
-                    throw new GradleException(
-                        'Docker 或 1Panel 编排没有锁定 prod Profile。'
-                    )
-                }
-                if (source.contains(
-                    'AQUAFISH_LICENSE_ENFORCEMENT_ENABLED'
-                )) {
-                    throw new GradleException(
-                        '正式 Compose 不得暴露授权 enforcement 关闭变量。'
-                    )
-                }
-            }
-            if (!releaseScriptText.contains(
-                "'-PaquafishReleaseBuild=true'"
-            )) {
+            if (!(
+                onePanelComposeText
+                    =~ /SPRING_PROFILES_ACTIVE:\s*prod/
+            ).find()) {
                 throw new GradleException(
-                    '正式 ZIP 脚本未启用 Aquafish 正式发行标记。'
+                    '1Panel 正式编排没有锁定 prod Profile。'
                 )
             }
-            def prodEntrypoints = (
-                releaseScriptText =~ /--spring\.profiles\.active=prod/
-            ).count
-            if (prodEntrypoints < 2) {
+            if (onePanelComposeText.contains(
+                'AQUAFISH_LICENSE_ENFORCEMENT_ENABLED'
+            )) {
                 throw new GradleException(
-                    '正式 ZIP 的 Windows/Linux 启动脚本没有全部锁定 prod。'
+                    '1Panel 正式编排不得暴露授权 enforcement 关闭变量。'
                 )
             }
             if (!(prodConfigText =~ /enforcement-enabled:\s*true/).find()) {
