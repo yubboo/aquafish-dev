@@ -24,10 +24,18 @@ RUN chmod +x ./app/gradlew \
         --no-daemon --console=plain
 
 # 运行阶段不携带源码和构建工具，只保留 Java 21 与 Aquafish JAR。
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre-noble
 WORKDIR /app
 
-RUN groupadd --system --gid 10001 aquafish \
+LABEL org.opencontainers.image.title="Aquafish" \
+    org.opencontainers.image.description="CMS, forum and AI extensible publishing platform" \
+    org.opencontainers.image.source="https://github.com/yubboo/aquafish-dev"
+
+# curl 用于 Docker/1Panel 健康检查；util-linux 提供降权启动所需的 setpriv。
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends curl util-linux \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 10001 aquafish \
     && useradd --system --uid 10001 --gid 10001 \
         --create-home --home-dir /app aquafish \
     && mkdir -p /app/workdir \

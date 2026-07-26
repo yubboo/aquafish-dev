@@ -132,6 +132,9 @@ cd ..\app
 docker build -t aquafish:local .
 ```
 
+1Panel 应用包、GHCR 镜像发布和域名反向代理说明见
+[`docs/deployment/01-1panel-and-container-registry.md`](docs/deployment/01-1panel-and-container-registry.md)。
+
 ## 当前状态
 
 目前已经建立多数据库安装底座、主题安装与继承、双模板引擎、模板回退链、PF4J 插件加载与生命周期、CMS/BBS 基础接口和管理端页面。

@@ -1,0 +1,28 @@
+name: Aquafish
+tags:
+  - 建站
+  - 论坛
+title: 面向 AI 时代的 CMS 与强论坛平台
+description: 模块化 CMS、论坛、主题和插件生态平台
+additionalProperties:
+  key: aquafish
+  name: Aquafish
+  tags:
+    - Website
+    - Forum
+  shortDescZh: 面向 AI 时代的 CMS 与强论坛平台
+  shortDescEn: CMS and forum platform for the AI era
+  description:
+    zh: 模块化 CMS、论坛、主题和插件生态平台
+    en: Modular CMS, forum, theme and plugin platform
+  type: website
+  crossVersionUpdate: true
+  limit: 0
+  recommend: 0
+  website: https://github.com/yubboo/aquafish-dev
+  github: https://github.com/yubboo/aquafish-dev
+  document: https://github.com/yubboo/aquafish-dev#readme
+  memoryRequired: 1024
+  architectures:
+    - amd64
+    - arm64
