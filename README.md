@@ -10,9 +10,10 @@ Aquafish 是面向内容、社区与 AI 场景的可扩展平台，采用与 Hal
 | `admin/` | Vue 3、TypeScript、Vite 管理端与安装向导 |
 | `app/theme/src/main/theme/` | 随核心维护并在构建时打包的内置主题 |
 | `docs/` | 当前架构、开发、安装和验收文档 |
+| `packaging/` | 1Panel 等平台应用模板源码与本地发行产物 |
 | `scripts/` | 仓库通用的构建验证与容器入口脚本 |
 
-`backups/`、`deploy/`、本机 AI 工具配置、运行数据和历史实施脚本仅用于本地开发，不进入源码仓库。
+`backups/`、本机 AI 工具配置、运行数据和历史实施脚本仅用于本地开发，不进入源码仓库。
 
 ## 技术栈
 
@@ -131,6 +132,15 @@ cd ..\app
 ```powershell
 docker build -t aquafish:local .
 ```
+
+容器镜像采用开发与正式双通道：
+
+- `main` 分支发布 `ghcr.io/yubboo/aquafish-dev:main` 和 `sha-*`；
+- GitHub Release 发布 `ghcr.io/yubboo/aquafish:<version>` 和 `latest`；
+- 1Panel 应用模板只使用固定版本的正式镜像。
+
+运行根目录 `p.bat` 并选择 `7`，可以把 1Panel 应用包生成到
+`packaging/1panel/`。
 
 1Panel 应用包、GHCR 镜像发布和域名反向代理说明见
 [`docs/deployment/01-1panel-and-container-registry.md`](docs/deployment/01-1panel-and-container-registry.md)。

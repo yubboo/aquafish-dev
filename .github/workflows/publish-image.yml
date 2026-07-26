@@ -1,9 +1,19 @@
-name: Publish container image
+name: Publish container images
 
 on:
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
+    paths:
+      - "**"
+      - "!**.md"
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -11,16 +21,26 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: yubboo/aquafish
 
 jobs:
   publish:
-    name: Publish amd64 and arm64 image
+    name: Publish amd64 and arm64 images
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Validate release tag
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must match v<major>.<minor>.<patch>: $RELEASE_TAG"
+            exit 1
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -32,21 +52,26 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate image metadata
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.event_name == 'release' && 'aquafish' || 'aquafish-dev' }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest
+            type=ref,event=branch,enabled=${{ github.event_name == 'push' }}
+            type=sha,enabled=${{ github.event_name == 'push' }}
+            type=semver,pattern={{version}},enabled=${{ github.event_name == 'release' }}
+            type=semver,pattern={{major}}.{{minor}},enabled=${{ github.event_name == 'release' }}
+            type=semver,pattern={{major}},enabled=${{ github.event_name == 'release' }}
+            type=raw,value=latest,enabled=${{ github.event_name == 'release' }}
+          flavor: |
+            latest=false
 
       - name: Build and publish image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile

@@ -9,7 +9,6 @@ admin/tsconfig.tsbuildinfo
 
 # Gradle
 .gradle/
-build/
 */build/
 app/.gradle/
 app/**/build/
@@ -33,7 +32,6 @@ storage/uploads/
 docs/export/
 docs/temp/
 backups/
-deploy/
 *.zip
 *.7z
 *.rar

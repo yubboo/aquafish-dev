@@ -9,6 +9,17 @@ const readline = require('node:readline')
 const projectRoot = path.resolve(__dirname, '..')
 const appDir = path.join(projectRoot, 'app')
 const adminDir = path.join(projectRoot, 'admin')
+const onePanelPackageScript = path.join(
+  projectRoot,
+  'scripts',
+  'package-1panel.ps1'
+)
+const onePanelPackageRoot = path.join(
+  projectRoot,
+  'packaging',
+  '1panel',
+  'aquafish'
+)
 
 const backendPort = 8520
 const adminPort = 18520
@@ -115,6 +126,7 @@ function showMenu() {
   console.log(' 4. 停止后端 + 管理端')
   console.log(' 5. 查看开发服务状态')
   console.log(' 6. 打开常用地址')
+  console.log(' 7. 一键生成 1Panel 应用包')
   console.log(' 0. 退出')
   console.log('')
   printSeparator()
@@ -750,6 +762,46 @@ function openCommonAddresses() {
 }
 
 /**
+ * 校验正式 1Panel 模板并生成可上传到面板的 ZIP。
+ *
+ * PowerShell 脚本负责自动选择最高语义化版本、校验镜像标签和必需文件，
+ * 菜单只负责提供稳定入口，避免在 JavaScript 中复制第二套打包规则。
+ */
+function packageOnePanelApplication() {
+  console.log('正在校验并生成 Aquafish 1Panel 应用包...')
+
+  const result = spawnSync(
+    'powershell.exe',
+    [
+      '-NoProfile',
+      '-ExecutionPolicy',
+      'Bypass',
+      '-File',
+      onePanelPackageScript
+    ],
+    {
+      cwd: projectRoot,
+      env: process.env,
+      stdio: 'inherit',
+      windowsHide: false
+    }
+  )
+
+  if (result.error) {
+    console.error(`1Panel 应用包生成失败：${result.error.message}`)
+    return false
+  }
+
+  if (result.status !== 0) {
+    console.error(`1Panel 应用包生成失败，退出码：${result.status}`)
+    return false
+  }
+
+  console.log('1Panel 应用包已经生成，可上传到 1Panel 本地应用目录。')
+  return true
+}
+
+/**
  * --check 只做静态自检，不启动或终止任何进程，供自动化验收和排错使用。
  */
 function validateLauncher() {
@@ -758,7 +810,10 @@ function validateLauncher() {
     path.join(appDir, 'gradlew.bat'),
     path.join(adminDir, 'package.json'),
     path.join(adminDir, 'vite.config.ts'),
-    path.join(appDir, 'boot', 'src', 'main', 'resources', 'application.yml')
+    path.join(appDir, 'boot', 'src', 'main', 'resources', 'application.yml'),
+    onePanelPackageScript,
+    path.join(onePanelPackageRoot, 'data.yml'),
+    path.join(onePanelPackageRoot, 'logo.png')
   ]
   const missingFiles = requiredFiles.filter(file => !fs.existsSync(file))
 
@@ -818,6 +873,13 @@ async function main() {
     return
   }
 
+  if (argument === '--package-1panel') {
+    const passed = packageOnePanelApplication()
+    rl.close()
+    process.exitCode = passed ? 0 : 1
+    return
+  }
+
   while (true) {
     showMenu()
     const choice = await ask('请输入数字：')
@@ -864,13 +926,19 @@ async function main() {
       continue
     }
 
+    if (choice === '7') {
+      packageOnePanelApplication()
+      await pause()
+      continue
+    }
+
     if (choice === '0') {
       console.log('已退出 Aquafish 开发启动菜单。')
       rl.close()
       return
     }
 
-    console.log('输入无效，请输入 1、2、3、4、5、6 或 0。')
+    console.log('输入无效，请输入 1、2、3、4、5、6、7 或 0。')
     await pause()
   }
 }
