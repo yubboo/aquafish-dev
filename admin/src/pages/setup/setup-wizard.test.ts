@@ -90,7 +90,7 @@ describe('database defaults', () => {
 
 describe('site url default', () => {
   it('分发安装自动使用浏览器当前 IP、协议和端口', () => {
-    expect(defaultSiteUrl('http://156.239.2.141:8080')).toBe('http://156.239.2.141:8080')
+    expect(defaultSiteUrl('http://156.239.2.141:8520')).toBe('http://156.239.2.141:8520')
     expect(defaultSiteUrl('https://www.example.com')).toBe('https://www.example.com')
   })
 

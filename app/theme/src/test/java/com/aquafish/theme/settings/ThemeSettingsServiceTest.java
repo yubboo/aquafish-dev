@@ -33,7 +33,7 @@ class ThemeSettingsServiceTest {
         Path workDir = temporaryDirectory.resolve("workdir");
         AquafishProperties properties = new AquafishProperties(
             workDir.toString(),
-            "http://127.0.0.1:8080",
+            "http://127.0.0.1:8520",
             "aq_",
             "default"
         );

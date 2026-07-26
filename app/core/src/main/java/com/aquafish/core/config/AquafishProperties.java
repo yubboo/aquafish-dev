@@ -40,7 +40,7 @@ public class AquafishProperties {
      * 站点外部访问地址。
      *
      * 本地开发：
-     * http://127.0.0.1:8080
+     * http://127.0.0.1:8520
      *
      * 线上部署：
      * https://你的域名
@@ -79,7 +79,7 @@ public class AquafishProperties {
      */
     public AquafishProperties(
         @Value("${aquafish.work-dir:workdir}") String workDir,
-        @Value("${aquafish.external-url:http://127.0.0.1:8080}") String externalUrl,
+        @Value("${aquafish.external-url:http://127.0.0.1:8520}") String externalUrl,
         @Value("${aquafish.database.table-prefix:aq_}") String tablePrefix,
         @Value("${aquafish.theme.active:default}") String activeTheme
     ) {

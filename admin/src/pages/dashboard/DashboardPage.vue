@@ -10,6 +10,7 @@ import {
   User,
 } from '@element-plus/icons-vue'
 import { adminRequest } from '../../api/admin-workspace'
+import AqExtensionOutlet from '../../plugin-ui/AqExtensionOutlet.vue'
 import './dashboard-page.css'
 
 interface DashboardData {
@@ -76,6 +77,7 @@ onMounted(() => void load())
           <p>{{ card.note }}</p>
         </div>
       </RouterLink>
+      <AqExtensionOutlet point="aqadmin:dashboard:widgets:create" />
     </div>
 
     <div class="dashboard-panels">

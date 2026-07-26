@@ -103,7 +103,7 @@ class TrustedProxyClientIpResolverTest {
         assertEquals(
             "127.0.0.1",
             resolver.resolve(
-                "127.0.0.1:8080",
+                "127.0.0.1:8520",
                 "unknown, invalid-host",
                 "invalid-host"
             )
@@ -135,7 +135,7 @@ class TrustedProxyClientIpResolverTest {
         assertEquals(
             "::1",
             resolver.resolve(
-                "[0:0:0:0:0:0:0:1]:8080",
+                "[0:0:0:0:0:0:0:1]:8520",
                 null,
                 null
             )

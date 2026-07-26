@@ -52,6 +52,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/admin',
+    name: 'admin.root',
     component: AdminLayout,
     children: [
       {

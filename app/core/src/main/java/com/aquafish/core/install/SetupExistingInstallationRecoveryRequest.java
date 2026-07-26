@@ -21,7 +21,7 @@ public record SetupExistingInstallationRecoveryRequest(
         return new SetupExistingInstallationRecoveryRequest(
             serverPort == null
                 || serverPort <= 0
-                    ? 8080
+                    ? 8520
                     : serverPort,
             database == null
                 ? null

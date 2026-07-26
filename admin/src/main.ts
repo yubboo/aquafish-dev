@@ -29,5 +29,19 @@ installAdminAuthGuard(router)
  * 授权守卫必须最后注册：先确认系统已安装，再确认管理员身份，最后判断平台授权。
  */
 installLicenseStatusGuard(router)
+/*
+ * 插件宿主只在进入已鉴权的 /admin 路由后异步加载，避免安装页和公开入口承担
+ * Vue Router、Pinia、公共组件等完整插件共享命名空间的首屏体积。
+ */
+router.afterEach((to) => {
+  if (to.path === '/admin' || to.path.startsWith('/admin/')) {
+    void import('./plugin-ui/loader')
+      .then(async (runtime) => {
+        runtime.installAqAdminPluginUiRuntime(router)
+        await runtime.syncAqAdminPluginUi()
+      })
+      .catch(() => undefined)
+  }
+})
 app.use(router)
 app.mount('#app')

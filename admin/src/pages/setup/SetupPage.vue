@@ -4026,7 +4026,7 @@ async function recoverExistingInstallation(): Promise<void> {
   await setupPost<SetupExistingInstallationRecoveryResult>(
     '/api/setup/recovery/existing',
     {
-      serverPort: 8080,
+      serverPort: 8520,
       database: context.value.databaseManaged
         ? null
         : databaseSettings(),
@@ -4216,7 +4216,7 @@ async function install(
   )
   await repaint()
   await setupPost('/api/setup/config/write', {
-    serverPort: 8080,
+    serverPort: 8520,
     database: context.value.databaseManaged ? null : databaseSettings(),
     redis: context.value.redisManaged ? null : redisSettings(),
     site: siteSettings(),

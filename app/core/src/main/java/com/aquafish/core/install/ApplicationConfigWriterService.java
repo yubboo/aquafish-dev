@@ -288,7 +288,7 @@ public class ApplicationConfigWriterService {
     private SetupApplicationConfigRequest safeRequest(SetupApplicationConfigRequest request) {
         if (request == null) {
             return new SetupApplicationConfigRequest(
-                8080,
+                8520,
                 DatabaseSettings.defaultMysql(),
                 RedisSettings.disabled(),
                 SiteSettings.defaultSettings(),

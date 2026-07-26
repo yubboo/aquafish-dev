@@ -75,7 +75,7 @@ class AquafishPluginManagerTest {
     private WorkDirResolver resolver() {
         AquafishProperties properties = new AquafishProperties(
             tempDirectory.resolve("workdir").toString(),
-            "http://127.0.0.1:8080",
+            "http://127.0.0.1:8520",
             "aq_",
             "default"
         );

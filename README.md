@@ -82,11 +82,14 @@ cd app
 .\gradlew.bat :boot:bootRun
 ```
 
-默认入口：
+源码开发入口：
 
-- 前台：`http://localhost:8080/site`
-- 管理端：`http://localhost:5173/admin`
-- 首次安装：`http://localhost:8080/setup`
+- 前台与 API（Spring Boot）：`http://localhost:8520/site`
+- 管理端（Vite）：`http://localhost:18520/admin`
+- 首次安装（Vite）：`http://localhost:18520/setup`
+
+发行 JAR 或 Docker 镜像已经内置管理端静态资源，统一使用 Spring Boot 的
+`8520` 端口访问：前台 `/site`、管理端 `/admin`、首次安装 `/setup`。
 
 ## 验证
 

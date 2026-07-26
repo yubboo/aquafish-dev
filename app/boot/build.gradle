@@ -268,7 +268,7 @@ dependencies {
  *
  * 默认 Java 编译和测试不依赖 admin/dist，保持后端开发流程独立。
  * 只有发行脚本传入 -PincludeAdminDist=true 时，才把已经通过 pnpm build
- * 生成的 Vue 文件复制到 bootJar 的 classpath:/static，最终由同一个 8080
+ * 生成的 Vue 文件复制到 bootJar 的 classpath:/static，最终由同一个 8520
  * 端口提供页面和 API，避免要求普通用户额外安装 Node.js 或静态服务器。
  */
 def includeAdminDist = providers.gradleProperty('includeAdminDist')

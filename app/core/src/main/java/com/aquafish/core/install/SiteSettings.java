@@ -22,7 +22,7 @@ public record SiteSettings(
     public static SiteSettings defaultSettings() {
         return new SiteSettings(
             "Aquafish",
-            "http://127.0.0.1:8080",
+            "http://127.0.0.1:8520",
             "zh-CN",
             "Asia/Shanghai"
         );
@@ -31,7 +31,7 @@ public record SiteSettings(
     public SiteSettings normalized() {
         return new SiteSettings(
             textOrDefault(name, "Aquafish"),
-            textOrDefault(url, "http://127.0.0.1:8080"),
+            textOrDefault(url, "http://127.0.0.1:8520"),
             textOrDefault(locale, "zh-CN"),
             textOrDefault(timezone, "Asia/Shanghai")
         );

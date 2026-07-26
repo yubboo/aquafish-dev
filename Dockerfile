@@ -36,7 +36,7 @@ RUN groupadd --system --gid 10001 aquafish \
 COPY --from=app-builder --chown=aquafish:aquafish /workspace/app/boot/build/libs/aquafish.jar /app/aquafish.jar
 COPY --chmod=755 scripts/docker-entrypoint.sh /usr/local/bin/aquafish-entrypoint
 
-EXPOSE 8080
+EXPOSE 8520
 VOLUME ["/app/workdir"]
 
 ENTRYPOINT ["/usr/local/bin/aquafish-entrypoint"]

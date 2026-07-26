@@ -1,8 +1,12 @@
 /** 插件 UI 默认入口和产物名称。 */
 export const AQ_PLUGIN_DEFAULT_ENTRY = 'src/index.ts'
 export const AQ_PLUGIN_DEFAULT_MANIFEST = '../src/main/resources/plugin.yaml'
-export const AQ_PLUGIN_DEFAULT_PRODUCTION_OUT_DIR = 'build/dist'
-export const AQ_PLUGIN_DEFAULT_DEVELOPMENT_OUT_DIR = '../build/resources/main/ui'
+/**
+ * 生产产物直接进入 Gradle 标准资源输出目录，随后执行 jar/bootJar 即可得到 JAR 根目录 ui/。
+ * 开发模式保留在 UI 工程自身 build/dist，便于单独检查产物且不污染 Java 构建目录。
+ */
+export const AQ_PLUGIN_DEFAULT_PRODUCTION_OUT_DIR = '../build/resources/main/ui'
+export const AQ_PLUGIN_DEFAULT_DEVELOPMENT_OUT_DIR = 'build/dist'
 export const AQ_PLUGIN_ENTRY_FILE = 'main.js'
 export const AQ_PLUGIN_STYLE_FILE = 'style.css'
 export const AQ_PLUGIN_UI_MANIFEST_FILE = 'ui-manifest.json'

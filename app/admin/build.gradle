@@ -29,6 +29,10 @@ dependencies {
      * 不再自行扫描 workdir/plugins 伪造生命周期。
      */
     implementation project(':plugin')
+    /*
+     * 插件 UI 宿主只解析受控 ui-manifest.json，不执行清单提供的远程地址。
+     */
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     /*
      * Spring WebFlux。

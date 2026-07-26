@@ -50,7 +50,6 @@ deploy/
 AGENTS.md
 CLAUDE.md
 aquafish_tool.bat
-p.bat
 pack-source.ps1
 pack-source打包命令.txt
 

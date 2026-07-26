@@ -45,7 +45,7 @@ class ApplicationConfigWriterManagedModeTest {
             workDir.toString(), statusService, database, redis, contextService
         );
         SetupApplicationConfigRequest request = new SetupApplicationConfigRequest(
-            8080,
+            8520,
             null,
             RedisSettings.disabled(),
             SiteSettings.defaultSettings(),
@@ -61,6 +61,7 @@ class ApplicationConfigWriterManagedModeTest {
                     throw new AssertionError(error);
                 }
                 assertTrue(result.written());
+                assertTrue(yaml.contains("port: 8520"));
                 assertTrue(yaml.contains("连接参数由部署平台环境变量管理"));
                 assertFalse(yaml.contains("database-secret"));
                 assertFalse(yaml.contains("redis-secret"));

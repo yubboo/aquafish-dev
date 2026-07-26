@@ -112,6 +112,8 @@ describe('Aquafish 插件 UI Vite 构建器', () => {
 
     expect(config.build?.rollupOptions?.external)
       .toEqual(expect.arrayContaining([...AQ_PLUGIN_EXTERNALS]))
+    expect(config.build?.outDir)
+      .toBe('../build/resources/main/ui')
     const outputOptions = config.build?.rollupOptions?.output
     expect(Array.isArray(outputOptions)).toBe(false)
     expect(outputOptions).toMatchObject({
@@ -146,6 +148,28 @@ describe('Aquafish 插件 UI Vite 构建器', () => {
       expect(main.code).toContain('AquafishUiShared')
       expect(main.code).toContain('AquafishComponents')
       expect(main.code).toContain('Vue')
+      /*
+       * 真实执行构建后的 IIFE，锁定宿主读取到“模块对象.default”的约定，
+       * 防止构建升级后静态文件仍存在但动态加载器拿不到插件定义。
+       */
+      const runtimeModule = new Function(
+        'Vue',
+        'AquafishComponents',
+        'AquafishUiShared',
+        `${main.code}; return AqPlugin_demo_plugin`,
+      )(
+        {
+          defineComponent: (value: unknown) => value,
+          ref: (value: unknown) => ({ value }),
+        },
+        { AqButton: {} },
+        { definePlugin: (value: unknown) => value },
+      ) as {
+        default?: { name?: string }
+        name?: string
+      }
+      const runtimeDefinition = runtimeModule.default ?? runtimeModule
+      expect(runtimeDefinition.name).toBe('demo-plugin')
     }
 
     const manifestAsset = output.find(

@@ -94,7 +94,7 @@ class ThemeLifecycleServiceTest {
     private TestContext context() throws Exception {
         AquafishProperties properties = new AquafishProperties(
             temporaryDirectory.toString(),
-            "http://127.0.0.1:8080",
+            "http://127.0.0.1:8520",
             "aq_",
             "default"
         );

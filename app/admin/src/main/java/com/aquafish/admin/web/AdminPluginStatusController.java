@@ -1,9 +1,15 @@
 package com.aquafish.admin.web;
 
+import com.aquafish.admin.plugin.ui.PluginUiPermissionService;
+import com.aquafish.admin.plugin.ui.PluginUiResourceService;
+import com.aquafish.admin.plugin.ui.PluginUiResourceService.Asset;
+import com.aquafish.admin.plugin.ui.PluginUiResourceService.Catalog;
 import com.aquafish.common.web.ApiResult;
 import com.aquafish.core.admin.auth.AdminAuthUser;
 import com.aquafish.plugin.runtime.PluginManagementSnapshot;
 import com.aquafish.plugin.runtime.PluginRuntimeLifecycleService;
+import java.time.Duration;
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * 后台 PF4J 插件状态和启停接口。
@@ -26,11 +33,17 @@ import reactor.core.publisher.Mono;
 public class AdminPluginStatusController {
 
     private final PluginRuntimeLifecycleService lifecycleService;
+    private final PluginUiResourceService pluginUiResourceService;
+    private final PluginUiPermissionService pluginUiPermissionService;
 
     public AdminPluginStatusController(
-        PluginRuntimeLifecycleService lifecycleService
+        PluginRuntimeLifecycleService lifecycleService,
+        PluginUiResourceService pluginUiResourceService,
+        PluginUiPermissionService pluginUiPermissionService
     ) {
         this.lifecycleService = lifecycleService;
+        this.pluginUiResourceService = pluginUiResourceService;
+        this.pluginUiPermissionService = pluginUiPermissionService;
     }
 
     @GetMapping("/status")
@@ -42,6 +55,56 @@ public class AdminPluginStatusController {
                 "PLUGIN_STATUS_READ_FAILED",
                 rootMessage(error)
             )));
+    }
+
+    /**
+     * 返回当前已启动且通过宿主清单校验的插件 UI。
+     *
+     * <p>清单扫描需要读取目录或 JAR，因此切换到 boundedElastic；权限来自数据库，
+     * 查询失败会按空授权处理。</p>
+     */
+    @GetMapping("/ui")
+    public Mono<ResponseEntity<ApiResult<Catalog>>> uiCatalog() {
+        return Mono.fromCallable(pluginUiResourceService::scan)
+            .subscribeOn(Schedulers.boundedElastic())
+            .flatMap(pluginUiPermissionService::enrich)
+            .map(data -> ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(ApiResult.ok(
+                    data,
+                    "插件 UI 清单读取成功。"
+                )))
+            .onErrorResume(error -> Mono.just(
+                ResponseEntity.status(
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                    )
+                    .cacheControl(CacheControl.noStore())
+                    .body(ApiResult.fail(
+                        "PLUGIN_UI_CATALOG_FAILED",
+                        rootMessage(error)
+                    ))
+            ));
+    }
+
+    /**
+     * 输出清单允许的同源插件脚本或样式。
+     */
+    @GetMapping("/{pluginId}/ui/{*assetPath}")
+    public Mono<ResponseEntity<Resource>> uiAsset(
+        @PathVariable("pluginId") String pluginId,
+        @PathVariable("assetPath") String assetPath
+    ) {
+        return Mono.fromCallable(() ->
+                pluginUiResourceService.asset(
+                    pluginId,
+                    assetPath
+                )
+            )
+            .subscribeOn(Schedulers.boundedElastic())
+            .map(this::assetResponse)
+            .onErrorReturn(
+                ResponseEntity.<Resource>notFound().build()
+            );
     }
 
     @PostMapping("/rescan")
@@ -110,6 +173,26 @@ public class AdminPluginStatusController {
             );
         }
         return user;
+    }
+
+    private ResponseEntity<Resource> assetResponse(Asset asset) {
+        return ResponseEntity.ok()
+            .contentType(asset.mediaType())
+            .contentLength(asset.contentLength())
+            .lastModified(asset.lastModified())
+            .cacheControl(
+                CacheControl.maxAge(Duration.ofMinutes(5))
+                    .cachePrivate()
+            )
+            .header(
+                "X-Content-Type-Options",
+                "nosniff"
+            )
+            .header(
+                "Cross-Origin-Resource-Policy",
+                "same-origin"
+            )
+            .body(asset.resource());
     }
 
     private ResponseEntity<ApiResult<PluginManagementSnapshot>> ok(

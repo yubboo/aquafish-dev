@@ -167,7 +167,7 @@ public final class StandardTemplateModelFactory {
 
         site.put("name", "Aquafish");
         site.put("description", "CMS + BBS + AI 平台");
-        site.put("url", "http://127.0.0.1:8080");
+        site.put("url", "http://127.0.0.1:8520");
         site.put("logo", "");
         site.put("locale", "zh-CN");
 
@@ -192,7 +192,7 @@ public final class StandardTemplateModelFactory {
         seo.put("title", "Aquafish " + type + " 页面");
         seo.put("description", "Aquafish CMS + BBS + AI 平台开发阶段模板渲染页面。");
         seo.put("keywords", "Aquafish,CMS,BBS,AI,论坛,博客");
-        seo.put("canonicalUrl", "http://127.0.0.1:8080/");
+        seo.put("canonicalUrl", "http://127.0.0.1:8520/");
 
         return seo;
     }

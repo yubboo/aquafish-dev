@@ -32,7 +32,7 @@ class ThemeRuntimeConfigurationServiceTest {
             config,
             """
             server:
-              port: 8080
+              port: 8520
             aquafish:
               database:
                 password: 'secret-value'
@@ -63,7 +63,7 @@ class ThemeRuntimeConfigurationServiceTest {
     private AquafishProperties properties(String activeTheme) {
         return new AquafishProperties(
             temporaryDirectory.toString(),
-            "http://127.0.0.1:8080",
+            "http://127.0.0.1:8520",
             "aq_",
             activeTheme
         );

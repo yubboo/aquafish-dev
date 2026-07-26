@@ -38,7 +38,7 @@ class MemberTrustedProxyIntegrationTest {
                 .remoteAddress(
                     new InetSocketAddress(
                         "198.51.100.9",
-                        8080
+                        8520
                     )
                 )
                 .header(
@@ -88,7 +88,7 @@ class MemberTrustedProxyIntegrationTest {
                 .remoteAddress(
                     new InetSocketAddress(
                         "127.0.0.1",
-                        8080
+                        8520
                     )
                 )
                 .header(
@@ -124,7 +124,7 @@ class MemberTrustedProxyIntegrationTest {
                 .remoteAddress(
                     new InetSocketAddress(
                         "127.0.0.1",
-                        8080
+                        8520
                     )
                 )
                 .header(
@@ -157,7 +157,7 @@ class MemberTrustedProxyIntegrationTest {
                 .remoteAddress(
                     new InetSocketAddress(
                         "192.0.2.50",
-                        8080
+                        8520
                     )
                 )
                 .header(

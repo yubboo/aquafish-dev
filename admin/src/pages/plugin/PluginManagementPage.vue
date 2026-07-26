@@ -6,6 +6,7 @@
 -->
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Connection,
   Refresh,
@@ -14,6 +15,10 @@ import {
   Warning,
 } from '@element-plus/icons-vue'
 import { adminRequest } from '../../api/admin-workspace'
+import {
+  aqPluginUiRuntimeState,
+  syncAqAdminPluginUi,
+} from '../../plugin-ui/loader'
 import '../workspace/admin-workspace.css'
 
 interface PluginDependency {
@@ -49,6 +54,7 @@ interface PluginRuntimeStatus {
 }
 
 const status = ref<PluginRuntimeStatus | null>(null)
+const router = useRouter()
 const loading = ref(false)
 const actingPluginId = ref('')
 const errorMessage = ref('')
@@ -56,6 +62,9 @@ const successMessage = ref('')
 
 const startedCount = computed(
   () => status.value?.items.filter((item) => item.started).length ?? 0,
+)
+const loadedUiCount = computed(
+  () => aqPluginUiRuntimeState.loadedPluginIds.length,
 )
 
 function isEnabledRequested(pluginId: string) {
@@ -98,6 +107,7 @@ async function rescan() {
       method: 'POST',
     })
     successMessage.value = '插件目录、依赖图和启用状态已重新同步。'
+    await synchronizePluginUi()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '插件重新扫描失败。'
   } finally {
@@ -117,10 +127,28 @@ async function changeLifecycle(item: PluginRuntimeItem, action: 'start' | 'stop'
     successMessage.value = action === 'start'
       ? `插件“${item.name}”已启用。`
       : `插件“${item.name}”及其运行中的下游依赖者已停止。`
+    await synchronizePluginUi()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '插件生命周期操作失败。'
   } finally {
     actingPluginId.value = ''
+  }
+}
+
+async function synchronizePluginUi() {
+  try {
+    await syncAqAdminPluginUi(true)
+  } catch (error) {
+    errorMessage.value = error instanceof Error
+      ? `插件生命周期已更新，但管理端 UI 同步失败：${error.message}`
+      : '插件生命周期已更新，但管理端 UI 同步失败。'
+  }
+  /*
+   * 动态路由被卸载时，如果管理员仍停留在该插件页面，立即回到插件管理页，
+   * 避免保留已经失效的组件实例。
+   */
+  if (router.currentRoute.value.path.startsWith('/admin/plugins/')) {
+    await router.replace('/admin/plugins')
   }
 }
 
@@ -172,6 +200,10 @@ onMounted(() => void load())
             <span>运行中的插件</span>
             <strong>{{ startedCount }}</strong>
           </div>
+          <div>
+            <span>已加载插件 UI</span>
+            <strong>{{ loadedUiCount }}</strong>
+          </div>
         </div>
       </section>
       <!-- END：PF4J 能力摘要 -->
@@ -182,6 +214,19 @@ onMounted(() => void load())
         <p>
           插件必须提供 plugin.yaml。停用基础插件时，会先停止所有依赖它的下游插件，
           避免残留失效 Bean 或 ClassLoader 引用。
+        </p>
+      </section>
+
+      <section
+        v-if="aqPluginUiRuntimeState.failures.length"
+        class="admin-workspace-state is-error"
+      >
+        <strong>插件 UI 隔离报告</strong>
+        <p
+          v-for="failure in aqPluginUiRuntimeState.failures"
+          :key="`${failure.pluginId}:${failure.stage}:${failure.message}`"
+        >
+          {{ failure.pluginId }} / {{ failure.stage }}：{{ failure.message }}
         </p>
       </section>
 

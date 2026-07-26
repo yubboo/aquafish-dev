@@ -295,7 +295,7 @@ public final class TrustedProxyClientIpResolver {
         /*
          * 支持：
          * [::1]
-         * [::1]:8080
+         * [::1]:8520
          */
         if (
             candidate.startsWith("[") &&
@@ -312,7 +312,7 @@ public final class TrustedProxyClientIpResolver {
         ) {
             /*
              * 支持 IPv4 携带端口：
-             * 127.0.0.1:8080
+             * 127.0.0.1:8520
              */
             int portSeparator =
                 candidate.lastIndexOf(':');

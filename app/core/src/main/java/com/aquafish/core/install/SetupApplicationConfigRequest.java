@@ -46,7 +46,7 @@ public record SetupApplicationConfigRequest(
             : redis.normalized();
 
         return new SetupApplicationConfigRequest(
-            serverPort == null || serverPort <= 0 ? 8080 : serverPort,
+            serverPort == null || serverPort <= 0 ? 8520 : serverPort,
             safeDatabase,
             safeRedis,
             safeSite,

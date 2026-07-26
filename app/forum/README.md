@@ -33,6 +33,6 @@
 - `:forum:compileJava`：`BUILD SUCCESSFUL`；
 - `:forum:cleanTest :forum:test`：10 个测试全部通过；
 - `clean test`：67 个任务全部执行成功；
-- 使用 `%USERPROFILE%\.aquafish\dev\application.yaml` 执行 `:boot:bootRun`：应用在 8080 端口启动，`GET /api/health` 返回 `status=ok`。
+- 使用 `%USERPROFILE%\.aquafish\dev\application.yaml` 执行 `:boot:bootRun`：应用在 8520 端口启动，`GET /api/health` 返回 `status=ok`。
 
 以上为自动化验证记录，当前等待用户确认，不提前开始主题发布、楼层回复或页面开发。
