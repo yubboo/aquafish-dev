@@ -16,13 +16,30 @@
 name: Publish container images
 
 on:
-  # main 分支代码变化时发布开发测试镜像。
+  # main 分支仅在容器构建相关文件变化时发布开发测试镜像。
+  # 修改普通文档或本地辅助脚本时，不重复构建多架构镜像。
   push:
     branches:
       - main
     paths:
-      - "**"
-      - "!**.md"
+      # Java 后端源码与构建配置。
+      - "app/**"
+
+      # Vue 管理端源码与构建配置。
+      - "admin/**"
+
+      # 1Panel 正式应用配置会参与后端发行构建校验。
+      - "packaging/1panel/aquafish/**"
+
+      # 最终容器启动入口。
+      - "scripts/docker-entrypoint.sh"
+
+      # Docker 构建配置。
+      - "Dockerfile"
+      - ".dockerignore"
+
+      # 工作流本身发生变化时，重新验证镜像构建。
+      - ".github/workflows/publish-image.yml"
 
   # 点击 GitHub Release 的 Publish release 后，
   # 发布社区正式镜像。
