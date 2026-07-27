@@ -1,22 +1,22 @@
 # Aquafish 容器镜像自动发布工作流。
 #
-# 当前包含两条发布通道：
+# 发布通道：
 #
-# 1. main 分支开发镜像
+# 1. main 分支开发测试镜像
 #    ghcr.io/yubboo/aquafish-dev:main
+#    ghcr.io/yubboo/aquafish-dev:sha-xxxxxxx
 #
-# 2. GitHub Release 社区正式版镜像
+# 2. GitHub Release 社区正式镜像
 #    ghcr.io/yubboo/aquafish:<版本>
 #    aqhub/aquafish:<版本>
 #
-# 专业版 aqhub/aquafish-pro 暂时不在这里发布，
-# 等真正的专业版模块和授权体系完成后，再创建独立工作流。
+# 3. 专业版暂不在此工作流发布
+#    aqhub/aquafish-pro 后续使用独立构建流程。
 
 name: Publish container images
 
 on:
-  # 每次向 main 分支推送非 Markdown 文件时，
-  # 自动构建并发布开发测试镜像。
+  # main 分支代码变化时发布开发测试镜像。
   push:
     branches:
       - main
@@ -24,72 +24,148 @@ on:
       - "**"
       - "!**.md"
 
-  # 在 GitHub Releases 页面点击 Publish release 后，
-  # 自动构建并发布社区正式版镜像。
+  # 点击 GitHub Release 的 Publish release 后，
+  # 发布社区正式镜像。
   release:
     types:
       - published
 
-# 同一分支或同一 Release 只保留最新的构建任务，
-# 避免重复构建浪费 GitHub Actions 资源。
+  # 允许在 GitHub Actions 页面手动运行。
+  workflow_dispatch:
+
+# 同一分支或同一 Release 只保留最新任务。
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# contents: read 用于读取仓库源码。
-# packages: write 用于向 GitHub Container Registry 推送镜像。
 permissions:
+  # 拉取仓库源码。
   contents: read
+
+  # 推送 GitHub GHCR 镜像。
   packages: write
 
 env:
-  # GitHub 官方容器镜像仓库地址。
+  # GitHub Container Registry 地址。
   REGISTRY: ghcr.io
 
 jobs:
   publish:
-    # 同时发布 AMD64 和 ARM64 两种架构镜像。
     name: Publish amd64 and arm64 images
     runs-on: ubuntu-latest
 
     steps:
-      # 拉取当前仓库源码。
+      # ======================================================
+      # 拉取源码
+      # ======================================================
       - name: Check out repository
         uses: actions/checkout@v6
 
-      # 正式发布时校验版本标签。
+      # ======================================================
+      # 自动确定当前 Aquafish 版本
       #
-      # 只允许：
-      # v0.0.2
-      # v1.2.3
+      # Release：
+      # v0.0.3 → 0.0.3
       #
-      # 不允许：
-      # 0.0.2
-      # version-0.0.2
-      # v0.0.2-beta
-      - name: Validate release tag
+      # main / 手动运行：
+      # 自动选择 packaging/1panel/aquafish 下最高版本目录。
+      # ======================================================
+      - name: Resolve Aquafish version
+        id: aquafish-version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="$(
+              find packaging/1panel/aquafish \
+                -mindepth 1 \
+                -maxdepth 1 \
+                -type d \
+                -printf '%f\n' |
+              grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' |
+              sort -V |
+              tail -n 1
+            )"
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "Unable to resolve Aquafish version."
+            exit 1
+          fi
+
+          VERSION_ROOT="packaging/1panel/aquafish/$VERSION"
+          COMPOSE_FILE="$VERSION_ROOT/docker-compose.yml"
+          DATA_FILE="$VERSION_ROOT/data.yml"
+
+          if [ ! -d "$VERSION_ROOT" ]; then
+            echo "Missing 1Panel version directory: $VERSION_ROOT"
+            exit 1
+          fi
+
+          if [ ! -f "$COMPOSE_FILE" ]; then
+            echo "Missing 1Panel compose file: $COMPOSE_FILE"
+            exit 1
+          fi
+
+          if [ ! -f "$DATA_FILE" ]; then
+            echo "Missing 1Panel data file: $DATA_FILE"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved Aquafish version: $VERSION"
+
+      # ======================================================
+      # 正式 Release 校验
+      # ======================================================
+      - name: Validate release
         if: github.event_name == 'release'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
+          AQUAFISH_VERSION: ${{ steps.aquafish-version.outputs.version }}
         run: |
+          set -euo pipefail
+
           if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Release tag must match v<major>.<minor>.<patch>: $RELEASE_TAG"
             exit 1
           fi
 
-      # 安装 QEMU，使 GitHub 的 AMD64 构建机可以构建 ARM64 镜像。
+          COMPOSE_FILE="packaging/1panel/aquafish/$AQUAFISH_VERSION/docker-compose.yml"
+          EXPECTED_IMAGE="aqhub/aquafish:$AQUAFISH_VERSION"
+
+          if ! grep -Fq "image: $EXPECTED_IMAGE" "$COMPOSE_FILE"; then
+            echo "The 1Panel compose image must be:"
+            echo "image: $EXPECTED_IMAGE"
+            echo ""
+            echo "Current compose file:"
+            cat "$COMPOSE_FILE"
+            exit 1
+          fi
+
+          echo "Release validation passed: $RELEASE_TAG"
+          echo "1Panel image validation passed: $EXPECTED_IMAGE"
+
+      # ======================================================
+      # 多架构构建环境
+      # ======================================================
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      # 创建 Docker Buildx 多架构构建环境。
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 登录 GitHub Container Registry。
+      # ======================================================
+      # 登录 GitHub Container Registry
       #
-      # GITHUB_TOKEN 由 GitHub Actions 自动提供，
-      # 不需要手动创建。
+      # GITHUB_TOKEN 由 GitHub 自动生成，
+      # 不需要手动配置。
+      # ======================================================
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -97,11 +173,14 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 只有发布正式 Release 时才登录 Docker Hub。
+      # ======================================================
+      # 登录 Docker Hub
       #
-      # Docker Hub 用户名固定为 aqhub。
-      # AQUAFISH_HUB 是你刚才在 GitHub Actions Secrets
-      # 中保存的 Docker Hub Personal Access Token。
+      # 仅正式 Release 需要登录 Docker Hub。
+      #
+      # AQUAFISH_HUB：
+      # GitHub Actions Secrets 中保存的 Docker Hub Token。
+      # ======================================================
       - name: Log in to Docker Hub
         if: github.event_name == 'release'
         uses: docker/login-action@v3
@@ -109,18 +188,20 @@ jobs:
           username: aqhub
           password: ${{ secrets.AQUAFISH_HUB }}
 
-      # 根据触发方式生成镜像名称与版本标签。
+      # ======================================================
+      # 生成镜像名称与标签
       #
-      # main 分支推送：
+      # main：
       # ghcr.io/yubboo/aquafish-dev:main
       # ghcr.io/yubboo/aquafish-dev:sha-xxxxxxx
       #
-      # 发布 v0.0.3 Release：
+      # Release v0.0.3：
       # ghcr.io/yubboo/aquafish:0.0.3
       # aqhub/aquafish:0.0.3
       # aqhub/aquafish:0.0
       # aqhub/aquafish:0
       # aqhub/aquafish:latest
+      # ======================================================
       - name: Generate image metadata
         id: metadata
         uses: docker/metadata-action@v5
@@ -132,43 +213,47 @@ jobs:
           tags: |
             type=ref,event=branch,enable=${{ github.event_name == 'push' }}
             type=sha,enable=${{ github.event_name == 'push' }}
+
+            type=raw,value=main,enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=sha,enable=${{ github.event_name == 'workflow_dispatch' }}
+
             type=semver,pattern={{version}},enable=${{ github.event_name == 'release' }}
             type=semver,pattern={{major}}.{{minor}},enable=${{ github.event_name == 'release' }}
             type=semver,pattern={{major}},enable=${{ github.event_name == 'release' }}
             type=raw,value=latest,enable=${{ github.event_name == 'release' }}
 
-          # 禁止 metadata-action 自动额外创建 latest，
-          # latest 标签完全由上面的规则控制。
+          # latest 完全由上面的规则控制。
           flavor: |
             latest=false
 
-      # 使用同一次 Docker Buildx 构建，
-      # 将相同镜像推送到对应的 GHCR 和 Docker Hub。
+      # ======================================================
+      # 构建并推送镜像
+      #
+      # Dockerfile 会复制全部 1Panel 版本目录，
+      # 因此不再需要向 Dockerfile 传入固定版本参数。
+      # ======================================================
       - name: Build and publish images
         uses: docker/build-push-action@v7
         with:
-          # Docker 构建上下文为仓库根目录。
           context: .
-
-          # 使用项目根目录中的 Dockerfile。
           file: ./Dockerfile
 
-          # 同时支持普通服务器和 ARM64 服务器。
+          # 支持普通服务器和 ARM64 服务器。
           platforms: linux/amd64,linux/arm64
 
-          # 构建完成后推送到镜像仓库。
+          # 构建后推送到镜像仓库。
           push: true
 
-          # 使用 metadata-action 生成的镜像标签和元数据。
+          # metadata-action 生成的标签。
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
 
-          # 使用 GitHub Actions 缓存加快后续构建。
+          # GitHub Actions 构建缓存。
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-          # 生成镜像构建来源证明。
+          # 镜像来源证明。
           provenance: mode=max
 
-          # 生成软件物料清单。
+          # 软件物料清单。
           sbom: true
